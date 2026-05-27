@@ -1,13 +1,29 @@
 """Flask web app for the anti-fraud case knowledge base."""
 
-from flask import Flask, Response, abort, jsonify, render_template, request, send_file, stream_with_context
+import uuid
+
+from flask import (
+    Flask,
+    Response,
+    abort,
+    jsonify,
+    render_template,
+    request,
+    send_file,
+    stream_with_context,
+)
 
 from .. import __version__
 from ..agent import Agent, task_type_label
-from ..config import settings
-from ..service.conversation import store as conv_store
+from ..config import PROJECT_ROOT, settings
 from ..domain.dataset import get_knowledge_base, item_to_dict
+from ..service.conversation import store as conv_store
 from ..service.search import search_items
+from ..service.asr import (
+    asr_available,
+    recognize_speech,
+    VolcASRError,
+)
 from ..service.tts import (
     openai_tts_available,
     server_tts_engine,
@@ -21,8 +37,8 @@ from ..service.tts import (
 def create_app() -> Flask:
     app = Flask(
         __name__,
-        template_folder="../../../templates",
-        static_folder="../../../static",
+        template_folder=str(PROJECT_ROOT / "templates"),
+        static_folder=str(PROJECT_ROOT / "static"),
     )
 
     app.logger.info(
@@ -55,20 +71,22 @@ def create_app() -> Flask:
             for channel in item.entry_channels:
                 if channel and channel not in entry_channels:
                     entry_channels.append(channel)
-        return jsonify({
-            "app_version": __version__,
-            "schema_version": kb.schema_version,
-            "generated_at": kb.generated_at,
-            "source": kb.source,
-            "item_count": len(kb.items),
-            "category_count": len(kb.categories),
-            "risk_levels": risk_levels,
-            "entry_channels": entry_channels,
-            "categories": [
-                {"id": category.id, "name": category.name, "item_count": category.item_count}
-                for category in kb.categories
-            ],
-        })
+        return jsonify(
+            {
+                "app_version": __version__,
+                "schema_version": kb.schema_version,
+                "generated_at": kb.generated_at,
+                "source": kb.source,
+                "item_count": len(kb.items),
+                "category_count": len(kb.categories),
+                "risk_levels": risk_levels,
+                "entry_channels": entry_channels,
+                "categories": [
+                    {"id": category.id, "name": category.name, "item_count": category.item_count}
+                    for category in kb.categories
+                ],
+            }
+        )
 
     @app.get("/api/items")
     def items():
@@ -89,12 +107,14 @@ def create_app() -> Flask:
             limit=limit,
             offset=offset,
         )
-        return jsonify({
-            "total": total,
-            "limit": limit,
-            "offset": offset,
-            "items": [_item_payload(item) for item in result],
-        })
+        return jsonify(
+            {
+                "total": total,
+                "limit": limit,
+                "offset": offset,
+                "items": [_item_payload(item) for item in result],
+            }
+        )
 
     @app.get("/api/items/<item_id>")
     def item_detail(item_id: str):
@@ -108,23 +128,8 @@ def create_app() -> Flask:
     def ask():
         kb = get_knowledge_base()
         payload = request.get_json(silent=True) or {}
-        question = str(payload.get("question") or "")
-        category = str(payload.get("category") or "")
-        session_id = str(payload.get("session_id") or "")
-        voice_enabled = payload.get("voice_enabled", True)
-        if isinstance(voice_enabled, str):
-            include_speech = voice_enabled.lower() not in {"0", "false", "no", "off"}
-        else:
-            include_speech = bool(voice_enabled)
+        question, category, session_id, include_speech, context = _parse_ask_payload(payload)
 
-        # Auto-generate session_id for new sessions
-        import uuid as _uuid
-        if not session_id:
-            session_id = _uuid.uuid4().hex[:12]
-        first_turn = conv_store.is_first_turn(session_id)
-        context = conv_store.format_context(session_id) if not first_turn else None
-        if context is None and isinstance(payload.get("context"), dict):
-            context = payload.get("context")
         agent = Agent(kb)
         try:
             result = agent.dispatch(
@@ -138,84 +143,12 @@ def create_app() -> Flask:
 
             app.logger.exception("Ask request failed")
             warning = describe_model_error(exc)
-            return jsonify({
-                'type': 'result',
-                'session_id': session_id,
-                'answer': f"问答暂时失败：{warning}",
-                'speech': "",
-                'mode': 'fallback',
-                'task_type': 'fact_qa',
-                'task_label': '问答失败',
-                'confidence': 0.0,
-                'sources': [],
-                'items': [],
-                'evidence': [],
-                'selection_reason': "",
-                'warnings': [warning],
-                'total_count': 0,
-                'decision': {},
-            })
+            return jsonify(_ask_error_payload(session_id, warning))
 
         if result is None:
-            return jsonify({
-                'type': 'result',
-                'session_id': session_id,
-                'answer': "问答暂时失败：未生成有效结果。",
-                'speech': "",
-                'mode': 'fallback',
-                'task_type': 'fact_qa',
-                'task_label': '问答失败',
-                'confidence': 0.0,
-                'sources': [],
-                'items': [],
-                'evidence': [],
-                'selection_reason': "",
-                'warnings': ["未生成有效结果。"],
-                'total_count': 0,
-                'decision': {},
-            })
+            return jsonify(_ask_empty_payload(session_id))
 
-        item_titles = []
-        items_full = []
-        seen_item_ids = set()
-        for it in (result.items or []):
-            if not isinstance(it, dict):
-                continue
-            title = str(it.get("title") or "").strip()
-            if title and title not in item_titles:
-                item_titles.append(title)
-            item_id = str(it.get("id") or "").strip()
-            if item_id and item_id not in seen_item_ids:
-                item = kb.get(item_id)
-                if item is not None:
-                    items_full.append(item_to_dict(item, include_content=True))
-                    seen_item_ids.add(item_id)
-            elif not item_id and title:
-                items_full.append(dict(it))
-        conv_store.add_turn(
-            session_id=session_id,
-            query=question,
-            answer=result.answer or "",
-            item_titles=item_titles,
-            items_full=items_full,
-        )
-        return jsonify({
-            'type': 'result',
-            'session_id': session_id,
-            'answer': result.answer,
-            'speech': result.speech,
-            'mode': result.mode,
-            'task_type': result.task_type.value,
-            'task_label': task_type_label(result.task_type),
-            'confidence': result.confidence,
-            'sources': result.sources,
-            'items': result.items,
-            'evidence': result.evidence,
-            'selection_reason': result.selection_reason,
-            'warnings': result.warnings,
-            'total_count': result.total_count,
-            'decision': result.decision,
-        })
+        return jsonify(_ask_success_payload(result, session_id, kb))
 
     @app.post("/api/tts")
     def create_tts_audio():
@@ -256,9 +189,151 @@ def create_app() -> Flask:
             abort(404)
         return send_file(path, conditional=True, max_age=3600)
 
+    @app.post("/api/asr")
+    def asr_recognize():
+        audio_data = request.get_data()
+        if not audio_data:
+            return jsonify({"error": "no_audio_data"}), 400
+
+        content_type = request.content_type or ""
+        format_hint = "webm"
+        if "audio/webm" in content_type:
+            format_hint = "webm"
+        elif "audio/ogg" in content_type:
+            format_hint = "ogg"
+        elif "audio/wav" in content_type:
+            format_hint = "wav"
+        elif "audio/mp3" in content_type or "audio/mpeg" in content_type:
+            format_hint = "mp3"
+
+        try:
+            text = recognize_speech(audio_data, format=format_hint)
+            return jsonify({"text": text})
+        except VolcASRError as exc:
+            app.logger.warning("ASR failed: %s", exc)
+            return jsonify({"error": str(exc)}), 503
+        except Exception:
+            app.logger.exception("ASR unexpected error")
+            return jsonify({"error": "asr_unavailable"}), 503
+
     return app
+
+
 def _item_payload(item, include_content: bool = False) -> dict:
     return item_to_dict(item, include_content=include_content)
+
+
+def _parse_ask_payload(payload: dict) -> tuple[str, str, str, bool, dict | None]:
+    """Extract and normalize ask request parameters."""
+    question = str(payload.get("question") or "")
+    category = str(payload.get("category") or "")
+    session_id = str(payload.get("session_id") or "")
+    voice_enabled = payload.get("voice_enabled", True)
+    if isinstance(voice_enabled, str):
+        include_speech = voice_enabled.lower() not in {"0", "false", "no", "off"}
+    else:
+        include_speech = bool(voice_enabled)
+
+    if not session_id:
+        session_id = uuid.uuid4().hex[:12]
+
+    first_turn = conv_store.is_first_turn(session_id)
+    context = conv_store.format_context(session_id) if not first_turn else None
+    if context is None and isinstance(payload.get("context"), dict):
+        context = payload.get("context")
+
+    return question, category, session_id, include_speech, context
+
+
+def _ask_error_payload(session_id: str, warning: str) -> dict:
+    return {
+        "type": "result",
+        "session_id": session_id,
+        "answer": f"问答暂时失败：{warning}",
+        "speech": "",
+        "mode": "fallback",
+        "task_type": "fact_qa",
+        "task_label": "问答失败",
+        "confidence": 0.0,
+        "sources": [],
+        "items": [],
+        "evidence": [],
+        "selection_reason": "",
+        "warnings": [warning],
+        "total_count": 0,
+        "decision": {},
+    }
+
+
+def _ask_empty_payload(session_id: str) -> dict:
+    return {
+        "type": "result",
+        "session_id": session_id,
+        "answer": "问答暂时失败：未生成有效结果。",
+        "speech": "",
+        "mode": "fallback",
+        "task_type": "fact_qa",
+        "task_label": "问答失败",
+        "confidence": 0.0,
+        "sources": [],
+        "items": [],
+        "evidence": [],
+        "selection_reason": "",
+        "warnings": ["未生成有效结果。"],
+        "total_count": 0,
+        "decision": {},
+    }
+
+
+def _extract_result_items(result, kb) -> tuple[list[str], list[dict]]:
+    """Pull item titles and full dicts from an AgentResult."""
+    item_titles: list[str] = []
+    items_full: list[dict] = []
+    seen_item_ids: set[str] = set()
+    for it in result.items or []:
+        if not isinstance(it, dict):
+            continue
+        title = str(it.get("title") or "").strip()
+        if title and title not in item_titles:
+            item_titles.append(title)
+        item_id = str(it.get("id") or "").strip()
+        if item_id and item_id not in seen_item_ids:
+            item_obj = kb.get(item_id)
+            if item_obj is not None:
+                items_full.append(item_to_dict(item_obj, include_content=True))
+                seen_item_ids.add(item_id)
+        elif not item_id and title:
+            items_full.append(dict(it))
+    return item_titles, items_full
+
+
+def _ask_success_payload(result, session_id: str, kb) -> dict:
+    """Persist turn and build the success response payload."""
+    item_titles, items_full = _extract_result_items(result, kb)
+    conv_store.add_turn(
+        session_id=session_id,
+        query=result.answer or "",
+        answer=result.answer or "",
+        item_titles=item_titles,
+        items_full=items_full,
+    )
+    return {
+        "type": "result",
+        "session_id": session_id,
+        "answer": result.answer,
+        "speech": result.speech,
+        "mode": result.mode,
+        "task_type": result.task_type.value,
+        "task_label": task_type_label(result.task_type),
+        "confidence": result.confidence,
+        "sources": result.sources,
+        "items": result.items,
+        "evidence": result.evidence,
+        "selection_reason": result.selection_reason,
+        "warnings": result.warnings,
+        "total_count": result.total_count,
+        "decision": result.decision,
+    }
 
 
 def main() -> None:

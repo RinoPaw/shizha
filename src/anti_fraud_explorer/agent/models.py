@@ -149,7 +149,7 @@ TASK_CONFIGS: dict[TaskType, TaskConfig] = {
         task_type=TaskType.LECTURE_PLAN,
         retrieval_limit=5,
         context_schema="exhibition_brief",
-        handler_name="_handle_lecture",        # 已重命名
+        handler_name="_handle_lecture",  # 已重命名
         generate_detail="正在选取合适案例并编排宣传流程",
     ),
     TaskType.STUDY_TASK: TaskConfig(

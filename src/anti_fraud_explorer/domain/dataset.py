@@ -16,6 +16,7 @@ class Category:
     name: str
     item_count: int
 
+
 @dataclass(frozen=True)
 class CaseItem:
     """Anti-fraud case item matching the normalized `case_items.json` schema."""

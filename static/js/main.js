@@ -5,6 +5,7 @@ import { stopSpeech, unlockSpeech, setVoiceStatus, voiceState, replayLastSpeech,
 import { renderQuerySuggestions, loadMeta, resizeQuestionInput, syncRestoredQuestion, handleQuestionInput } from './ui.js';
 import { renderRelatedItems, updateRelatedPanelTitle, searchRightPanel, showDetail, hideDetail, loadInitialRandomItems } from './search.js';
 import { askQuestion } from './ask.js';
+import { initRecorder } from './recorder.js';
 
 function init() {
   bindElements({
@@ -17,6 +18,7 @@ function init() {
     querySuggestions: document.querySelector("#querySuggestions"),
     askButton: document.querySelector("#askButton"),
     voiceToggle: document.querySelector("#voiceToggle"),
+    recordButton: document.querySelector("#recordButton"),
     voiceStatus: document.querySelector("#voiceStatus"),
     answerBox: document.querySelector("#answerBox"),
     answerMode: document.querySelector("#answerMode"),
@@ -40,6 +42,7 @@ function init() {
   });
 
   initHuman();
+  initRecorder(els.recordButton);
   stopSpeech({ delayed: true, preserveHuman: true });
 
   // Initial setup

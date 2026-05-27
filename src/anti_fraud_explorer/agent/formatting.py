@@ -3,7 +3,7 @@
 from typing import Any
 
 from ..prompts import FRAUD_LABEL_MAP
-from ..service.item_cards import enriched_item_card, source_payload, title_with_family
+from ..service.item_cards import title_with_family
 from ..text import normalize_text
 
 
@@ -17,12 +17,14 @@ def format_context_item_for_llm(item: Any) -> str:
         return ""
 
     meta = " | ".join(
-        part for part in [
+        part
+        for part in [
             str(item.get("ccl2023_category") or "").strip(),
             str(item.get("custom_subcategory") or "").strip(),
             str(item.get("risk_level") or "").strip(),
             str(item.get("victim_group") or "").strip(),
-        ] if part
+        ]
+        if part
     )
     label = f"- [{item_id}] {title}" if item_id else f"- {title}"
     lines = [f"{label} | {meta}" if meta else label]
@@ -65,7 +67,11 @@ def items_to_title_context(items: list[Any], total: int) -> str:
     lines = [f"第 1 轮候选标题共 {total} 项，以下为标题和基础元数据：\n"]
     for i, item in enumerate(items[:100], 1):  # INITIAL_TITLE_CONTEXT_LIMIT
         forms = "、".join(item.entry_channels[:4]) if item.entry_channels else ""
-        meta = " | ".join(part for part in [item.ccl2023_category, item.risk_level, item.custom_subcategory] if part)
+        meta = " | ".join(
+            part
+            for part in [item.ccl2023_category, item.risk_level, item.custom_subcategory]
+            if part
+        )
         extra = "；".join(part for part in [f"入口渠道：{forms}" if forms else ""] if part)
         suffix = f" | {extra}" if extra else ""
         lines.append(f"{i}. [{item.id}] {title_with_family(item)} | {meta}{suffix}")
@@ -75,9 +81,27 @@ def items_to_title_context(items: list[Any], total: int) -> str:
 def context_title_keywords(items: list[Any]) -> list[str]:
     """Extract keywords from context items to expand retrieval."""
     keywords: list[str] = []
-    suffixes = ("诈骗", "刷单", "返利", "冒充", "贷款", "游戏", "理财", "养老", "客服", "公检法", "征信", "虚假", "投资")
+    suffixes = (
+        "诈骗",
+        "刷单",
+        "返利",
+        "冒充",
+        "贷款",
+        "游戏",
+        "理财",
+        "养老",
+        "客服",
+        "公检法",
+        "征信",
+        "虚假",
+        "投资",
+    )
     for item in items:
-        texts = [getattr(item, "ccl2023_category", ""), getattr(item, "custom_subcategory", ""), getattr(item, "title", "")]
+        texts = [
+            getattr(item, "ccl2023_category", ""),
+            getattr(item, "custom_subcategory", ""),
+            getattr(item, "title", ""),
+        ]
         for text in texts:
             text = normalize_text(text)
             if not text:
@@ -104,4 +128,3 @@ def candidate_summaries_for_llm(items: list[Any], limit: int) -> str:
             f"{item.summary[:80]}"
         )
     return "\n".join(lines)
-

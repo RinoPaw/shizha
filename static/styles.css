@@ -687,6 +687,134 @@ textarea:focus {
   transition: color 0.3s ease;
 }
 
+/* Record button ------------------------------------------------------- */
+.record-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 42px;
+  min-width: 100px;
+  padding: 0 16px 0 12px;
+  border: 1px solid rgba(92, 129, 112, 0.32);
+  border-radius: 999px;
+  background: rgba(99, 139, 120, 0.08);
+  color: var(--celadon-dark);
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.28s ease, border-color 0.28s ease, background 0.28s ease, box-shadow 0.28s ease;
+}
+
+.record-button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(92, 129, 112, 0.48);
+  background: rgba(99, 139, 120, 0.12);
+  box-shadow: 0 10px 22px rgba(28, 53, 44, 0.08);
+}
+
+.record-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  transform: none;
+  box-shadow: none;
+}
+
+.record-icon {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  border-radius: 50%;
+  background: rgba(86, 130, 111, 0.18);
+  overflow: hidden;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.record-glyph {
+  position: relative;
+  z-index: 1;
+  color: currentColor;
+}
+
+/* Idle — microphone circle */
+.record-button[data-state="idle"] .record-glyph {
+  width: 8px;
+  height: 12px;
+  border: 2px solid currentColor;
+  border-radius: 4px;
+  background: transparent;
+}
+
+/* Recording — red pulsing dot */
+.record-button[data-state="recording"] {
+  border-color: rgba(194, 58, 43, 0.45);
+  background: rgba(194, 58, 43, 0.08);
+  color: var(--vermillion);
+  animation: record-pulse 1.4s ease-in-out infinite;
+}
+
+.record-button[data-state="recording"] .record-icon {
+  background: rgba(194, 58, 43, 0.18);
+}
+
+.record-button[data-state="recording"] .record-glyph {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: currentColor;
+}
+
+/* Processing — spinning ring */
+.record-button[data-state="processing"] {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.record-button[data-state="processing"] .record-icon {
+  background: rgba(86, 130, 111, 0.12);
+}
+
+.record-button[data-state="processing"] .record-glyph {
+  width: 12px;
+  height: 12px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: record-spin 0.8s linear infinite;
+}
+
+.record-label {
+  display: inline-block;
+  min-width: 3em;
+  text-align: center;
+  font-size: 12px;
+  color: currentColor;
+  letter-spacing: 2px;
+  font-family: "Noto Serif SC", "STSong", serif;
+  transition: color 0.3s ease;
+}
+
+@keyframes record-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(194, 58, 43, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(194, 58, 43, 0);
+  }
+}
+
+@keyframes record-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 .voice-hint {
   flex: 1;
   min-width: 0;

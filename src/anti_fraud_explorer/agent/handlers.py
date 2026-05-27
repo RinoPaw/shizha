@@ -9,13 +9,10 @@ from ..config import settings
 from .models import TaskType, AgentResult
 from ..domain.dataset import KnowledgeBase
 from ..service.item_cards import enriched_item_card, source_payload, title_with_family
-from ..service.scenario_evidence import scenario_match_score, scenario_is_hard_match
+from ..service.scenario_evidence import scenario_match_score
 from ..prompts import DEFAULT_TRANSFORM_TYPE, TRANSFORM_MAX_TOKENS, TRANSFORM_PROMPTS
 from ..text import normalize_text
-from .formatting import (
-    candidate_summaries_for_llm,
-    context_title_keywords,
-)
+from .formatting import candidate_summaries_for_llm
 from .rendering import render_template, build_transform_local
 
 # Forward declaration for type hint
@@ -25,6 +22,7 @@ Agent = Any  # Will be resolved at runtime from agent.py
 def handle_comparison(kb: KnowledgeBase, analysis) -> AgentResult:
     """COMPARISON: multi-entity structured comparison, no LLM."""
     from .comparison import handle_comparison as _comparison_impl
+
     return _comparison_impl(kb, analysis)
 
 
@@ -46,6 +44,7 @@ def handle_study_task(agent: Agent, analysis) -> AgentResult:
 
     if target_item is None:
         from ..ai import Answer, answer_question
+
         answer: Answer = answer_question(
             agent.kb,
             question=analysis.rewritten_query or analysis.original_query,
@@ -101,12 +100,14 @@ def handle_study_task(agent: Agent, analysis) -> AgentResult:
 
     sources = [source_payload(target_item)]
     items = [enriched_item_card(target_item)]
-    evidence = [{
-        "type": "source",
-        "claim": "教案主体",
-        "basis": f"entity={analysis.entities[0] if analysis.entities else '推荐'}",
-        "item_id": target_item.id,
-    }]
+    evidence = [
+        {
+            "type": "source",
+            "claim": "教案主体",
+            "basis": f"entity={analysis.entities[0] if analysis.entities else '推荐'}",
+            "item_id": target_item.id,
+        }
+    ]
 
     return AgentResult(
         task_type=TaskType.STUDY_TASK,
@@ -227,21 +228,29 @@ def handle_browse(agent: Agent, analysis) -> AgentResult:
 
     items = [enriched_item_card(item) for item in result]
     filter_desc = _describe_filters(category, province, level)
-    header = f"找到 {total} 条{filter_desc}相关案例：\n" if total else f"未找到匹配的{filter_desc}相关案例。"
+    header = (
+        f"找到 {total} 条{filter_desc}相关案例：\n"
+        if total
+        else f"未找到匹配的{filter_desc}相关案例。"
+    )
     lines = [header]
     for i, item in enumerate(result, 1):
         level_str = f" | {item.risk_level}" if item.risk_level else ""
         subtype_str = f" | {item.custom_subcategory}" if item.custom_subcategory else ""
-        lines.append(f"{i}. {title_with_family(item)} -- {item.ccl2023_category}{level_str}{subtype_str}")
+        lines.append(
+            f"{i}. {title_with_family(item)} -- {item.ccl2023_category}{level_str}{subtype_str}"
+        )
 
     evidence = []
     for item in result:
-        evidence.append({
-            "type": "source",
-            "claim": "筛选命中",
-            "basis": f"province={province}, category={category}, risk_level={level}",
-            "item_id": item.id,
-        })
+        evidence.append(
+            {
+                "type": "source",
+                "claim": "筛选命中",
+                "basis": f"province={province}, category={category}, risk_level={level}",
+                "item_id": item.id,
+            }
+        )
 
     warnings = []
     if province:
@@ -249,7 +258,9 @@ def handle_browse(agent: Agent, analysis) -> AgentResult:
     if not total:
         warnings.append(f"未找到{filter_desc}相关案例")
     elif total > limit:
-        warnings.append(f"共匹配 {total} 项，当前仅展示前 {limit} 项。可通过筛选条件缩小范围或调整展示数量。")
+        warnings.append(
+            f"共匹配 {total} 项，当前仅展示前 {limit} 项。可通过筛选条件缩小范围或调整展示数量。"
+        )
 
     return AgentResult(
         task_type=TaskType.BROWSE_QUERY,
@@ -329,9 +340,18 @@ def handle_recommend(agent: Agent, analysis) -> AgentResult:
         )
         selected = _parse_llm_selection(response, limit)
     except Exception:
-        unique.sort(key=lambda x: (
-            5 if x.risk_level == "极高" else 3 if x.risk_level == "高" else 1 if x.risk_level == "中" else 0
-        ), reverse=True)
+        unique.sort(
+            key=lambda x: (
+                5
+                if x.risk_level == "极高"
+                else 3
+                if x.risk_level == "高"
+                else 1
+                if x.risk_level == "中"
+                else 0
+            ),
+            reverse=True,
+        )
         selected = [item.id for item in unique[:limit]]
 
     top = [agent.kb.get(item_id) for item_id in selected if agent.kb.get(item_id)]
@@ -382,12 +402,14 @@ def handle_recommend(agent: Agent, analysis) -> AgentResult:
 
     evidence = []
     for item in top:
-        evidence.append({
-            "type": "inferred",
-            "claim": "推荐排序",
-            "basis": f"scenario={scenario}, risk_level={item.risk_level}",
-            "item_id": item.id,
-        })
+        evidence.append(
+            {
+                "type": "inferred",
+                "claim": "推荐排序",
+                "basis": f"scenario={scenario}, risk_level={item.risk_level}",
+                "item_id": item.id,
+            }
+        )
 
     return AgentResult(
         task_type=TaskType.RECOMMENDATION,
@@ -418,7 +440,10 @@ def handle_lecture(agent: Agent, analysis) -> AgentResult:
         rec.items = [rec.items[selected_index]]
         if rec.evidence:
             rec.evidence = [rec.evidence[min(selected_index, len(rec.evidence) - 1)]]
-        rec.selection_reason = selected_reason or f"先筛出 {max(analysis.retrieval_count, 5)} 个候选，再确定 1 个核心案例"
+        rec.selection_reason = (
+            selected_reason
+            or f"先筛出 {max(analysis.retrieval_count, 5)} 个候选，再确定 1 个核心案例"
+        )
 
     rec.task_type = TaskType.LECTURE_PLAN
 
@@ -431,12 +456,18 @@ def handle_lecture(agent: Agent, analysis) -> AgentResult:
         display_str = "、".join(item_data.get("entry_channels", ["展板"]))
         item_title = item_data["title"]
         category_name = item_data.get("ccl2023_category") or ""
-        display_title = f"{item_title}（{category_name}）" if category_name and category_name not in item_title else item_title
-        template_items.append({
-            "display_title": display_title,
-            "display_str": display_str,
-            "summary": item_data["summary"],
-        })
+        display_title = (
+            f"{item_title}（{category_name}）"
+            if category_name and category_name not in item_title
+            else item_title
+        )
+        template_items.append(
+            {
+                "display_title": display_title,
+                "display_str": display_str,
+                "summary": item_data["summary"],
+            }
+        )
 
     rec.answer = render_template(
         "lecture_plan.md.j2",
@@ -452,6 +483,7 @@ def handle_lecture(agent: Agent, analysis) -> AgentResult:
 # ---------------------------------------------------------------------------
 # Helpers used by handlers
 # ---------------------------------------------------------------------------
+
 
 def _describe_filters(category: str, province: str, level: str) -> str:
     parts = [p for p in [province, level, category] if p]
@@ -506,7 +538,7 @@ def _parse_llm_selection(response: str, limit: int) -> list[str]:
     start = text.find("{")
     end = text.rfind("}")
     if start >= 0 and end > start:
-        payload = json.loads(text[start:end + 1])
+        payload = json.loads(text[start : end + 1])
         selected = payload.get("selected", [])
         if isinstance(selected, list):
             return [str(s) for s in selected[:limit] if s]
@@ -526,11 +558,13 @@ def _select_exhibition_core_item(candidate_items, scene, audience, time_budget):
     candidate_lines = []
     for index, item in enumerate(candidate_items, 1):
         meta = " · ".join(
-            part for part in [
+            part
+            for part in [
                 str(item.get("ccl2023_category") or ""),
                 str(item.get("custom_subcategory") or ""),
                 str(item.get("risk_level") or ""),
-            ] if part
+            ]
+            if part
         )
         entry_channels = "、".join(item.get("entry_channels") or [])
         summary = str(item.get("summary") or "").strip()
@@ -551,8 +585,7 @@ def _select_exhibition_core_item(candidate_items, scene, audience, time_budget):
         f"场景：{scene}\n"
         f"受众：{audience}\n"
         f"时间预算：{time_budget}\n\n"
-        "候选案例：\n"
-        + "\n\n".join(candidate_lines)
+        "候选案例：\n" + "\n\n".join(candidate_lines)
     )
     try:
         raw = chat_completion(
@@ -582,8 +615,11 @@ def _select_exhibition_core_item(candidate_items, scene, audience, time_budget):
 
 def _call_transform_model(transform_type: str, context: str, query: str) -> str:
     from ..service.http_client import chat_completion
+
     system_prompt = TRANSFORM_PROMPTS.get(transform_type, TRANSFORM_PROMPTS[DEFAULT_TRANSFORM_TYPE])
-    max_tokens = TRANSFORM_MAX_TOKENS.get(transform_type, TRANSFORM_MAX_TOKENS[DEFAULT_TRANSFORM_TYPE])
+    max_tokens = TRANSFORM_MAX_TOKENS.get(
+        transform_type, TRANSFORM_MAX_TOKENS[DEFAULT_TRANSFORM_TYPE]
+    )
     return chat_completion(
         [
             {"role": "system", "content": system_prompt},

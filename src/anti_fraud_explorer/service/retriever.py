@@ -57,18 +57,44 @@ _SCENARIO_MAP: dict[str, str] = {
 _COUNT_PATTERN = re.compile(r"(\d+|[一二两三四五六七八九十])\s*[个项条种]")
 
 _CN_NUM_MAP: dict[str, int] = {
-    "一": 1, "二": 2, "两": 2, "三": 3, "四": 4, "五": 5,
-    "六": 6, "七": 7, "八": 8, "九": 9, "十": 10,
+    "一": 1,
+    "二": 2,
+    "两": 2,
+    "三": 3,
+    "四": 4,
+    "五": 5,
+    "六": 6,
+    "七": 7,
+    "八": 8,
+    "九": 9,
+    "十": 10,
 }
 _CITY_PATTERN = re.compile(r"([一-鿿]{2,4}(?:市|地区|州|盟|自治州))")
 
 _SHORT_PROVINCE_MAP: dict[str, str] = {
-    "河南": "河南省", "河北": "河北省", "山东": "山东省", "山西": "山西省",
-    "陕西": "陕西省", "甘肃": "甘肃省", "青海": "青海省", "四川": "四川省",
-    "贵州": "贵州省", "云南": "云南省", "海南": "海南省", "广东": "广东省",
-    "湖南": "湖南省", "湖北": "湖北省", "安徽": "安徽省", "江苏": "江苏省",
-    "浙江": "浙江省", "福建": "福建省", "江西": "江西省", "台湾": "台湾省",
-    "辽宁": "辽宁省", "吉林": "吉林省", "黑龙江": "黑龙江省",
+    "河南": "河南省",
+    "河北": "河北省",
+    "山东": "山东省",
+    "山西": "山西省",
+    "陕西": "陕西省",
+    "甘肃": "甘肃省",
+    "青海": "青海省",
+    "四川": "四川省",
+    "贵州": "贵州省",
+    "云南": "云南省",
+    "海南": "海南省",
+    "广东": "广东省",
+    "湖南": "湖南省",
+    "湖北": "湖北省",
+    "安徽": "安徽省",
+    "江苏": "江苏省",
+    "浙江": "浙江省",
+    "福建": "福建省",
+    "江西": "江西省",
+    "台湾": "台湾省",
+    "辽宁": "辽宁省",
+    "吉林": "吉林省",
+    "黑龙江": "黑龙江省",
 }
 
 _CONSTRAINT_KEYWORDS: dict[str, str] = {
@@ -202,7 +228,10 @@ class QueryAnalyzer:
         self._category_names = [c.name for c in kb.categories]
 
     def analyze(
-        self, query: str, task_type: TaskType | None = None, context: dict | None = None,
+        self,
+        query: str,
+        task_type: TaskType | None = None,
+        context: dict | None = None,
         planner_queries: list[str] | None = None,
     ) -> QueryAnalysis:
         # ── task identity supplied by the model planner ──
@@ -461,9 +490,7 @@ class QueryAnalyzer:
                 return canonical
         return ""
 
-    def _build_expansions_for_analysis(
-        self, provinces: list[str], rewritten: str
-    ) -> list[str]:
+    def _build_expansions_for_analysis(self, provinces: list[str], rewritten: str) -> list[str]:
         """Build expansion terms from province list and rewritten query."""
         terms: list[str] = []
         for entity in provinces:
@@ -515,12 +542,15 @@ class QueryAnalyzer:
         cleaned = re.sub(r"\s+", " ", cleaned).strip()
         return cleaned or query
 
-    def _build_expansions(
-        self, entities: dict[str, list[str]], rewritten: str
-    ) -> list[str]:
+    def _build_expansions(self, entities: dict[str, list[str]], rewritten: str) -> list[str]:
         terms: list[str] = []
         for entity in entities.get("province", []):
-            short = entity.rstrip("省市自治区").replace("壮族", "").replace("回族", "").replace("维吾尔", "")
+            short = (
+                entity.rstrip("省市自治区")
+                .replace("壮族", "")
+                .replace("回族", "")
+                .replace("维吾尔", "")
+            )
             if len(short) >= 2 and short != entity:
                 terms.append(short)
         expanded_query = " ".join([rewritten, *terms])

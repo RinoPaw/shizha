@@ -56,9 +56,18 @@ def extract_structured_field(text: str, label: str) -> str:
     start += len(marker)
     # Find next label boundary
     labels = [
-        "场景简述", "性质判断", "判断理由", "入口渠道", "冒充身份",
-        "关键手法", "目标资产", "诈骗阶段", "风险信号", "防范建议",
-        "来源名称", "采集日期",
+        "场景简述",
+        "性质判断",
+        "判断理由",
+        "入口渠道",
+        "冒充身份",
+        "关键手法",
+        "目标资产",
+        "诈骗阶段",
+        "风险信号",
+        "防范建议",
+        "来源名称",
+        "采集日期",
     ]
     end = len(text)
     for next_label in labels:

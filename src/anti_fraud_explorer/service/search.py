@@ -50,6 +50,7 @@ _SEARCH_TRAILING_PUNCTUATION = "？?！!。.，,、 \t\r\n"
 # Public API
 # ---------------------------------------------------------------------------
 
+
 def search_items(
     kb: KnowledgeBase,
     query: str = "",
@@ -119,9 +120,11 @@ def search_items(
 
     return result[offset : offset + limit], len(result)
 
+
 # ---------------------------------------------------------------------------
 # Query normalization
 # ---------------------------------------------------------------------------
+
 
 def normalize_search_query(query: str) -> str:
     """Normalize a raw search string without trying to interpret user intent."""
@@ -145,6 +148,7 @@ def tokenize(query: str) -> list[str]:
 # ---------------------------------------------------------------------------
 # Lexical ranking
 # ---------------------------------------------------------------------------
+
 
 def rank_lexical(
     candidates: Iterable[CaseItem],
@@ -198,6 +202,7 @@ def score_item(item: CaseItem, query: str, tokens: list[str]) -> float:
 # Search document building
 # ---------------------------------------------------------------------------
 
+
 def build_search_text(item: CaseItem | dict[str, Any]) -> str:
     """Build the lightweight lexical-search text for an item."""
     parts = [
@@ -232,6 +237,7 @@ def _item_text_list(item: CaseItem | dict[str, Any], key: str) -> list[str]:
 # Pinyin fuzzy fallback
 # ---------------------------------------------------------------------------
 
+
 def prepend_pinyin_matches(
     kb: KnowledgeBase,
     ranked_items: list[CaseItem],
@@ -240,10 +246,7 @@ def prepend_pinyin_matches(
 ) -> list[CaseItem]:
     """Prepend deduplicated pinyin matches within the current candidate set."""
     candidate_ids = {item.id for item in candidates}
-    pinyin_results = [
-        item for item in search_items_pinyin(kb, query)
-        if item.id in candidate_ids
-    ]
+    pinyin_results = [item for item in search_items_pinyin(kb, query) if item.id in candidate_ids]
     if not pinyin_results:
         return ranked_items
 
@@ -338,10 +341,10 @@ def _is_substantial_pinyin_part(candidate_py: str, query_py: str) -> bool:
     return len(candidate_py) >= len(query_py) * 0.45
 
 
-
 # ---------------------------------------------------------------------------
 # Optional hybrid semantic ranking
 # ---------------------------------------------------------------------------
+
 
 def rank_hybrid(
     kb: KnowledgeBase,

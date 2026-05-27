@@ -19,7 +19,7 @@ from ..service.search import (
 from ..service.retriever import QueryAnalyzer
 from ..service.scenario_evidence import scenario_is_hard_match, scenario_match_score
 from ..text import normalize_text
-from ..prompts import SUBSEQUENT_TURN_SYSTEM_PROMPT, FRAUD_LABEL_MAP
+from ..prompts import SUBSEQUENT_TURN_SYSTEM_PROMPT
 
 from .models import (
     AgentDecision,
@@ -33,14 +33,6 @@ from .formatting import (
     format_context_item_for_llm,
     items_to_llm_context,
     items_to_title_context,
-)
-from .handlers import (
-    handle_browse,
-    handle_comparison,
-    handle_content_transform,
-    handle_lecture,
-    handle_recommend,
-    handle_study_task,
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -72,12 +64,17 @@ class Agent:
     # ------------------------------------------------------------------ #
 
     def dispatch(
-        self, query: str, category: str = "",
-        include_speech: bool = True, context: dict | None = None,
+        self,
+        query: str,
+        category: str = "",
+        include_speech: bool = True,
+        context: dict | None = None,
     ) -> AgentResult:
         result = None
         speech_text = ""
-        for event in self.dispatch_stream(query, category, include_speech=include_speech, context=context):
+        for event in self.dispatch_stream(
+            query, category, include_speech=include_speech, context=context
+        ):
             if isinstance(event, AgentResult):
                 result = event
             elif isinstance(event, dict) and event.get("type") == "speech":
@@ -87,8 +84,11 @@ class Agent:
         return result
 
     def dispatch_stream(
-        self, query: str, category: str = "",
-        include_speech: bool = True, context: dict | None = None,
+        self,
+        query: str,
+        category: str = "",
+        include_speech: bool = True,
+        context: dict | None = None,
     ):
         query = query.strip()
         if not query:
@@ -100,7 +100,9 @@ class Agent:
             )
             return
 
-        has_legacy_context = bool(context and (context.get("question") or context.get("items") or context.get("answer")))
+        has_legacy_context = bool(
+            context and (context.get("question") or context.get("items") or context.get("answer"))
+        )
         is_first = not context or (context.get("turn_count", 0) == 0 and not has_legacy_context)
         if is_first:
             yield from self._dispatch_subsequent_turn(query, category, include_speech, context=None)
@@ -113,13 +115,19 @@ class Agent:
     # ------------------------------------------------------------------ #
 
     def _dispatch_subsequent_turn(
-        self, query: str, category: str, include_speech: bool, context: dict | None,
+        self,
+        query: str,
+        category: str,
+        include_speech: bool,
+        context: dict | None,
     ):
         from ..ai import describe_model_error
 
         context = context or {}
         yield self._progress_event("search", "检索资料", "按原问题筛选候选标题。")
-        title_candidates, initial_total_count, initial_note = self._search_initial_candidates(query, category, context)
+        title_candidates, initial_total_count, initial_note = self._search_initial_candidates(
+            query, category, context
+        )
         search_rounds_used = 1
         used_queries: list[str] = [query]
         detailed_items: list[Any] = []
@@ -129,12 +137,19 @@ class Agent:
         warnings: list[str] = []
 
         if not settings.ai_api_key:
-            yield self._progress_event("generate", "整理结论", "未配置模型 Key，使用本地案例资料直接回答。")
+            yield self._progress_event(
+                "generate", "整理结论", "未配置模型 Key，使用本地案例资料直接回答。"
+            )
             result, decision = self._subsequent_fallback_result(
-                query=query, context=context, collected_items=collected_items,
-                used_queries=used_queries, total_count=total_count, warnings=warnings,
+                query=query,
+                context=context,
+                collected_items=collected_items,
+                used_queries=used_queries,
+                total_count=total_count,
+                warnings=warnings,
                 reason="未配置 AI_API_KEY，服务器使用本地检索资料回答。",
-                mode="local_context", planner="local_no_key",
+                mode="local_context",
+                planner="local_no_key",
             )
             yield from self._stream_completed_result(result, decision, include_speech, query=query)
             return
@@ -143,12 +158,17 @@ class Agent:
             if search_rounds_used >= MAX_SEARCH_ROUNDS_PER_TURN:
                 yield self._progress_event("generate", "思考回答", "资料已齐，正在组织回答。")
             else:
-                yield self._progress_event("classify", "理解问题", "结合上下文和候选标题，判断是否需要精查。")
+                yield self._progress_event(
+                    "classify", "理解问题", "结合上下文和候选标题，判断是否需要精查。"
+                )
 
             try:
                 payload = self._call_subsequent_turn_model(
-                    query=query, context=context, title_candidates=title_candidates,
-                    detailed_items=detailed_items, search_rounds_used=search_rounds_used,
+                    query=query,
+                    context=context,
+                    title_candidates=title_candidates,
+                    detailed_items=detailed_items,
+                    search_rounds_used=search_rounds_used,
                     retrieval_note=retrieval_note,
                 )
             except Exception as exc:
@@ -156,10 +176,16 @@ class Agent:
                 LOGGER.warning("Subsequent-turn LLM decision unavailable: %s", warning)
                 warnings.append(warning)
                 result, decision = self._subsequent_fallback_result(
-                    query=query, context=context, collected_items=collected_items,
-                    used_queries=used_queries, total_count=total_count, warnings=warnings,
+                    query=query,
+                    context=context,
+                    collected_items=collected_items,
+                    used_queries=used_queries,
+                    total_count=total_count,
+                    warnings=warnings,
                 )
-                yield from self._stream_completed_result(result, decision, include_speech, query=query)
+                yield from self._stream_completed_result(
+                    result, decision, include_speech, query=query
+                )
                 return
 
             action = self._payload_action(payload)
@@ -169,20 +195,32 @@ class Agent:
             if action == "answer" and answer:
                 yield self._progress_event("generate", "思考回答", "资料已齐，正在组织回答。")
                 result, decision = self._subsequent_answer_result(
-                    payload=payload, answer=answer, context=context,
-                    collected_items=collected_items, used_queries=used_queries,
-                    total_count=total_count, warnings=warnings,
+                    payload=payload,
+                    answer=answer,
+                    context=context,
+                    collected_items=collected_items,
+                    used_queries=used_queries,
+                    total_count=total_count,
+                    warnings=warnings,
                 )
-                yield from self._stream_completed_result(result, decision, include_speech, query=query)
+                yield from self._stream_completed_result(
+                    result, decision, include_speech, query=query
+                )
                 return
 
             if search_rounds_used >= MAX_SEARCH_ROUNDS_PER_TURN:
                 warnings.append("搜索预算已用尽，已基于现有上下文兜底回答。")
                 result, decision = self._subsequent_fallback_result(
-                    query=query, context=context, collected_items=collected_items,
-                    used_queries=used_queries, total_count=total_count, warnings=warnings,
+                    query=query,
+                    context=context,
+                    collected_items=collected_items,
+                    used_queries=used_queries,
+                    total_count=total_count,
+                    warnings=warnings,
                 )
-                yield from self._stream_completed_result(result, decision, include_speech, query=query)
+                yield from self._stream_completed_result(
+                    result, decision, include_speech, query=query
+                )
                 return
 
             if not search_queries:
@@ -191,15 +229,23 @@ class Agent:
             if not search_queries:
                 warnings.append("模型未给出答案或检索词，且上下文中没有可兜底检索的案例。")
                 result, decision = self._subsequent_fallback_result(
-                    query=query, context=context, collected_items=collected_items,
-                    used_queries=used_queries, total_count=total_count, warnings=warnings,
+                    query=query,
+                    context=context,
+                    collected_items=collected_items,
+                    used_queries=used_queries,
+                    total_count=total_count,
+                    warnings=warnings,
                 )
-                yield from self._stream_completed_result(result, decision, include_speech, query=query)
+                yield from self._stream_completed_result(
+                    result, decision, include_speech, query=query
+                )
                 return
 
             search_rounds_used += 1
             used_queries.extend(q for q in search_queries if q not in used_queries)
-            yield self._progress_event("search", "检索资料", f"精查资料：{'、'.join(search_queries[:4])}")
+            yield self._progress_event(
+                "search", "检索资料", f"精查资料：{'、'.join(search_queries[:4])}"
+            )
             new_items, total = self._search_subsequent_items(search_queries, category)
             total_count += total
             if total == 0:
@@ -217,16 +263,24 @@ class Agent:
     # ------------------------------------------------------------------ #
 
     def _call_subsequent_turn_model(
-        self, query: str, context: dict, title_candidates: list[Any],
-        detailed_items: list[Any], search_rounds_used: int, retrieval_note: str = "",
+        self,
+        query: str,
+        context: dict,
+        title_candidates: list[Any],
+        detailed_items: list[Any],
+        search_rounds_used: int,
+        retrieval_note: str = "",
     ) -> dict[str, Any]:
         from ..service.http_client import chat_completion
         from .planner import agent_planner_extra_options, extract_json_object
 
         raw = chat_completion(
             self._build_subsequent_turn_messages(
-                query=query, context=context, title_candidates=title_candidates,
-                detailed_items=detailed_items, search_rounds_used=search_rounds_used,
+                query=query,
+                context=context,
+                title_candidates=title_candidates,
+                detailed_items=detailed_items,
+                search_rounds_used=search_rounds_used,
                 retrieval_note=retrieval_note,
             ),
             temperature=0.2,
@@ -239,18 +293,27 @@ class Agent:
         return payload
 
     def _build_subsequent_turn_messages(
-        self, query: str, context: dict, title_candidates: list[Any],
-        detailed_items: list[Any], search_rounds_used: int, retrieval_note: str = "",
+        self,
+        query: str,
+        context: dict,
+        title_candidates: list[Any],
+        detailed_items: list[Any],
+        search_rounds_used: int,
+        retrieval_note: str = "",
     ) -> list[dict[str, str]]:
         remaining = max(MAX_SEARCH_ROUNDS_PER_TURN - search_rounds_used, 0)
         history_text = self._format_history_for_llm(context)
         title_text = (
-            items_to_title_context(title_candidates[:INITIAL_TITLE_CONTEXT_LIMIT], len(title_candidates))
-            if title_candidates else "无"
+            items_to_title_context(
+                title_candidates[:INITIAL_TITLE_CONTEXT_LIMIT], len(title_candidates)
+            )
+            if title_candidates
+            else "无"
         )
         detail_text = (
             items_to_llm_context(detailed_items[:30], len(detailed_items))
-            if detailed_items else "无"
+            if detailed_items
+            else "无"
         )
 
         user_prompt = (
@@ -320,7 +383,10 @@ class Agent:
     # ------------------------------------------------------------------ #
 
     def _search_initial_candidates(
-        self, query: str, category: str, context: dict | None = None,
+        self,
+        query: str,
+        category: str,
+        context: dict | None = None,
     ) -> tuple[list[Any], int, str]:
         analysis = self.query_analyzer.analyze(query, context=context)
         search_query = normalize_search_query(analysis.rewritten_query or query)
@@ -329,18 +395,24 @@ class Agent:
         contextual_items = self._contextual_initial_candidates(context_items, category)
         if not lowered_query:
             if contextual_items:
-                return contextual_items, len(contextual_items), self._contextual_candidate_note(contextual_items)
+                return (
+                    contextual_items,
+                    len(contextual_items),
+                    self._contextual_candidate_note(contextual_items),
+                )
             return [], 0, "服务器根据原问题没有查询到候选标题；你可以直接回答或组织关键词重新查询。"
 
         candidates = [
-            item for item in self.kb.items
-            if not category or item.ccl2023_category == category
+            item for item in self.kb.items if not category or item.ccl2023_category == category
         ]
-        structured_items = self._structured_initial_candidates(analysis, limit=INITIAL_TITLE_CANDIDATE_LIMIT)
+        structured_items = self._structured_initial_candidates(
+            analysis, limit=INITIAL_TITLE_CANDIDATE_LIMIT
+        )
         ranked = rank_lexical(candidates, lowered_query, tokenize(search_query))
         scenario = analysis.scenario
         lexical_items = [
-            item for score, item in ranked
+            item
+            for score, item in ranked
             if score >= LEXICAL_MIN_SCORE
             and (not scenario or scenario_is_hard_match(item, scenario))
         ][:INITIAL_TITLE_CANDIDATE_LIMIT]
@@ -350,18 +422,21 @@ class Agent:
             self._merge_items(structured_items, lexical_items),
         )[:INITIAL_TITLE_CANDIDATE_LIMIT]
         if not title_candidates:
-            return [], 0, (
-                "服务器根据原问题没有查询到候选标题；"
-                "如果历史上下文不足，你可以发送 search_queries 重新组织关键词查询。"
+            return (
+                [],
+                0,
+                (
+                    "服务器根据原问题没有查询到候选标题；"
+                    "如果历史上下文不足，你可以发送 search_queries 重新组织关键词查询。"
+                ),
             )
 
         note_prefix = (
-            "服务器已附带历史案例相关候选，是否采用由你根据对话判断；"
-            if contextual_items else ""
+            "服务器已附带历史案例相关候选，是否采用由你根据对话判断；" if contextual_items else ""
         )
         note = (
-            note_prefix +
-            f"服务器已完成第 1 轮标题候选检索，提供 {len(title_candidates)} 个候选案例的标题和基础元数据；"
+            note_prefix
+            + f"服务器已完成第 1 轮标题候选检索，提供 {len(title_candidates)} 个候选案例的标题和基础元数据；"
             "这些候选用于判断下一步，不包含完整事实依据。"
         )
         return title_candidates, len(title_candidates), note
@@ -384,7 +459,8 @@ class Agent:
             if categories and item.ccl2023_category in categories:
                 score += 6
             if any(
-                keyword and (
+                keyword
+                and (
                     keyword in item.title
                     or keyword in item.ccl2023_category
                     or keyword in item.custom_subcategory
@@ -413,7 +489,9 @@ class Agent:
     def _structured_initial_candidates(self, analysis, limit: int) -> list[Any]:
         query = analysis.original_query
         scenario = analysis.scenario
-        wants_recommendation = bool(re.search(r"推荐|适合|哪些|有哪些|找|筛选|展示|宣传|宣讲|班会|活动|互动|亲子", query))
+        wants_recommendation = bool(
+            re.search(r"推荐|适合|哪些|有哪些|找|筛选|展示|宣传|宣讲|班会|活动|互动|亲子", query)
+        )
         if not wants_recommendation or not scenario:
             return []
 
@@ -455,7 +533,9 @@ class Agent:
                 result_total = len(exact_items)
             else:
                 result, result_total = search_items(
-                    self.kb, query=search_query, category=category,
+                    self.kb,
+                    query=search_query,
+                    category=category,
                     limit=DETAIL_SEARCH_LIMIT_PER_QUERY,
                 )
             total += result_total
@@ -497,9 +577,14 @@ class Agent:
     # ------------------------------------------------------------------ #
 
     def _subsequent_answer_result(
-        self, payload: dict[str, Any], answer: str, context: dict,
-        collected_items: list[Any], used_queries: list[str],
-        total_count: int, warnings: list[str],
+        self,
+        payload: dict[str, Any],
+        answer: str,
+        context: dict,
+        collected_items: list[Any],
+        used_queries: list[str],
+        total_count: int,
+        warnings: list[str],
     ) -> tuple[AgentResult, AgentDecision]:
         from .planner import clamp_float
 
@@ -510,9 +595,13 @@ class Agent:
         raw_display_items = payload.get("display_items")
         if isinstance(raw_display_items, list):
             display_refs = self._payload_str_list(raw_display_items)
-            display_items = self._select_display_items(display_refs, display_pool, fallback_items=[])
+            display_items = self._select_display_items(
+                display_refs, display_pool, fallback_items=[]
+            )
         else:
-            display_items = self._select_display_items([], display_pool, fallback_items=collected_items)
+            display_items = self._select_display_items(
+                [], display_pool, fallback_items=collected_items
+            )
         cards = [enriched_item_card(item) for item in display_items[:8]]
         sources = [source_payload(item) for item in display_items[:5]]
 
@@ -539,7 +628,9 @@ class Agent:
         )
         return result, decision
 
-    def _select_display_items(self, refs: list[str], pool: list[Any], fallback_items: list[Any]) -> list[Any]:
+    def _select_display_items(
+        self, refs: list[str], pool: list[Any], fallback_items: list[Any]
+    ) -> list[Any]:
         selected: list[Any] = []
         seen: set[str] = set()
 
@@ -566,10 +657,16 @@ class Agent:
         return ref in (item.id, item.title, title_with_family(item), item.ccl2023_category)
 
     def _subsequent_fallback_result(
-        self, query: str, context: dict, collected_items: list[Any],
-        used_queries: list[str], total_count: int, warnings: list[str],
+        self,
+        query: str,
+        context: dict,
+        collected_items: list[Any],
+        used_queries: list[str],
+        total_count: int,
+        warnings: list[str],
         reason: str = "后续轮模型未能给出可用 answer，服务器使用上下文兜底。",
-        mode: str = "llm_context_fallback", planner: str = "llm_decision",
+        mode: str = "llm_context_fallback",
+        planner: str = "llm_decision",
     ) -> tuple[AgentResult, AgentDecision]:
         display_items = collected_items[:5] or self._context_items(context)[:5]
         task_type = _fallback_task_type(query)
@@ -582,7 +679,9 @@ class Agent:
             lines = [lead]
             for item in display_items[:3]:
                 meta = " | ".join(
-                    part for part in [item.ccl2023_category, item.risk_level, item.custom_subcategory] if part
+                    part
+                    for part in [item.ccl2023_category, item.risk_level, item.custom_subcategory]
+                    if part
                 )
                 lines.append(f"- **{title_with_family(item)}**：{meta}")
                 if item.summary:
@@ -717,6 +816,7 @@ class Agent:
         if result.speech:
             return result
         from ..ai.spoken import build_spoken_answer
+
         speech = build_spoken_answer(
             result.answer,
             question=query,
@@ -739,11 +839,12 @@ class Agent:
         return source_items
 
     def _stream_completed_result(
-        self, result: AgentResult, decision: AgentDecision,
-        include_speech: bool, query: str = "",
+        self,
+        result: AgentResult,
+        decision: AgentDecision,
+        include_speech: bool,
+        query: str = "",
     ):
-        from .planner import clamp_float
-
         if not include_speech or result.speech:
             yield with_agent_decision(result, decision, include_speech)
             return
@@ -759,6 +860,7 @@ class Agent:
 # ------------------------------------------------------------------ #
 # Module-level helpers
 # ------------------------------------------------------------------ #
+
 
 def _fallback_task_type(query: str) -> TaskType:
     text = normalize_text(query)
@@ -776,7 +878,9 @@ def _fallback_task_type(query: str) -> TaskType:
 
 
 def with_agent_decision(
-    result: AgentResult, decision: AgentDecision, include_speech: bool,
+    result: AgentResult,
+    decision: AgentDecision,
+    include_speech: bool,
 ) -> AgentResult:
     result = replace(result, decision=decision.to_payload())
     if not include_speech:
@@ -789,6 +893,7 @@ def normalize_query_with_pinyin_anchor(kb: KnowledgeBase, query: str, category: 
     if not query:
         return query
     from ..service.search import search_items_pinyin
+
     for item in search_items_pinyin(kb, query):
         if category and item.ccl2023_category != category:
             continue

@@ -53,7 +53,9 @@ def chat_completion(
         body = response.json()
         return body["choices"][0]["message"]["content"].strip()
     except httpx.HTTPStatusError as exc:
-        raise RuntimeError(f"Chat API HTTP {exc.response.status_code}: {_truncate_body(exc.response)}") from exc
+        raise RuntimeError(
+            f"Chat API HTTP {exc.response.status_code}: {_truncate_body(exc.response)}"
+        ) from exc
     except httpx.RequestError as exc:
         raise RuntimeError(f"Chat API request failed: {exc}") from exc
 
@@ -104,6 +106,7 @@ def describe_error(exc: Exception, api_key: str = "") -> str:
 
 def _should_use_zhipu_sdk() -> bool:
     from urllib.parse import urlparse
+
     host = urlparse(settings.ai_base_url).hostname or ""
     return host.endswith("bigmodel.cn")
 

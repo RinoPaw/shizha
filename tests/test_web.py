@@ -25,7 +25,9 @@ def test_ask_stream_returns_fallback_result_when_agent_crashes(monkeypatch):
     app.testing = True
 
     with app.test_client() as client:
-        response = client.post("/api/ask", json={"question": "刷单诈骗是什么", "voice_enabled": False})
+        response = client.post(
+            "/api/ask", json={"question": "刷单诈骗是什么", "voice_enabled": False}
+        )
 
     assert response.status_code == 200
     payload = response.get_json()

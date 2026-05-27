@@ -3,15 +3,7 @@
 import re
 
 
-EMOJI_RE = re.compile(
-    "["
-    "\U0001F1E6-\U0001F1FF"
-    "\U0001F300-\U0001FAFF"
-    "\u2600-\u27bf"
-    "\u200d"
-    "\ufe0f"
-    "]+"
-)
+EMOJI_RE = re.compile("[\U0001f1e6-\U0001f1ff\U0001f300-\U0001faff\u2600-\u27bf\u200d\ufe0f]+")
 
 
 def collapse_whitespace(value: str) -> str:

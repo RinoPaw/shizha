@@ -50,8 +50,13 @@ def volc_tts_available() -> bool:
     if not settings.volc_tts_enabled:
         return False
     if _use_v3_api():
-        return bool(settings.volc_tts_api_key or (settings.volc_tts_app_id and settings.volc_tts_access_token))
-    return bool(settings.volc_tts_app_id and settings.volc_tts_access_token and settings.volc_tts_cluster)
+        return bool(
+            settings.volc_tts_api_key
+            or (settings.volc_tts_app_id and settings.volc_tts_access_token)
+        )
+    return bool(
+        settings.volc_tts_app_id and settings.volc_tts_access_token and settings.volc_tts_cluster
+    )
 
 
 def synthesize_speech_to_file(text: str) -> TTSAudio | None:

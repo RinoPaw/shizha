@@ -74,32 +74,36 @@ def handle_comparison(kb: KnowledgeBase, analysis) -> AgentResult:
         ]
         if suggestion_cards:
             topic_text = f"与“{suggestion_query}”相关" if suggestion_query else "当前最接近"
-            answer_lines.extend([
-                "",
-                f"资料库里 {topic_text} 的案例有：",
-                "",
-            ])
-            for index, item in enumerate(suggestions, 1):
-                desc = " · ".join(
-                    part for part in [item.ccl2023_category, item.risk_level] if part
-                )
-                answer_lines.append(f"{index}. {title_with_family(item)}" + (f"（{desc}）" if desc else ""))
-            answer_lines.extend([
-                "",
-                "你可以继续追问这些已收录案例之间的区别，或改问资料库中实际存在的地区化案例。",
-            ])
-        elif _has_explicit_region_targets(targets):
-            answer_lines.extend([
-                "",
-                "这类问题带有明确地域约束，系统不会用其他省份的同类案例替代，以免把参考资料误当成对比对象。",
-            ])
-
-        speech = (
-            f"资料库中暂时没有可直接对应{missing_text}的条目，所以现在不能做依据式对比。"
-            + (
-                f"当前最接近的案例主要有：{'、'.join(title_with_family(item) for item in suggestions)}。"
-                if suggestions else ""
+            answer_lines.extend(
+                [
+                    "",
+                    f"资料库里 {topic_text} 的案例有：",
+                    "",
+                ]
             )
+            for index, item in enumerate(suggestions, 1):
+                desc = " · ".join(part for part in [item.ccl2023_category, item.risk_level] if part)
+                answer_lines.append(
+                    f"{index}. {title_with_family(item)}" + (f"（{desc}）" if desc else "")
+                )
+            answer_lines.extend(
+                [
+                    "",
+                    "你可以继续追问这些已收录案例之间的区别，或改问资料库中实际存在的地区化案例。",
+                ]
+            )
+        elif _has_explicit_region_targets(targets):
+            answer_lines.extend(
+                [
+                    "",
+                    "这类问题带有明确地域约束，系统不会用其他省份的同类案例替代，以免把参考资料误当成对比对象。",
+                ]
+            )
+
+        speech = f"资料库中暂时没有可直接对应{missing_text}的条目，所以现在不能做依据式对比。" + (
+            f"当前最接近的案例主要有：{'、'.join(title_with_family(item) for item in suggestions)}。"
+            if suggestions
+            else ""
         )
         return AgentResult(
             task_type=TaskType.COMPARISON,
@@ -118,17 +122,23 @@ def handle_comparison(kb: KnowledgeBase, analysis) -> AgentResult:
 
     # ── Table header ──
     col_width = 18
-    header = f"| {'维度':<{col_width - 4}}" + "".join(
-        f" | {name[:col_width - 2]:<{col_width - 2}}" for name, _ in resolved
-    ) + " |"
-    sep = "|" + "-" * (col_width - 1) + "|" + "|".join("-" * (col_width - 1) for _ in resolved) + "|"
+    header = (
+        f"| {'维度':<{col_width - 4}}"
+        + "".join(f" | {name[: col_width - 2]:<{col_width - 2}}" for name, _ in resolved)
+        + " |"
+    )
+    sep = (
+        "|" + "-" * (col_width - 1) + "|" + "|".join("-" * (col_width - 1) for _ in resolved) + "|"
+    )
     lines.append(header)
     lines.append(sep)
 
     def _row(label: str, *values: str) -> str:
-        return f"| {label:<{col_width - 4}}" + "".join(
-            f" | {v[:col_width - 2]:<{col_width - 2}}" for v in values
-        ) + " |"
+        return (
+            f"| {label:<{col_width - 4}}"
+            + "".join(f" | {v[: col_width - 2]:<{col_width - 2}}" for v in values)
+            + " |"
+        )
 
     # Category row
     lines.append(_row("类别", *(item.ccl2023_category for _, item in resolved)))
@@ -136,10 +146,15 @@ def handle_comparison(kb: KnowledgeBase, analysis) -> AgentResult:
     lines.append(_row("细分类", *(item.custom_subcategory or "—" for _, item in resolved)))
     lines.append(_row("风险等级", *(item.risk_level or "—" for _, item in resolved)))
 
-    lines.append(_row(
-        "入口渠道",
-        *("、".join(item.entry_channels) if item.entry_channels else "\u2014" for _, item in resolved),
-    ))
+    lines.append(
+        _row(
+            "入口渠道",
+            *(
+                "、".join(item.entry_channels) if item.entry_channels else "\u2014"
+                for _, item in resolved
+            ),
+        )
+    )
 
     # ── Narrative sections ──
     lines.append("")
@@ -163,7 +178,9 @@ def handle_comparison(kb: KnowledgeBase, analysis) -> AgentResult:
     levels = [item.risk_level or "" for _, item in resolved]
     unique_levels = list(dict.fromkeys(levels))
     if len(unique_levels) > 1:
-        summary_parts.append(f"风险等级上，{'、'.join(f'{name}为{lv}' for (name, _), lv in zip(resolved, levels))}")
+        summary_parts.append(
+            f"风险等级上，{'、'.join(f'{name}为{lv}' for (name, _), lv in zip(resolved, levels))}"
+        )
     else:
         summary_parts.append(f"两项风险等级均为{unique_levels[0]}")
 
@@ -179,12 +196,14 @@ def handle_comparison(kb: KnowledgeBase, analysis) -> AgentResult:
     # Build evidence
     evidence: list[dict[str, Any]] = []
     for entity_name, item in resolved:
-        evidence.append({
-            "type": "source",
-            "claim": f"对比项：{entity_name}",
-            "basis": f"search query={entity_name!r}",
-            "item_id": item.id,
-        })
+        evidence.append(
+            {
+                "type": "source",
+                "claim": f"对比项：{entity_name}",
+                "basis": f"search query={entity_name!r}",
+                "item_id": item.id,
+            }
+        )
 
     sources = [source_payload(item) for _, item in resolved]
     items = [enriched_item_card(item) for _, item in resolved]
@@ -219,7 +238,9 @@ def _comparison_target_parts(target: str) -> tuple[str, str]:
     if match:
         province = match.group(1)
     else:
-        for short, full in sorted(_SHORT_PROVINCE_MAP.items(), key=lambda item: len(item[0]), reverse=True):
+        for short, full in sorted(
+            _SHORT_PROVINCE_MAP.items(), key=lambda item: len(item[0]), reverse=True
+        ):
             if short in cleaned:
                 province = full
                 cleaned = cleaned.replace(short, "", 1)

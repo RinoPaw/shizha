@@ -1,4 +1,5 @@
 """Smoke tests for dataset loading."""
+
 import json
 
 import pytest

@@ -1,6 +1,5 @@
 """Model-calling functions for the anti-fraud AI."""
 
-
 from ..config import settings
 from ..domain.dataset import CaseItem
 from ..prompts import QA_SYSTEM_PROMPT

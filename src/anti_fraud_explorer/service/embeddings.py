@@ -69,7 +69,9 @@ class EmbeddingClient:
         self.model = settings.embedding_model if model is None else model
         self.timeout = settings.embedding_timeout if timeout is None else timeout
         self.max_retries = settings.embedding_max_retries if max_retries is None else max_retries
-        self.retry_backoff = settings.embedding_retry_backoff if retry_backoff is None else retry_backoff
+        self.retry_backoff = (
+            settings.embedding_retry_backoff if retry_backoff is None else retry_backoff
+        )
 
     def embed_texts(self, texts: list[str]) -> list[list[float]]:
         if not self.api_key:
@@ -89,7 +91,9 @@ class EmbeddingClient:
         raise EmbeddingUnavailable(last_error or "Embedding request failed.")
 
     def retry_delay(self, exc: Exception, attempt: int) -> float:
-        if isinstance(exc, EmbeddingUnavailable) and isinstance(exc.__cause__, httpx.HTTPStatusError):
+        if isinstance(exc, EmbeddingUnavailable) and isinstance(
+            exc.__cause__, httpx.HTTPStatusError
+        ):
             retry_after = exc.__cause__.response.headers.get("Retry-After")
             if retry_after:
                 try:

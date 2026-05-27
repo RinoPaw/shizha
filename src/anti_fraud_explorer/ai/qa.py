@@ -23,7 +23,9 @@ class Answer:
     speech: str = ""
 
 
-def answer_question(kb: KnowledgeBase, question: str, category: str = "", include_speech: bool = True) -> Answer:
+def answer_question(
+    kb: KnowledgeBase, question: str, category: str = "", include_speech: bool = True
+) -> Answer:
     from ..ai.client import call_chat_model, describe_model_error
     from ..ai.spoken import build_spoken_answer
 
@@ -31,12 +33,16 @@ def answer_question(kb: KnowledgeBase, question: str, category: str = "", includ
     category = normalize_text(category)
     if not question:
         answer = "请先输入问题。"
-        return Answer(answer=answer, mode="empty", sources=[], speech=answer if include_speech else "")
+        return Answer(
+            answer=answer, mode="empty", sources=[], speech=answer if include_speech else ""
+        )
 
     sources = fact_question_sources(kb, question=question, category=category, limit=5)
     if not sources:
         answer = "没有在数据集中找到足够相关的资料。"
-        return Answer(answer=answer, mode="no_context", sources=[], speech=answer if include_speech else "")
+        return Answer(
+            answer=answer, mode="no_context", sources=[], speech=answer if include_speech else ""
+        )
 
     if settings.ai_api_key:
         try:
@@ -45,14 +51,14 @@ def answer_question(kb: KnowledgeBase, question: str, category: str = "", includ
                 answer=answer,
                 mode="llm",
                 sources=[source_payload(item) for item in sources],
-                speech=build_spoken_answer(answer, question=question, sources=sources) if include_speech else "",
+                speech=build_spoken_answer(answer, question=question, sources=sources)
+                if include_speech
+                else "",
             )
         except Exception as exc:  # noqa: BLE001 - API failures should gracefully fall back.
             LOGGER.warning("Chat model unavailable: %s", describe_model_error(exc))
             fallback = build_local_answer(question, sources)
-            fallback += (
-                "\n\n模型服务暂时不可用，已为你切换成本地依据式回答。"
-            )
+            fallback += "\n\n模型服务暂时不可用，已为你切换成本地依据式回答。"
             return Answer(
                 answer=fallback,
                 mode="fallback",
@@ -123,7 +129,9 @@ def direct_item_matches(
         elif item_category and (search_query in item_category or item_category in search_query):
             category_contains.append(item)
 
-    return _dedupe_items(exact_title) or _dedupe_items(title_contains + exact_category + category_contains)
+    return _dedupe_items(exact_title) or _dedupe_items(
+        title_contains + exact_category + category_contains
+    )
 
 
 def _dedupe_items(items: list[CaseItem]) -> list[CaseItem]:

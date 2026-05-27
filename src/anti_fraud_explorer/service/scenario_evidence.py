@@ -57,7 +57,9 @@ def scenario_match_score(item: Any, scenario: str) -> int:
         score += 10
     display_hits = sum(1 for term in terms if term and term in display_text)
     source_hits = sum(1 for term in terms if term and term in source_text)
-    strong_source_hits = sum(1 for term in SCENARIO_STRONG_TERMS.get(scenario, ()) if term and term in source_text)
+    strong_source_hits = sum(
+        1 for term in SCENARIO_STRONG_TERMS.get(scenario, ()) if term and term in source_text
+    )
     score += min(display_hits * 6, 12)
     if strong_source_hits:
         score += min(strong_source_hits * 5, 10)

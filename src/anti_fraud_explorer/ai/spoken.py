@@ -9,6 +9,7 @@ from ..text import normalize_text, strip_emoji
 
 LOGGER = logging.getLogger(__name__)
 
+
 def build_spoken_prompt(
     answer: str,
     question: str = "",

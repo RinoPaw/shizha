@@ -1,5 +1,5 @@
 """Smoke tests for configuration loading."""
-import pytest
+
 from anti_fraud_explorer.config import settings
 
 
