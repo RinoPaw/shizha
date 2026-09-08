@@ -135,3 +135,51 @@ test("completion with no generated segment terminates cleanly", () => {
   assert.equal(terminals.length, 1);
   assert.equal(terminals[0].failed, false);
 });
+
+test("retries a failed network TTS segment twice, then falls back without failing the voice session", () => {
+  const audio = new FakeAudio("/tts/0");
+  const events = [];
+  const terminals = [];
+  const timers = [];
+  let fallback = null;
+
+  const scheduler = new TtsScheduler({
+    createAudio: () => audio,
+    onEvent: (event) => events.push(event),
+    onTerminal: (event) => terminals.push(event),
+    scheduleRetry: (callback) => {
+      timers.push(callback);
+      return callback;
+    },
+    cancelRetry: () => {},
+    fallbackSpeak: (text, callbacks) => {
+      fallback = { text, callbacks };
+      return () => {};
+    },
+  });
+
+  scheduler.begin();
+  scheduler.enqueue("网络不稳也要继续播报。", { url: "/tts/0" });
+  scheduler.complete();
+
+  audio.emit("error");
+  assert.equal(events.filter((event) => event.type === "request.retry").length, 1);
+  timers.shift()();
+  assert.match(audio.src, /tts_retry=1/);
+
+  audio.emit("error");
+  assert.equal(events.filter((event) => event.type === "request.retry").length, 2);
+  timers.shift()();
+  assert.match(audio.src, /tts_retry=2/);
+
+  audio.emit("error");
+  assert.equal(events.filter((event) => event.type === "request.degraded").length, 1);
+  assert.equal(fallback.text, "网络不稳也要继续播报。");
+  fallback.callbacks.onStart();
+  assert.equal(scheduler.isPlaying, true);
+  fallback.callbacks.onEnd();
+
+  assert.equal(scheduler.isPlaying, false);
+  assert.equal(terminals.length, 1);
+  assert.equal(terminals[0].failed, false);
+});
