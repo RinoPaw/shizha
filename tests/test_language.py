@@ -45,7 +45,7 @@ def test_text_is_authoritative_for_language_and_dialect_detection() -> None:
 
 def test_provider_language_tags_map_to_response_and_tts_profiles() -> None:
     expected = {
-        "zh_cn": ("zh-CN", "zh-CN-YunxiNeural"),
+        "zh_cn": ("zh-CN", "zh-CN-YunxiaNeural"),
         "en": ("en-US", "en-US-JennyNeural"),
         "ja": ("ja-JP", "ja-JP-NanamiNeural"),
         "ko": ("ko-KR", "ko-KR-SunHiNeural"),
@@ -66,5 +66,5 @@ def test_chinese_dialect_profiles_share_chinese_asr_and_use_available_voices() -
     assert is_chinese_locale("zh-CN-henan")
     assert not is_chinese_locale("en-US")
     assert get_language_profile("yue-CN").tts_voice == "zh-HK-HiuMaanNeural"
-    assert get_language_profile("zh-CN-sichuan").tts_voice == "zh-CN-YunxiNeural"
-    assert get_language_profile("zh-CN-henan").tts_voice == "zh-CN-YunxiNeural"
+    assert get_language_profile("zh-CN-sichuan").tts_voice == "zh-CN-YunxiaNeural"
+    assert get_language_profile("zh-CN-henan").tts_voice == "zh-CN-YunxiaNeural"
