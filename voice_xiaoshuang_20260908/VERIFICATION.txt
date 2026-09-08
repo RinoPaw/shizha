@@ -1,0 +1,34 @@
+识诈小双中性音色验证记录
+
+变更分支：main
+变更字段：LANGUAGE_PROFILES[*].tts_voice
+变更结果：zh-CN、zh-CN-sichuan、zh-CN-henan 均设为 zh-CN-XiaoshuangNeural；未传 style 时使用该音色默认中性表达。
+原始哈希：8aee6adaacda00bbeaa6951d1a2d4463bc6cefd49ab3a1c023d45f4062089dd5
+修改哈希：a284c0cd11285b6639536f779f6d5f75b4e81a86620db0cefdae8bc591beb29f
+
+四个交付路径：
+MODIFIED_FILE：D:\Projects\Packages\识诈\voice_xiaoshuang_20260908\MODIFIED_FILE
+DIFF_FILE：D:\Projects\Packages\识诈\voice_xiaoshuang_20260908\DIFF_FILE.patch
+VERIFICATION.txt：D:\Projects\Packages\识诈\voice_xiaoshuang_20260908\VERIFICATION.txt
+ROLLBACK.sh：D:\Projects\Packages\识诈\voice_xiaoshuang_20260908\ROLLBACK.sh
+
+BASELINE
+命令：$env:PYTHONPATH='src'; & '..\.venv\Scripts\python.exe' -m pytest -q -p no:cacheprovider tests/test_language.py
+输入：修改前 language.py 与 test_language.py
+字面输出/结果：5 passed in 0.01s
+退出状态：0
+原始行为：普通话使用 zh-CN-XiaoxiaoNeural；四川话、河南话使用 zh-CN-YunxiNeural。
+
+MODIFIED
+命令：校验三个中文 profile；& '..\.venv\Scripts\python.exe' -m pytest -q -p no:cacheprovider
+输入：修改后的 main 工作树
+字面输出/结果：xiaoshuang_profiles=3/3；80 passed in 5.45s；MODIFIED_VOICE python=0
+退出状态：0
+修改行为：普通话、四川话、河南话统一选择 zh-CN-XiaoshuangNeural。
+
+ROLLBACK
+命令：bash voice_xiaoshuang_20260908/ROLLBACK.sh /mnt/d/Projects/Packages/识诈/voice_xiaoshuang_20260908/rollback_test；随后运行 test_language.py
+输入：迁移后副本
+字面输出/结果：restored 2 paths；hash restoration: 2/2 paths；5 passed in 0.03s；ROLLBACK_VOICE python=0
+退出状态：0
+恢复行为/状态：副本恢复原音色映射及原始哈希；实际识诈工作树仍保持小双音色。

@@ -1,0 +1,3823 @@
+--- a/.env.example
++++ b/.env.example
+@@ -18,8 +18,21 @@
+ XF_APP_ID=
+ XF_API_KEY=
+ XF_API_SECRET=
++# Dialect and multilingual SLM host (supports automatic routing).
++XF_ASR_HOST=iat.cn-huabei-1.xf-yun.com
++# Compatibility endpoint used automatically if the newer SLM capabilities
++# are not enabled for the configured Xunfei application.
++XF_LEGACY_ASR_HOST=iat.xf-yun.com
+ # Optional SLM resource id for the Xunfei ASR endpoint.
+ XF_ASR_RES_ID=
++# Optional dedicated credentials for the multilingual SLM. When omitted, the
++# primary Xunfei application credentials above are reused.
++XF_MULTILINGUAL_APP_ID=
++XF_MULTILINGUAL_API_KEY=
++XF_MULTILINGUAL_API_SECRET=
++XF_MULTILINGUAL_ASR_HOST=iat.cn-huabei-1.xf-yun.com
++# Limit automatic multilingual recognition to the requested foreign-language set.
++XF_MULTILINGUAL_LANGUAGE_HINT=en|ja|ko
+ 
+ # Edge TTS output (used by /api/tts)
+ TTS_VOICE=zh-CN-XiaoxiaoNeural
+
+--- a/.gitattributes
++++ b/.gitattributes
+@@ -0,0 +1,2 @@
++bootstrap-shizha.cmd -text
++deploy/install-lab.ps1 -text
+
+--- a/bootstrap-shizha.cmd
++++ b/bootstrap-shizha.cmd
+@@ -0,0 +1 @@
++@echo off & powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "$i=Join-Path $env:TEMP 'shizha-install-lab.ps1'; Invoke-WebRequest 'https://raw.githubusercontent.com/RinoPaw/shizha/main/deploy/install-lab.ps1' -OutFile $i -UseBasicParsing; $e='%~dp0shizha.env'; if(Test-Path -LiteralPath $e){& powershell.exe -NoProfile -ExecutionPolicy Bypass -File $i -EnvFile $e}else{& powershell.exe -NoProfile -ExecutionPolicy Bypass -File $i}; exit $LASTEXITCODE"
+
+--- a/deploy/install-lab.ps1
++++ b/deploy/install-lab.ps1
+@@ -0,0 +1,109 @@
++﻿[CmdletBinding()]
++param(
++    [string]$InstallRoot = "D:\Projects\Packages",
++    [string]$Repository = "https://github.com/RinoPaw/shizha.git",
++    [string]$Branch = "main",
++    [string]$EnvFile = "",
++    [switch]$SkipModels,
++    [switch]$SkipLaunch
++)
++
++$ErrorActionPreference = "Stop"
++$ProgressPreference = "SilentlyContinue"
++[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
++
++function Step([string]$Text) { Write-Host "`n=== $Text ===" -ForegroundColor Cyan }
++function Require-Command([string]$Name, [string]$WingetId) {
++    if (Get-Command $Name -ErrorAction SilentlyContinue) { return }
++    if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
++        throw "缺少 $Name，且本机没有 winget。请先安装 $Name 后重试。"
++    }
++    Step "安装 $Name"
++    winget install --id $WingetId -e --accept-package-agreements --accept-source-agreements
++    $machine = [Environment]::GetEnvironmentVariable("Path", "Machine")
++    $user = [Environment]::GetEnvironmentVariable("Path", "User")
++    $env:Path = "$machine;$user"
++    if (-not (Get-Command $Name -ErrorAction SilentlyContinue)) { throw "$Name 安装后仍不在 PATH。请重开终端再运行。" }
++}
++
++function Get-Uv([string]$Root) {
++    $bundled = Join-Path $Root "runtime\uv\uv.exe"
++    if (Test-Path -LiteralPath $bundled) { return $bundled }
++    $cmd = Get-Command uv -ErrorAction SilentlyContinue
++    if ($cmd) { return $cmd.Source }
++    Step "安装 uv"
++    $installer = Join-Path $env:TEMP "uv-install.ps1"
++    Invoke-WebRequest "https://astral.sh/uv/install.ps1" -OutFile $installer -UseBasicParsing
++    & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $installer
++    $uv = Join-Path $env:USERPROFILE ".local\bin\uv.exe"
++    if (-not (Test-Path -LiteralPath $uv)) { throw "uv 安装失败。" }
++    return $uv
++}
++
++function Download-Models([string]$Uv, [string]$Project, [string]$ModelsRoot) {
++    $manifestPath = Join-Path $Project "deploy\models.manifest.json"
++    $manifest = Get-Content -LiteralPath $manifestPath -Raw -Encoding UTF8 | ConvertFrom-Json
++    New-Item -ItemType Directory -Force -Path $ModelsRoot | Out-Null
++    foreach ($model in $manifest.models) {
++        $destination = Join-Path $ModelsRoot $model.destination
++        New-Item -ItemType Directory -Force -Path $destination | Out-Null
++        Step "Hugging Face：$($model.name)"
++        $args = @("--from", "huggingface_hub", "hf", "download", $model.repo_id,
++                  "--revision", $model.revision, "--local-dir", $destination)
++        foreach ($pattern in $model.files) { $args += @("--include", $pattern) }
++        & $Uv tool run @args
++        if ($LASTEXITCODE -ne 0) { throw "模型下载失败：$($model.name)" }
++        foreach ($property in $model.sha256.PSObject.Properties) {
++            $file = Join-Path $destination $property.Name
++            if (-not (Test-Path -LiteralPath $file)) { throw "模型文件缺失：$file" }
++            $actual = (Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash.ToLowerInvariant()
++            if ($actual -ne [string]$property.Value) { throw "模型校验失败：$file" }
++        }
++    }
++}
++
++Step "检查基础工具"
++Require-Command "git" "Git.Git"
++Require-Command "node" "OpenJS.NodeJS.LTS"
++Require-Command "npm" "OpenJS.NodeJS.LTS"
++
++$InstallRoot = [IO.Path]::GetFullPath($InstallRoot)
++$Project = Join-Path $InstallRoot "识诈"
++New-Item -ItemType Directory -Force -Path $InstallRoot | Out-Null
++
++Step "同步 GitHub 源码"
++if (Test-Path -LiteralPath (Join-Path $Project ".git")) {
++    git -C $Project fetch origin $Branch --prune
++    git -C $Project checkout $Branch
++    git -C $Project pull --ff-only origin $Branch
++} elseif (Test-Path -LiteralPath $Project) {
++    throw "目标目录已存在但不是 Git 仓库：$Project"
++} else {
++    git clone --branch $Branch --single-branch $Repository $Project
++}
++if ($LASTEXITCODE -ne 0) { throw "GitHub 源码同步失败。" }
++
++$Uv = Get-Uv $InstallRoot
++if (-not $SkipModels) { Download-Models $Uv $Project (Join-Path $InstallRoot "models") }
++
++if (-not $EnvFile) {
++    $beside = Join-Path (Split-Path -Parent $PSCommandPath) "shizha.env"
++    if (Test-Path -LiteralPath $beside) { $EnvFile = $beside }
++}
++if ($EnvFile) {
++    $resolvedEnv = (Resolve-Path -LiteralPath $EnvFile).Path
++    Copy-Item -LiteralPath $resolvedEnv -Destination (Join-Path $Project ".env") -Force
++} elseif (-not (Test-Path -LiteralPath (Join-Path $Project ".env"))) {
++    Copy-Item -LiteralPath (Join-Path $Project ".env.example") -Destination (Join-Path $Project ".env")
++    Write-Warning "已生成 .env；云端模型和讯飞语音需要填入密钥。"
++}
++
++Step "安装依赖并构建"
++& (Join-Path $Project "start.bat") --check
++if ($LASTEXITCODE -ne 0) { throw "识诈运行环境检查失败。" }
++
++Step "安装完成"
++Write-Host "源码：$Project"
++Write-Host "模型：$(Join-Path $InstallRoot 'models')"
++Write-Host "启动：$(Join-Path $Project 'start.bat')"
++if (-not $SkipLaunch) { & (Join-Path $Project "start.bat") }
+
+--- a/deploy/models.manifest.json
++++ b/deploy/models.manifest.json
+@@ -0,0 +1,45 @@
++{
++  "schema_version": 1,
++  "models": [
++    {
++      "name": "qwen3.5-9b-q4-k-m",
++      "repo_id": "tinnlab/Qwen3.5-9B-GGUF",
++      "revision": "main",
++      "files": ["Qwen3.5-9B-Q4_K_M.gguf"],
++      "destination": "llm/qwen3.5-9b",
++      "sha256": {
++        "Qwen3.5-9B-Q4_K_M.gguf": "03b74727a860a56338e042c4420bb3f04b2fec5734175f4cb9fa853daf52b7e8"
++      }
++    },
++    {
++      "name": "qwen3-embedding-0.6b",
++      "repo_id": "Qwen/Qwen3-Embedding-0.6B",
++      "revision": "97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3",
++      "files": ["*"],
++      "destination": "embedding/Qwen3-Embedding-0.6B",
++      "sha256": {}
++    },
++    {
++      "name": "sensevoice-small-int8",
++      "repo_id": "newbeeforever/sensevoice-small-sherpa-onnx",
++      "revision": "main",
++      "files": ["model.int8.onnx", "tokens.txt"],
++      "destination": "asr/sensevoice-small-int8",
++      "sha256": {
++        "model.int8.onnx": "c71f0ce00bec95b07744e116345e33d8cbbe08cef896382cf907bf4b51a2cd51",
++        "tokens.txt": "f449eb28dc567533d7fa59be34e2abca8784f771850c78a47fb731a31429a1dc"
++      }
++    },
++    {
++      "name": "zipformer-ctc-zh-xlarge-int8",
++      "repo_id": "csukuangfj/sherpa-onnx-streaming-zipformer-ctc-zh-xlarge-int8-2025-06-30",
++      "revision": "main",
++      "files": ["model.int8.onnx", "tokens.txt"],
++      "destination": "asr/zipformer-ctc-zh-xlarge-int8",
++      "sha256": {
++        "model.int8.onnx": "5c04e1ba8c200e9ca1a9229d46641ce06fa563162e60d9997ef92c306549aa05",
++        "tokens.txt": "6722bd1585f46f84456b29c3550a343a3cc375b971645773c02ed8e0b4e2405c"
++      }
++    }
++  ]
++}
+
+--- a/frontend/AGENTS.md
++++ b/frontend/AGENTS.md
+@@ -0,0 +1,53 @@
++# Prototype Instructions
++
++Run the local server yourself and open the preview in the browser available to this environment. Do not give the user server-start instructions when you can run it.
++
++Before making substantial visual changes, use the Product Design plugin's `get-context` skill when the visual source is unclear or no longer matches the current goal. When the user gives durable prototype-specific design feedback, preferences, or decisions, record them in `AGENTS.md`.
++
++When implementing from a selected generated mock, treat that image as the source of truth for layout, component anatomy, density, spacing, color, typography, visible content, and hierarchy.
++
++Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts/prepare-sites-build.mjs`, and `tests/sites-worker.test.mjs` intact so the same local prototype can be handed to Sites. Before a Sites handoff, run `npm run build` and `npm run test:sites`; the build must leave `dist/client/index.html`, `dist/server/index.js`, and `dist/.openai/hosting.json`.
++
++## Confirmed visual direction
++
++- The current durable direction is a light, full-screen three-column workspace; do not restore a wide
++  top header or make the page depend on body scrolling.
++- The left column is reserved for the digital human, the center column for the conversation, and the
++  right column for searchable project material and detail views.
++- Keep the composer at the bottom in a restrained GPT-like form. The realtime voice control sits to the
++  right as a genuinely round button; do not turn it into a square or a speech-to-text-looking control.
++- Language and dialect support is automatic. Do not add a language selector, language button, or any
++  other locale control; infer the current turn from speech/text with browser locale only as a hint.
++- Use restrained xuan-paper texture and a quiet light palette. Readable type and compact, consistent
++  conversation bubbles take priority over decorative chrome, large empty states, or redundant labels.
++- Project imagery is intentionally not displayed for now; do not add empty image regions, “待上传” text,
++  or visual placeholders. The digital human itself remains a real video surface.
++- Treat `.superdesign/references/shizha-high-fidelity-direction.png` as historical exploration, not a
++  license to restore the superseded dark-wood/high-decoration treatment.
++
++## Supported voice path
++
++The only supported voice architecture is:
++
++```text
++browser VAD → /api/voice → Xunfei streaming ASR
++→ AssistantService / DeepSeek → Edge TTS
++→ interruptible browser playback
++```
++
++Do not add or document an OpenAI Realtime/WebRTC path. Text chat and realtime voice must continue to
++share the same session, turn, cancellation, retrieval, and assistant core. Voice UI state should be
++derived from one canonical lifecycle: listening, transcribing, thinking, responding, interrupted, or
++error; recognition belongs to the user side and must not fight the assistant state or digital-human
++video lifecycle.
++
++- A disconnected voice transport is always visually idle; stale voice status must never show a prompt,
++  suppress the normal empty state, or coexist with the text-chat progress indicator.
++- Every new user submission atomically invalidates the previous turn and stops current, queued, and
++  prefetched TTS before the new turn starts.
++- While realtime voice is connected, the former text-input area contains only the live spectrum. Keep
++  all send/stop controls out of that area; the round realtime control remains separate on the right.
++- A high-confidence VAD onset during playback pauses local TTS immediately but is only a tentative
++  interruption. Confirm it when ASR produces non-empty text; if ASR rejects the sound, resume the same
++  audio element from its preserved position. Consecutive utterances that overlap provider finalization
++  are combined in order, never cancelled, overwritten, or answered as a detached fragment.
+
+--- a/frontend/src/App.jsx
++++ b/frontend/src/App.jsx
+@@ -13,6 +13,7 @@
+ import DigitalHuman from "./components/DigitalHuman.jsx";
+ import { composerAction, effectiveVoiceStatus } from "./lib/conversationUiState.js";
+ import { createConversationSessionId } from "./lib/conversationSession.js";
++import { getLocaleHint, getPreferredLocales } from "./lib/locale.js";
+ import {
+   mergePageItems,
+   nextPageState,
+@@ -21,6 +22,8 @@
+ } from "./lib/pagination.js";
+ 
+ const API_BASE = import.meta.env.VITE_API_BASE || "";
++const LOCALE_HINT = getLocaleHint();
++const PREFERRED_LOCALES = getPreferredLocales();
+ const VOICE_COPY = {
+   [REALTIME_VOICE_STATUS.IDLE]: { label: "实时对话", detail: "等待开启", owner: "system" },
+   [REALTIME_VOICE_STATUS.CONNECTING]: { label: "连接中", detail: "请允许使用麦克风", owner: "assistant" },
+@@ -469,11 +472,17 @@
+               firstTextLogged = true;
+               console.info(`[识诈][trace=${requestId}] llm.first_text_delta`);
+             }
+-            realtimeRef.current?.appendSpeechDelta?.(event.payload?.delta || "");
++            realtimeRef.current?.appendSpeechDelta?.(
++              event.payload?.delta || "",
++              event.payload?.locale || LOCALE_HINT,
++            );
+           }
+           if (type === "turn.completed") {
+             console.info(`[识诈][trace=${requestId}] text.complete`);
+-            realtimeRef.current?.finishSpeechStream?.(event.payload?.answer || "");
++            realtimeRef.current?.finishSpeechStream?.(
++              event.payload?.answer || "",
++              event.payload?.locale || LOCALE_HINT,
++            );
+           }
+           if (["turn.failed", "turn.cancelled"].includes(type)) realtimeRef.current?.stopSpeaking?.();
+           if (event.turn_id) turnRef.current = event.turn_id;
+@@ -489,7 +498,12 @@
+       const response = await fetch(apiUrl("/api/chat"), {
+         method: "POST",
+         headers: { "Content-Type": "application/json", Accept: "text/event-stream" },
+-        body: JSON.stringify({ question: text, session_id: sessionRef.current, category: filters.category }),
++        body: JSON.stringify({
++          question: text,
++          session_id: sessionRef.current,
++          category: filters.category,
++          locale_hint: LOCALE_HINT,
++        }),
+         signal: controller.signal,
+       });
+       if (!response.ok || !response.body) throw new Error("request_failed");
+
+--- a/frontend/src/hooks/useBrowserDuplexVoice.js
++++ b/frontend/src/hooks/useBrowserDuplexVoice.js
+@@ -21,6 +21,7 @@
+ import { advanceVADGate, createVADGateState, getVADOnsetPolicy } from "../lib/vadOnsetGate.js";
+ import { encodePcm, StatefulPcmResampler } from "../lib/pcmResampler.js";
+ import { appendPreRoll, createPreRollState, drainPreRoll, PRE_ROLL_MS } from "../lib/pcmPreRoll.js";
++import { DEFAULT_LOCALE, getPreferredLocales, normalizeLocaleHint } from "../lib/locale.js";
+ 
+ const TARGET_RATE = 16000;
+ const NORMAL_VAD_POLICY = getVADOnsetPolicy(false);
+@@ -33,7 +34,38 @@
+   return url.toString();
+ }
+ 
+-function compactRecognitionContext(context) {
++export function resolveSpeechLocale(value, fallback = DEFAULT_LOCALE) {
++  return normalizeLocaleHint(value) || normalizeLocaleHint(fallback) || DEFAULT_LOCALE;
++}
++
++export function assistantEventLocale(message, fallback = DEFAULT_LOCALE) {
++  return resolveSpeechLocale(
++    message?.locale
++      || message?.response_locale
++      || message?.payload?.locale
++      || message?.payload?.response_locale,
++    fallback,
++  );
++}
++
++export function buildTtsUrl({
++  websocketPath,
++  text,
++  traceId,
++  segment,
++  reason,
++  locale,
++}) {
++  const ttsPath = String(websocketPath || "/api/voice").replace(/\/voice$/, "/tts");
++  const speechLocale = resolveSpeechLocale(locale);
++  return `${ttsPath}?text=${encodeURIComponent(String(text || ""))}`
++    + `&trace_id=${encodeURIComponent(String(traceId || ""))}`
++    + `&segment=${encodeURIComponent(String(segment ?? 0))}`
++    + `&reason=${encodeURIComponent(String(reason || ""))}`
++    + `&locale=${encodeURIComponent(speechLocale)}`;
++}
++
++export function compactRecognitionContext(context) {
+   const value = context && typeof context === "object" ? context : {};
+   const values = [];
+   for (const key of ["selectedTitle", "selectedItem", "selected"]) {
+@@ -52,11 +84,24 @@
+     titles.push(title.slice(0, 200));
+     if (titles.length >= 8) break;
+   }
++  const rawPreferredLocales = Array.isArray(value.preferredLocales)
++    ? value.preferredLocales
++    : Array.isArray(value.preferred_locales)
++      ? value.preferred_locales
++      : [];
++  const requestedLocale = normalizeLocaleHint(value.localeHint || value.locale_hint || value.locale);
++  const preferredLocales = getPreferredLocales({
++    languages: [...(requestedLocale ? [requestedLocale] : []), ...rawPreferredLocales],
++  });
++  const localeHint = requestedLocale || preferredLocales[0] || DEFAULT_LOCALE;
++
+   return {
+     category: String(value.category || "").trim().slice(0, 200),
+     titles,
+     selected_title: String(value.selectedTitle || value.selectedItem?.title || value.selected?.title || "").trim().slice(0, 200),
+     session_id: String(value.sessionId || "").trim().slice(0, 128),
++    locale_hint: localeHint,
++    preferred_locales: preferredLocales,
+   };
+ }
+ 
+@@ -120,7 +165,8 @@
+   const speechPipelineRef = useRef(false);
+   const assistantPendingRef = useRef(false);
+   const speechTraceRef = useRef("");
+-  const speechTextPlanRef = useRef(new TtsTextPlan());
++  const speechLocaleRef = useRef(DEFAULT_LOCALE);
++  const speechTextPlanRef = useRef(new TtsTextPlan(DEFAULT_LOCALE));
+   const ttsSchedulerRef = useRef(null);
+   const bargeInRef = useRef(createBargeInState());
+   const assistantTurnRef = useRef("");
+@@ -326,13 +372,20 @@
+     return true;
+   }, []);
+ 
+-  const beginSpeechStream = useCallback(() => {
++  const beginSpeechStream = useCallback((locale = "") => {
+     const generation = ttsSchedulerRef.current?.begin();
+     speechPipelineRef.current = true;
+     assistantPendingRef.current = true;
+     setSpeechPending(true);
+     speechTraceRef.current = globalThis.crypto?.randomUUID?.() || `tts-${Date.now()}`;
+-    speechTextPlanRef.current.reset();
++    // Locale is owned by the answer generation, just like the TTS scheduler
++    // generation.  Snapshot it once so a later browser/context update cannot
++    // make the prefetched remainder speak with another voice.
++    speechLocaleRef.current = resolveSpeechLocale(
++      locale,
++      compactRecognitionContext(recognitionContextRef.current).locale_hint,
++    );
++    speechTextPlanRef.current.reset(speechLocaleRef.current);
+     speechActiveRef.current = false;
+     aboveRef.current = createVADGateState();
+     preRollRef.current = createPreRollState();
+@@ -345,23 +398,29 @@
+     if (!scheduler) return false;
+     const spokenSegment = String(segment || "").replace(/[#*_`>-]/g, " ").trim();
+     const segmentNumber = scheduler.segmentCount;
+-    const ttsPath = websocketPath.replace(/\/voice$/, "/tts");
+-    const url = `${ttsPath}?text=${encodeURIComponent(spokenSegment)}&trace_id=${encodeURIComponent(speechTraceRef.current)}&segment=${segmentNumber}&reason=${reason}`;
++    const url = buildTtsUrl({
++      websocketPath,
++      text: spokenSegment,
++      traceId: speechTraceRef.current,
++      segment: segmentNumber,
++      reason,
++      locale: speechLocaleRef.current,
++    });
+     return scheduler.enqueue(spokenSegment, { url, reason });
+   }, [websocketPath]);
+ 
+-  const appendSpeechDelta = useCallback((text) => {
++  const appendSpeechDelta = useCallback((text, locale = "") => {
+     const delta = String(text || "");
+     if (!delta) return false;
+-    if (!speechPipelineRef.current) beginSpeechStream();
++    if (!speechPipelineRef.current) beginSpeechStream(locale);
+     const firstSegment = speechTextPlanRef.current.append(delta);
+     if (firstSegment) enqueueSpeechSegment(firstSegment, "first_sentence");
+     return true;
+   }, [beginSpeechStream, enqueueSpeechSegment]);
+ 
+-  const finishSpeechStream = useCallback((fallbackText = "") => {
++  const finishSpeechStream = useCallback((fallbackText = "", locale = "") => {
+     const scheduler = ttsSchedulerRef.current;
+-    if (!speechPipelineRef.current) beginSpeechStream();
++    if (!speechPipelineRef.current) beginSpeechStream(locale);
+     const remainder = speechTextPlanRef.current.finish();
+     if (remainder) enqueueSpeechSegment(remainder, "text_complete");
+     else if (fallbackText && !scheduler?.hasSegments) enqueueSpeechSegment(fallbackText, "text_complete");
+@@ -369,12 +428,12 @@
+     return true;
+   }, [beginSpeechStream, enqueueSpeechSegment]);
+ 
+-  const speak = useCallback((text) => {
++  const speak = useCallback((text, locale = "") => {
+     const content = String(text || "").trim();
+     if (!content) return false;
+-    beginSpeechStream();
+-    appendSpeechDelta(content);
+-    return finishSpeechStream();
++    beginSpeechStream(locale);
++    appendSpeechDelta(content, locale);
++    return finishSpeechStream("", locale);
+   }, [appendSpeechDelta, beginSpeechStream, finishSpeechStream]);
+ 
+   const processAudio = useCallback((samples, inputRate) => {
+@@ -629,14 +688,22 @@
+         }
+         else if (message.type === "assistant.delta") {
+           if (!acceptAssistantTurn(message, assistantTurnRef, ignoredAssistantTurnsRef.current)) return;
+-          callbacks.current.onAssistantTranscript?.(message.text || "", { done: false });
+-          appendSpeechDelta(message.text || "");
++          const locale = assistantEventLocale(
++            message,
++            compactRecognitionContext(recognitionContextRef.current).locale_hint,
++          );
++          callbacks.current.onAssistantTranscript?.(message.text || "", { done: false, locale });
++          appendSpeechDelta(message.text || "", locale);
+         }
+         else if (message.type === "assistant.done") {
+           if (!acceptAssistantTurn(message, assistantTurnRef, ignoredAssistantTurnsRef.current)) return;
+-          callbacks.current.onAssistantTranscript?.(message.text || "", { done: true });
++          const locale = assistantEventLocale(
++            message,
++            compactRecognitionContext(recognitionContextRef.current).locale_hint,
++          );
++          callbacks.current.onAssistantTranscript?.(message.text || "", { done: true, locale });
+           assistantPendingRef.current = false;
+-          finishSpeechStream(message.text || "");
++          finishSpeechStream(message.text || "", locale);
+           const turnId = normalizeVoiceId(message.turn_id);
+           if (turnId) {
+             rememberIgnoredTurn(ignoredAssistantTurnsRef.current, turnId);
+
+--- a/frontend/src/lib/locale.js
++++ b/frontend/src/lib/locale.js
+@@ -0,0 +1,28 @@
++export const DEFAULT_LOCALE = "zh-CN";
++
++export function normalizeLocaleHint(value) {
++  const text = String(value || "").trim().replaceAll("_", "-");
++  if (!text || text.length > 64) return "";
++  try {
++    return Intl.getCanonicalLocales(text)[0] || "";
++  } catch {
++    return "";
++  }
++}
++
++export function getPreferredLocales(source = globalThis.navigator) {
++  const values = Array.isArray(source?.languages) && source.languages.length
++    ? source.languages
++    : [source?.language];
++  const locales = [];
++  for (const value of values) {
++    const locale = normalizeLocaleHint(value);
++    if (locale && !locales.includes(locale)) locales.push(locale);
++    if (locales.length >= 3) break;
++  }
++  return locales.length ? locales : [DEFAULT_LOCALE];
++}
++
++export function getLocaleHint(source = globalThis.navigator) {
++  return getPreferredLocales(source)[0] || DEFAULT_LOCALE;
++}
+
+--- a/frontend/src/lib/ttsTextPlan.js
++++ b/frontend/src/lib/ttsTextPlan.js
+@@ -1,9 +1,40 @@
+-const SENTENCE_BOUNDARY = /(?<=[。！？!?；;\n])/u;
++const HARD_BOUNDARIES = new Set(["。", "！", "!", "？", "?", "；", ";", "\n"]);
++const CLOSING_PUNCTUATION = new Set(["\"", "'", "”", "’", ")", "]", "】", "》"]);
++const COMMON_ABBREVIATION = /(?:^|\s)(?:mr|mrs|ms|dr|prof|sr|jr|st|vs|etc)\.$/iu;
++const INITIALISM = /(?:^|\s)(?:[a-z]\.){2,}$/iu;
++
++function isPeriodBoundary(text, index) {
++  const previous = text[index - 1] || "";
++  const next = text[index + 1] || "";
++  if (/\d/u.test(previous) && /\d/u.test(next)) return false;
++  if (next && !/\s/u.test(next) && !CLOSING_PUNCTUATION.has(next)) return false;
++  const prefix = text.slice(Math.max(0, index - 16), index + 1);
++  return !COMMON_ABBREVIATION.test(prefix) && !INITIALISM.test(prefix);
++}
++
++function splitCompletedSentences(text) {
++  const sentences = [];
++  let start = 0;
++  for (let index = 0; index < text.length; index += 1) {
++    const character = text[index];
++    const boundary = HARD_BOUNDARIES.has(character)
++      || (character === "." && isPeriodBoundary(text, index));
++    if (!boundary) continue;
++    let end = index + 1;
++    while (end < text.length && CLOSING_PUNCTUATION.has(text[end])) end += 1;
++    const sentence = text.slice(start, end).trim();
++    if (sentence) sentences.push(sentence);
++    start = end;
++    index = end - 1;
++  }
++  return { sentences, remainder: text.slice(start) };
++}
+ 
+ export class TtsTextPlan {
+-  constructor() { this.reset(); }
++  constructor(locale = "zh-CN") { this.reset(locale); }
+ 
+-  reset() {
++  reset(locale = this.locale || "zh-CN") {
++    this.locale = String(locale || "zh-CN");
+     this.buffer = "";
+     this.remainder = "";
+     this.firstCommitted = false;
+@@ -13,15 +44,19 @@
+   append(text) {
+     if (this.finalized) return null;
+     this.buffer += String(text || "");
+-    const parts = this.buffer.split(SENTENCE_BOUNDARY);
+-    this.buffer = parts.pop() || "";
+-    const sentences = parts.map((part) => part.trim()).filter(Boolean);
++    const split = splitCompletedSentences(this.buffer);
++    this.buffer = split.remainder;
++    const sentences = split.sentences;
+     let first = null;
+     if (!this.firstCommitted && sentences.length) {
+       first = sentences.shift();
+       this.firstCommitted = true;
+     }
+-    if (sentences.length) this.remainder += sentences.join("");
++    if (sentences.length) {
++      const separator = /^(?:zh|yue|ja|ko)(?:-|$)/iu.test(this.locale) ? "" : " ";
++      const joined = sentences.join(separator);
++      this.remainder += this.remainder && separator ? `${separator}${joined}` : joined;
++    }
+     return first;
+   }
+ 
+@@ -34,3 +69,5 @@
+     return remainder || null;
+   }
+ }
++
++export { splitCompletedSentences };
+
+--- a/frontend/tests/locale.test.mjs
++++ b/frontend/tests/locale.test.mjs
+@@ -0,0 +1,63 @@
++import test from "node:test";
++import assert from "node:assert/strict";
++
++import {
++  DEFAULT_LOCALE,
++  getLocaleHint,
++  getPreferredLocales,
++  normalizeLocaleHint,
++} from "../src/lib/locale.js";
++import {
++  assistantEventLocale,
++  buildTtsUrl,
++  compactRecognitionContext,
++} from "../src/hooks/useBrowserDuplexVoice.js";
++
++test("normalizes browser locales, removes duplicates, and falls back safely", () => {
++  assert.equal(normalizeLocaleHint("zh_cn"), "zh-CN");
++  assert.equal(normalizeLocaleHint("not a locale"), "");
++  assert.deepEqual(
++    getPreferredLocales({ languages: ["en-us", "en-US", "ja_jp", "bad locale"] }),
++    ["en-US", "ja-JP"],
++  );
++  assert.equal(getLocaleHint({ languages: [] }), DEFAULT_LOCALE);
++});
++
++test("adds hidden locale hints to the bounded recognition context", () => {
++  const context = compactRecognitionContext({
++    localeHint: "en-us",
++    preferredLocales: ["ja-JP", "en-US"],
++    sessionId: "session",
++    selectedItem: { title: "昆曲" },
++  });
++
++  assert.equal(context.locale_hint, "en-US");
++  assert.deepEqual(context.preferred_locales, ["en-US", "ja-JP"]);
++  assert.equal(context.selected_title, "昆曲");
++  assert.equal(context.session_id, "session");
++});
++
++test("uses the resolved assistant locale in every allowlisted TTS URL", () => {
++  const url = new URL(buildTtsUrl({
++    websocketPath: "/api/voice",
++    text: "Hello, 昆曲.",
++    traceId: "trace one",
++    segment: 1,
++    reason: "text complete",
++    locale: "en-us",
++  }), "https://example.test");
++
++  assert.equal(url.pathname, "/api/tts");
++  assert.equal(url.searchParams.get("locale"), "en-US");
++  assert.equal(url.searchParams.get("text"), "Hello, 昆曲.");
++  assert.equal(url.searchParams.get("trace_id"), "trace one");
++});
++
++test("reads locale from realtime event envelopes with a safe fallback", () => {
++  assert.equal(assistantEventLocale({ locale: "ja-JP" }, "en-US"), "ja-JP");
++  assert.equal(
++    assistantEventLocale({ payload: { locale: "yue-HK" } }, "en-US"),
++    "yue-HK",
++  );
++  assert.equal(assistantEventLocale({}, "de-DE"), "de-DE");
++});
+
+--- a/frontend/tests/tts-text-plan.test.mjs
++++ b/frontend/tests/tts-text-plan.test.mjs
+@@ -17,3 +17,25 @@
+   assert.equal(plan.append("没有标点的回答"), null);
+   assert.equal(plan.finish(), "没有标点的回答");
+ });
++
++test("commits an English full stop without waiting for the complete answer", () => {
++  const plan = new TtsTextPlan("en-US");
++  assert.equal(plan.append("The first sentence. The sec"), "The first sentence.");
++  assert.equal(plan.append("ond sentence. A third sentence."), null);
++  assert.equal(plan.finish(), "The second sentence. A third sentence.");
++});
++
++test("does not split decimals, common abbreviations, or initialisms", () => {
++  const plan = new TtsTextPlan("en-US");
++  assert.equal(
++    plan.append("The value is 3.14 and Dr. Zhang used e.g. paper cutting. Next."),
++    "The value is 3.14 and Dr. Zhang used e.g. paper cutting.",
++  );
++  assert.equal(plan.finish(), "Next.");
++});
++
++test("keeps a closing quote with the completed English sentence", () => {
++  const plan = new TtsTextPlan("en-US");
++  assert.equal(plan.append('She said “Hello.” Then left.'), 'She said “Hello.”');
++  assert.equal(plan.finish(), "Then left.");
++});
+
+--- a/src/anti_fraud_explorer/api.py
++++ b/src/anti_fraud_explorer/api.py
+@@ -20,7 +20,11 @@
+ from pydantic import BaseModel, Field
+ 
+ from . import __version__
+-from .asr_normalization import normalize_asr_final, prepare_asr_normalization
++from .asr_normalization import (
++    NormalizedTranscript,
++    normalize_asr_final,
++    prepare_asr_normalization,
++)
+ from .assistant import AssistantService, SearchService
+ from .config import (
+     FRONTEND_DIR,
+@@ -30,11 +34,25 @@
+     XF_API_KEY,
+     XF_API_SECRET,
+     XF_APP_ID,
++    XF_ASR_HOST,
+     XF_ASR_RES_ID,
++    XF_LEGACY_ASR_HOST,
++    XF_MULTILINGUAL_API_KEY,
++    XF_MULTILINGUAL_API_SECRET,
++    XF_MULTILINGUAL_APP_ID,
++    XF_MULTILINGUAL_ASR_HOST,
++    XF_MULTILINGUAL_LANGUAGE_HINT,
+ )
+ from .dataset import item_to_dict
++from .language import (
++    detect_locale,
++    get_language_profile,
++    is_chinese_locale,
++    locale_from_provider_language,
++    normalize_locale_hint,
++)
+ from .sessions import SessionStore
+-from .voice import VoiceProviderError, XfyunStream
++from .voice import AutoXfyunStream, VoiceProviderError
+ 
+ MAX_CHAT_CHARS = 4000
+ MAX_SESSION_ID_CHARS = 128
+@@ -62,6 +80,7 @@
+     question: str = Field(min_length=1, max_length=MAX_CHAT_CHARS)
+     session_id: str | None = Field(default=None, max_length=MAX_SESSION_ID_CHARS)
+     category: str = Field(default="", max_length=200)
++    locale_hint: str = Field(default="", max_length=64)
+ 
+ 
+ def create_app(
+@@ -70,8 +89,12 @@
+     search: SearchService | None = None,
+     sessions: SessionStore | None = None,
+ ) -> FastAPI:
+-    search = search or (getattr(assistant, "search", None) if assistant else None) or SearchService()
+-    sessions = sessions or (getattr(assistant, "sessions", None) if assistant else None) or SessionStore()
++    search = (
++        search or (getattr(assistant, "search", None) if assistant else None) or SearchService()
++    )
++    sessions = (
++        sessions or (getattr(assistant, "sessions", None) if assistant else None) or SessionStore()
++    )
+     assistant = assistant or AssistantService(search=search, sessions=sessions)
+     kb = search.knowledge_base
+     prepare_asr_normalization(kb)
+@@ -134,6 +157,7 @@
+     @app.get("/api/tts")
+     async def synthesize_speech(
+         text: str = Query(min_length=1, max_length=MAX_TTS_CHARS),
++        locale: str = Query(default="", max_length=64),
+         trace_id: str = Query(default="", max_length=128),
+         segment: int = Query(default=0, ge=0, le=999),
+         reason: str = Query(default="", max_length=40),
+@@ -141,8 +165,23 @@
+         text = text.strip()
+         if not text:
+             raise HTTPException(status_code=422, detail="empty_text")
++        # The locale attached to an assistant turn is authoritative for every
++        # segment in that turn.  Inspect text only when an older client did
++        # not send a resolved locale; otherwise a canonical Chinese project
++        # name inside an English sentence could unexpectedly change voices.
++        requested_locale = normalize_locale_hint(locale)
++        language_profile = get_language_profile(
++            requested_locale or detect_locale(text),
++        )
+         started = time.perf_counter()
+-        LOGGER.info("[trace=%s segment=%s] tts.request.start reason=%s chars=%s", trace_id or "-", segment, reason or "unspecified", len(text))
++        LOGGER.info(
++            "[trace=%s segment=%s] tts.request.start reason=%s chars=%s locale=%s",
++            trace_id or "-",
++            segment,
++            reason or "unspecified",
++            len(text),
++            language_profile.code,
++        )
+ 
+         async def audio_stream() -> AsyncIterator[bytes]:
+             communicate = edge_tts.Communicate(
+@@ -156,14 +195,27 @@
+                 if chunk.get("type") == "audio" and chunk.get("data"):
+                     if first_chunk:
+                         first_chunk = False
+-                        LOGGER.info("[trace=%s segment=%s] tts.first_audio_chunk +%.3fs", trace_id or "-", segment, time.perf_counter() - started)
++                        LOGGER.info(
++                            "[trace=%s segment=%s] tts.first_audio_chunk +%.3fs",
++                            trace_id or "-",
++                            segment,
++                            time.perf_counter() - started,
++                        )
+                     yield chunk["data"]
+-            LOGGER.info("[trace=%s segment=%s] tts.stream.complete +%.3fs", trace_id or "-", segment, time.perf_counter() - started)
++            LOGGER.info(
++                "[trace=%s segment=%s] tts.stream.complete +%.3fs",
++                trace_id or "-",
++                segment,
++                time.perf_counter() - started,
++            )
+ 
+         return StreamingResponse(
+             audio_stream(),
+             media_type="audio/mpeg",
+-            headers={"Cache-Control": "no-store"},
++            headers={
++                "Cache-Control": "no-store",
++                "X-Speech-Locale": language_profile.code,
++            },
+         )
+ 
+     @app.get("/api/items")
+@@ -217,11 +269,13 @@
+         question = body.question.strip()
+         session_id = body.session_id.strip() if body.session_id else None
+         category = body.category.strip()
++        locale_hint = body.locale_hint.strip()
+ 
+         async for assistant_event in assistant.stream_turn(
+             question,
+             session_id=session_id,
+             category=category,
++            locale_hint=locale_hint,
+         ):
+             yield ServerSentEvent(
+                 data=assistant_event.to_dict(),
+@@ -254,7 +308,7 @@
+             return
+         await websocket.accept()
+         connection_id = uuid.uuid4().hex
+-        asr_stream: XfyunStream | None = None
++        asr_stream: AutoXfyunStream | None = None
+         asr_start_task: asyncio.Task[None] | None = None
+         answer_task: asyncio.Task[None] | None = None
+         # Finalizing ASR is independent for each ended utterance.  Keeping a
+@@ -263,6 +317,8 @@
+         finalize_tasks: set[asyncio.Task[None]] = set()
+         batch_results: dict[int, str] = {}
+         batch_candidates: dict[int, tuple[str, ...]] = {}
++        batch_languages: dict[int, str] = {}
++        batch_asr_modes: dict[int, str] = {}
+         # The browser may split one spoken turn into several VAD utterances.
+         # Keep each provider hypothesis until its final arrives, then publish
+         # the ordered concatenation so a late partial from the first segment
+@@ -276,6 +332,7 @@
+         session_id: str | None = None
+         voice_category = ""
+         voice_context_titles: list[str] = []
++        voice_locale_hint = ""
+         active_turn_id: str | None = None
+         utterance_sequence = 0
+         event_sequence = 0
+@@ -284,12 +341,15 @@
+         def update_voice_context(event: dict[str, Any]) -> None:
+             """Keep only bounded, non-sensitive recognition context from the browser."""
+ 
+-            nonlocal session_id, voice_category, voice_context_titles
++            nonlocal session_id, voice_category, voice_context_titles, voice_locale_hint
+             category = str(event.get("category") or "").strip()
+             voice_category = category[:200]
+             incoming_session = str(event.get("session_id") or "").strip()
+             if incoming_session:
+                 session_id = incoming_session[:MAX_SESSION_ID_CHARS]
++            incoming_locale = normalize_locale_hint(event.get("locale_hint") or event.get("locale"))
++            if incoming_locale:
++                voice_locale_hint = incoming_locale
+ 
+             values: list[Any] = []
+             for key in ("selected_title", "selected_item", "selected"):
+@@ -330,7 +390,7 @@
+                         return tuple(recent)
+             return tuple(recent)
+ 
+-        def make_asr_stream(on_partial: Any) -> XfyunStream:
++        def make_asr_stream(on_partial: Any) -> AutoXfyunStream:
+             recent = recent_voice_items()
+             recent_titles = [str(getattr(item, "title", "") or "") for item in recent]
+             hotwords: list[str] = []
+@@ -342,13 +402,29 @@
+                     hotwords.append(title)
+                 if len(hotwords) >= MAX_VOICE_CONTEXT_TITLES + MAX_VOICE_RECENT_ITEMS:
+                     break
+-            return XfyunStream(
++            preferred_mode = (
++                AutoXfyunStream.DIALECT
++                if is_chinese_locale(voice_locale_hint)
++                else AutoXfyunStream.MULTILINGUAL
++            )
++            return AutoXfyunStream(
+                 app_id=XF_APP_ID,
+                 api_key=XF_API_KEY,
+                 api_secret=XF_API_SECRET,
++                multilingual_app_id=XF_MULTILINGUAL_APP_ID,
++                multilingual_api_key=XF_MULTILINGUAL_API_KEY,
++                multilingual_api_secret=XF_MULTILINGUAL_API_SECRET,
++                host=XF_ASR_HOST,
++                multilingual_host=XF_MULTILINGUAL_ASR_HOST,
++                multilingual_language_hint=XF_MULTILINGUAL_LANGUAGE_HINT,
++                legacy_host=XF_LEGACY_ASR_HOST,
+                 on_partial=on_partial,
+                 hotwords=tuple(hotwords),
+                 resource_id=XF_ASR_RES_ID,
++                # Probe on every utterance so one conversation can naturally
++                # switch between a Chinese dialect and English/Japanese/Korean.
++                mode=AutoXfyunStream.AUTO,
++                preferred_mode=preferred_mode,
+             )
+ 
+         async def send(payload: dict[str, Any]) -> None:
+@@ -356,11 +432,13 @@
+             try:
+                 async with send_lock:
+                     event_sequence += 1
+-                    await websocket.send_json({
+-                        "connection_id": connection_id,
+-                        "sequence": event_sequence,
+-                        **payload,
+-                    })
++                    await websocket.send_json(
++                        {
++                            "connection_id": connection_id,
++                            "sequence": event_sequence,
++                            **payload,
++                        }
++                    )
+             except (RuntimeError, WebSocketDisconnect):
+                 pass
+ 
+@@ -392,6 +470,8 @@
+             batch_generation += 1
+             batch_results.clear()
+             batch_candidates.clear()
++            batch_languages.clear()
++            batch_asr_modes.clear()
+             batch_partials.clear()
+             pending_user_speaking.clear()
+             batch_pending.clear()
+@@ -415,15 +495,17 @@
+             if not combined:
+                 return
+             partial_revision += 1
+-            await send({
+-                "type": "user.partial",
+-                # The latest id owns the visible bubble; the text includes
+-                # all earlier utterance hypotheses in order.
+-                "utterance_id": max(batch_partials),
+-                "revision": partial_revision,
+-                "text": combined,
+-                "final": False,
+-            })
++            await send(
++                {
++                    "type": "user.partial",
++                    # The latest id owns the visible bubble; the text includes
++                    # all earlier utterance hypotheses in order.
++                    "utterance_id": max(batch_partials),
++                    "revision": partial_revision,
++                    "text": combined,
++                    "final": False,
++                }
++            )
+ 
+         async def stop_answer(reason: str) -> None:
+             nonlocal answer_task, active_turn_id
+@@ -439,32 +521,43 @@
+                 )
+             await stop_task(task)
+ 
+-        async def answer(question: str, turn_id: str) -> None:
++        async def answer(question: str, turn_id: str, locale_hint: str = "") -> None:
+             nonlocal session_id
++            answer_locale = detect_locale(question, hint=locale_hint or voice_locale_hint)
+             LOGGER.info(
+                 "voice.agent.thinking connection=%s turn=%s question_chars=%s",
+                 connection_id,
+                 turn_id,
+                 len(question),
+             )
+-            await send({"type": "status", "status": "thinking", "turn_id": turn_id})
++            await send(
++                {
++                    "type": "status",
++                    "status": "thinking",
++                    "turn_id": turn_id,
++                    "locale": answer_locale,
++                }
++            )
+             try:
+                 async for event in assistant.stream_turn(
+                     question,
+                     session_id=session_id,
+                     turn_id=turn_id,
+                     category=voice_category,
++                    locale_hint=answer_locale,
+                 ):
+                     if active_turn_id != turn_id:
+                         return
+                     session_id = event.session_id
+                     if event.type == "response.text.delta":
++                        event_locale = str(event.payload.get("locale") or answer_locale)
+                         await send(
+                             {
+                                 "type": "assistant.delta",
+                                 "session_id": event.session_id,
+                                 "turn_id": event.turn_id,
+                                 "text": event.payload.get("delta", ""),
++                                "locale": event_locale,
+                             }
+                         )
+                     elif event.type == "response.sources":
+@@ -477,12 +570,14 @@
+                             }
+                         )
+                     elif event.type == "turn.completed":
++                        event_locale = str(event.payload.get("locale") or answer_locale)
+                         await send(
+                             {
+                                 "type": "assistant.done",
+                                 "session_id": event.session_id,
+                                 "turn_id": event.turn_id,
+                                 "text": event.payload.get("answer", ""),
++                                "locale": event_locale,
+                             }
+                         )
+                     elif event.type == "turn.failed":
+@@ -492,12 +587,14 @@
+                             if code == "llm_first_token_timeout"
+                             else "回答服务暂时不可用，请再试一次"
+                         )
+-                        await send({
+-                            "type": "error",
+-                            "turn_id": turn_id,
+-                            "code": code,
+-                            "message": message,
+-                        })
++                        await send(
++                            {
++                                "type": "error",
++                                "turn_id": turn_id,
++                                "code": code,
++                                "message": message,
++                            }
++                        )
+             except asyncio.CancelledError:
+                 raise
+             except Exception:
+@@ -508,12 +605,16 @@
+                 )
+                 await send({"type": "error", "turn_id": turn_id, "message": "回答服务暂时不可用"})
+ 
+-        async def start_answer(question: str, reason: str) -> None:
++        async def start_answer(
++            question: str,
++            reason: str,
++            locale_hint: str = "",
++        ) -> None:
+             nonlocal answer_task, active_turn_id
+             await stop_answer(reason)
+             turn_id = uuid.uuid4().hex
+             active_turn_id = turn_id
+-            answer_task = asyncio.create_task(answer(question, turn_id))
++            answer_task = asyncio.create_task(answer(question, turn_id, locale_hint))
+ 
+         async def commit_voice_batch(generation: int) -> None:
+             """Commit one settled group of overlapping VAD utterances."""
+@@ -527,7 +628,12 @@
+             if generation != batch_generation:
+                 return
+             async with batch_lock:
+-                if generation != batch_generation or asr_stream is not None or batch_pending or not batch_results:
++                if (
++                    generation != batch_generation
++                    or asr_stream is not None
++                    or batch_pending
++                    or not batch_results
++                ):
+                     return
+                 results = dict(batch_results)
+                 batch_results.clear()
+@@ -538,6 +644,8 @@
+                     for candidate in batch_candidates.pop(item_id, ())
+                     if candidate
+                 )
++                provider_languages = [batch_languages.pop(item_id, "") for item_id in ordered_ids]
++                asr_modes = [batch_asr_modes.pop(item_id, "") for item_id in ordered_ids]
+                 raw_text = " ".join(
+                     results[item_id].strip() for item_id in ordered_ids if results[item_id].strip()
+                 )
+@@ -547,12 +655,28 @@
+                     partial_revision = 0
+                     await send({"type": "utterance.rejected", "utterance_id": committed_id})
+                     return
+-                normalized = normalize_asr_final(
++                provider_locale = next(
++                    (
++                        locale
++                        for language in reversed(provider_languages)
++                        if (locale := locale_from_provider_language(language))
++                    ),
++                    None,
++                )
++                resolved_locale = detect_locale(
+                     raw_text,
+-                    kb=kb,
+-                    category=voice_category,
+-                    recent_items=recent_voice_items(),
+-                    asr_candidates=asr_candidates,
++                    hint=provider_locale or voice_locale_hint,
++                )
++                normalized = (
++                    normalize_asr_final(
++                        raw_text,
++                        kb=kb,
++                        category=voice_category,
++                        recent_items=recent_voice_items(),
++                        asr_candidates=asr_candidates,
++                    )
++                    if is_chinese_locale(resolved_locale)
++                    else NormalizedTranscript(raw_text, raw_text, ())
+                 )
+                 canonical_text = normalized.canonical_text
+                 normalizations = [asdict(span) for span in normalized.spans]
+@@ -565,34 +689,40 @@
+                     len(normalizations),
+                 )
+                 await stop_answer("asr_batch")
+-                await send({
+-                    "type": "user.transcript",
+-                    "utterance_id": committed_id,
+-                    "revision": partial_revision,
+-                    "final": True,
+-                    "text": canonical_text,
+-                    "raw_text": raw_text,
+-                    "normalizations": normalizations,
+-                })
++                await send(
++                    {
++                        "type": "user.transcript",
++                        "utterance_id": committed_id,
++                        "revision": partial_revision,
++                        "final": True,
++                        "text": canonical_text,
++                        "raw_text": raw_text,
++                        "normalizations": normalizations,
++                        "locale": resolved_locale,
++                        "asr_engine": next((mode for mode in reversed(asr_modes) if mode), "auto"),
++                    }
++                )
+                 # This batch is complete. Do not let its partial prefix leak
+                 # into the next VAD turn; there are no pending finalizers to
+                 # invalidate, so the generation remains unchanged.
+                 batch_partials.clear()
+                 partial_revision = 0
+-                await start_answer(canonical_text, "new_utterance")
++                await start_answer(canonical_text, "new_utterance", resolved_locale)
+ 
+         async def finish_utterance(
+-            stream: XfyunStream,
++            stream: AutoXfyunStream,
+             start_task: asyncio.Task[None],
+             utterance_id: int,
+             generation: int,
+         ) -> None:
+             try:
+-                await send({
+-                    "type": "status",
+-                    "status": "transcribing",
+-                    "utterance_id": utterance_id,
+-                })
++                await send(
++                    {
++                        "type": "status",
++                        "status": "transcribing",
++                        "utterance_id": utterance_id,
++                    }
++                )
+                 await start_task
+                 transcript = await stream.finish()
+                 LOGGER.info(
+@@ -611,6 +741,10 @@
+                 if generation == batch_generation:
+                     batch_results[utterance_id] = transcript
+                     batch_candidates[utterance_id] = stream.candidates
++                    selected_mode = str(getattr(stream, "selected_mode", "") or "")
++                    detected_language = str(getattr(stream, "detected_language", "") or "")
++                    batch_asr_modes[utterance_id] = selected_mode
++                    batch_languages[utterance_id] = detected_language
+                     # The provider final is authoritative for this segment;
+                     # keep it in the batch until commit so a late partial
+                     # cannot replace the calibrated text.
+@@ -627,6 +761,8 @@
+                 if generation == batch_generation:
+                     batch_results[utterance_id] = ""
+                     batch_candidates[utterance_id] = ()
++                    batch_asr_modes[utterance_id] = ""
++                    batch_languages[utterance_id] = ""
+                 await send({"type": "error", "message": "语音识别暂时不可用"})
+             finally:
+                 await stream.close()
+@@ -634,7 +770,7 @@
+                 batch_pending.discard(utterance_id)
+                 await commit_voice_batch(generation)
+ 
+-        async def start_asr(stream: XfyunStream, utterance_id: int) -> None:
++        async def start_asr(stream: AutoXfyunStream, utterance_id: int) -> None:
+             started_at = time.perf_counter()
+             LOGGER.info(
+                 "voice.asr.connect.start connection=%s utterance=%s",
+@@ -650,7 +786,7 @@
+             )
+ 
+         def schedule_finalize(
+-            stream: XfyunStream,
++            stream: AutoXfyunStream,
+             start_task: asyncio.Task[None],
+             utterance_id: int,
+         ) -> None:
+@@ -724,11 +860,13 @@
+                             if current not in batch_partials:
+                                 return
+                             if current in pending_user_speaking and _contains_spoken_text(text):
+-                                await send({
+-                                    "type": "status",
+-                                    "status": "user_speaking",
+-                                    "utterance_id": current,
+-                                })
++                                await send(
++                                    {
++                                        "type": "status",
++                                        "status": "user_speaking",
++                                        "utterance_id": current,
++                                    }
++                                )
+                                 pending_user_speaking.discard(current)
+                             if not partial_logged:
+                                 LOGGER.info(
+@@ -752,11 +890,13 @@
+                         # in order after the handshake.
+                         asr_start_task = asyncio.create_task(start_asr(asr_stream, utterance_id))
+                         if utterance_id not in pending_user_speaking:
+-                            await send({
+-                                "type": "status",
+-                                "status": "user_speaking",
+-                                "utterance_id": utterance_id,
+-                            })
++                            await send(
++                                {
++                                    "type": "status",
++                                    "status": "user_speaking",
++                                    "utterance_id": utterance_id,
++                                }
++                            )
+                 elif event_type == "utterance.end" and asr_stream is not None:
+                     async with batch_lock:
+                         utterance_id = utterance_sequence
+@@ -776,7 +916,9 @@
+                         clear_voice_batch()
+                         await stop_finalize_tasks()
+                         await close_active_asr()
+-                        await send({"type": "utterance.rejected", "utterance_id": utterance_sequence})
++                        await send(
++                            {"type": "utterance.rejected", "utterance_id": utterance_sequence}
++                        )
+                 elif event_type == "barge_in":
+                     # Batch commit and confirmed barge-in both replace the
+                     # active answer. Serialize them so a concurrently
+@@ -789,11 +931,13 @@
+                             utterance_sequence,
+                         )
+                         await stop_answer("barge_in")
+-                    await send({
+-                        "type": "status",
+-                        "status": "user_speaking",
+-                        "utterance_id": utterance_sequence,
+-                    })
++                    await send(
++                        {
++                            "type": "status",
++                            "status": "user_speaking",
++                            "utterance_id": utterance_sequence,
++                        }
++                    )
+                 elif event_type == "text":
+                     text = str(event.get("text") or "").strip()
+                     if text:
+@@ -810,11 +954,13 @@
+                         clear_voice_batch()
+                         await stop_finalize_tasks()
+                         await close_active_asr()
+-                        await send({
+-                            "type": "status",
+-                            "status": "listening",
+-                            "utterance_id": utterance_sequence,
+-                        })
++                        await send(
++                            {
++                                "type": "status",
++                                "status": "listening",
++                                "utterance_id": utterance_sequence,
++                            }
++                        )
+         except WebSocketDisconnect:
+             pass
+         finally:
+@@ -828,6 +974,7 @@
+ 
+     return app
+ 
++
+ app = create_app()
+ 
+ 
+
+--- a/src/anti_fraud_explorer/asr_normalization.py
++++ b/src/anti_fraud_explorer/asr_normalization.py
+@@ -188,8 +188,12 @@
+     category: str = "",
+     recent_items: Iterable[Any] = (),
+     asr_candidates: Iterable[Any] = (),
++    language: str = "zh",
+ ) -> NormalizedTranscript:
+     text = str(raw_text or "")
++    language_code = str(language or "").strip().casefold().replace("-", "_")
++    if language_code not in {"zh", "cn", "zh_cn", "cn_cbm", "chinese"}:
++        return NormalizedTranscript(text, text, ())
+     index = _get_index(kb)
+     if not text or not index.entries:
+         return NormalizedTranscript(text, text, ())
+
+--- a/src/anti_fraud_explorer/assistant.py
++++ b/src/anti_fraud_explorer/assistant.py
+@@ -22,6 +22,7 @@
+ )
+ from .dataset import FraudCase, KnowledgeBase, get_knowledge_base, item_to_dict, normalize_text
+ from .events import EventSequence
++from .language import DEFAULT_LOCALE, detect_locale, get_language_profile
+ from .models import AssistantEvent, ConversationTurn, SearchResponse
+ from .providers.llm import LLMProvider, OpenAICompatibleLLM
+ from .search import normalize_search_query, search_items, tokenize
+@@ -29,6 +30,12 @@
+ 
+ MAX_QUESTION_CHARS = 4000
+ GREETING_QUESTIONS = frozenset({"你好", "您好", "嗨", "哈喽", "在吗"})
++MULTILINGUAL_GREETINGS = {
++    "zh-CN-henan": frozenset({"恁好"}),
++    "en-US": frozenset({"hello", "hi", "hey", "good morning", "good afternoon"}),
++    "ja-JP": frozenset({"こんにちは", "もしもし", "おはよう", "こんばんは"}),
++    "ko-KR": frozenset({"안녕하세요", "안녕", "여보세요"}),
++}
+ SHORT_REPLY_MODES = {
+     "嗯": "continuation",
+     "嗯嗯": "continuation",
+@@ -39,6 +46,7 @@
+     "继续": "continuation",
+     "接着说": "continuation",
+     "然后呢": "continuation",
++    "中": "continuation",
+     "等一下": "pause",
+     "等等": "pause",
+     "先等一下": "pause",
+@@ -47,12 +55,47 @@
+ LOGGER = logging.getLogger(__name__)
+ LOGGER.setLevel(logging.INFO)
+ ITEM_COUNT_WORDS = {
+-    "一": 1, "两": 2, "二": 2, "三": 3, "四": 4, "五": 5,
+-    "六": 6, "七": 7, "八": 8, "九": 9, "十": 10,
++    "一": 1,
++    "两": 2,
++    "二": 2,
++    "三": 3,
++    "四": 4,
++    "五": 5,
++    "六": 6,
++    "七": 7,
++    "八": 8,
++    "九": 9,
++    "十": 10,
+ }
+ CATALOGUE_BROWSE_ACTIONS = ("推荐", "有哪些", "哪些", "列举", "浏览", "查找", "搜索", "找几个", "找一些")
+ CATALOGUE_BROWSE_OBJECTS = ("案例", "资料", "类别", "诈骗", "风险", "手法")
+ FRAUD_DOMAIN_TERMS = ("诈骗", "反诈", "风险", "转账", "验证码", "共享屏幕", "被骗", "诈骗案例")
++MULTILINGUAL_FRAUD_TERMS = {
++    "en-US": ("fraud", "scam", "phishing", "transfer", "verification code"),
++    "ja-JP": ("詐欺", "フィッシング", "送金", "認証コード"),
++    "ko-KR": ("사기", "피싱", "송금", "인증번호"),
++}
++MULTILINGUAL_SEARCH_GLOSSES = {
++    "en-US": (
++        (("refund scam", "fake customer service"), "冒充客服"),
++        (("investment scam", "fake investment"), "虚假投资理财"),
++        (("task scam", "rebate scam"), "刷单返利"),
++        (("impersonation scam", "police scam"), "冒充公检法"),
++        (("phishing",), "网络钓鱼"),
++    ),
++    "ja-JP": (
++        (("還付金詐欺", "偽カスタマーサービス"), "冒充客服"),
++        (("投資詐欺",), "虚假投资理财"),
++        (("フィッシング",), "网络钓鱼"),
++    ),
++    "ko-KR": (
++        (("환불 사기", "가짜 고객센터"), "冒充客服"),
++        (("투자 사기",), "虚假投资理财"),
++        (("피싱",), "网络钓鱼"),
++    ),
++}
++
++
+ class SearchService:
+     """One stable search entry point for APIs, chat and voice."""
+ 
+@@ -119,8 +162,10 @@
+         session_id: str | None = None,
+         turn_id: str | None = None,
+         category: str = "",
++        locale_hint: str = "",
+     ) -> AsyncIterator[AssistantEvent]:
+         question = normalize_text(str(question or ""))
++        locale = detect_locale(question, hint=locale_hint)
+         if not question:
+             session = self.sessions.get_or_create(session_id)
+             turn = turn_id or uuid.uuid4().hex
+@@ -144,21 +189,29 @@
+         sequence = EventSequence(session.session_id, turn_id)
+         history = self.sessions.history(session.session_id)
+         short_reply_mode = _short_reply_mode(question)
+-        retrieval_basis = "conversation_reply" if short_reply_mode else _retrieval_basis(
+-            self.search,
+-            question,
+-            category,
++        retrieval_basis = (
++            "conversation_reply"
++            if short_reply_mode
++            else _retrieval_basis(
++                self.search,
++                question,
++                category,
++                locale=locale,
++            )
+         )
++        retrieval_query = _localized_search_query(question, locale, retrieval_basis)
+         answer_parts: list[str] = []
+         candidates: tuple[FraudCase, ...] = ()
+         try:
+-            yield sequence.make("turn.started", question=question)
++            yield sequence.make("turn.started", question=question, locale=locale)
+             if cancel_event.is_set():
+-                yield sequence.make("turn.cancelled", reason=self._cancel_reason(session.session_id, turn_id))
++                yield sequence.make(
++                    "turn.cancelled", reason=self._cancel_reason(session.session_id, turn_id)
++                )
+                 return
+ 
+-            if question.rstrip("。！!？?～~，,") in GREETING_QUESTIONS:
+-                answer = "你好，我是熊猫警官。把可疑消息、电话或操作告诉我，我们一起判断风险。"
++            if _is_greeting(question, locale):
++                answer = _localized_copy(locale, "greeting")
+                 self.sessions.append(
+                     session.session_id,
+                     ConversationTurn(
+@@ -166,15 +219,17 @@
+                         question=question,
+                         answer=answer,
+                         source_ids=(),
++                        locale=locale,
+                     ),
+                 )
+-                yield sequence.make("response.text.delta", delta=answer)
++                yield sequence.make("response.text.delta", delta=answer, locale=locale)
+                 yield sequence.make("response.sources", sources=[])
+                 yield sequence.make(
+                     "turn.completed",
+                     answer=answer,
+                     confidence=1.0,
+-                    suggested_questions=["怎么判断一条陌生消息有风险？", "遇到转账要求该怎么办？"],
++                    suggested_questions=_localized_greeting_suggestions(locale),
++                    locale=locale,
+                 )
+                 return
+ 
+@@ -191,28 +246,39 @@
+                 return
+ 
+             yield sequence.make("retrieval.started")
+-            candidate_limit = self._candidate_limit(question, category)
+-            result = SearchResponse(items=(), total=0) if retrieval_basis in {"none", "conversation_reply"} else await asyncio.to_thread(
+-                self.search.search,
+-                question,
+-                category=category,
+-                limit=candidate_limit,
++            candidate_limit = (
++                self.max_candidates
++                if retrieval_basis == "multilingual_catalogue"
++                else self._candidate_limit(question, category)
++            )
++            result = (
++                SearchResponse(items=(), total=0)
++                if retrieval_basis in {"none", "conversation_reply"}
++                else await asyncio.to_thread(
++                    self.search.search,
++                    retrieval_query,
++                    category=category,
++                    limit=candidate_limit,
++                )
+             )
+             if (
+                 not short_reply_mode
+                 and result.total > candidate_limit
+-                and _is_scope_browse(self.search, question, category)
++                and (
++                    retrieval_basis == "multilingual_catalogue"
++                    or _is_scope_browse(self.search, question, category)
++                )
+             ):
+                 offset = _exploration_offset(
+                     session.session_id,
+                     turn_id,
+-                    question,
++                    retrieval_query,
+                     result.total,
+                     candidate_limit,
+                 )
+                 result = await asyncio.to_thread(
+                     self.search.search,
+-                    question,
++                    retrieval_query,
+                     category=category,
+                     limit=candidate_limit,
+                     offset=offset,
+@@ -241,7 +307,9 @@
+                 source_count=len(candidates),
+             )
+             if cancel_event.is_set():
+-                yield sequence.make("turn.cancelled", reason=self._cancel_reason(session.session_id, turn_id))
++                yield sequence.make(
++                    "turn.cancelled", reason=self._cancel_reason(session.session_id, turn_id)
++                )
+                 return
+ 
+             # Avoid even constructing a network client when no key is
+@@ -257,6 +325,7 @@
+                     history,
+                     short_reply_mode=short_reply_mode,
+                     retrieval_basis=retrieval_basis,
++                    locale=locale,
+                 )
+                 try:
+                     llm_started = time.perf_counter()
+@@ -293,24 +362,39 @@
+                             continue
+                         if first_delta_at is None:
+                             first_delta_at = time.perf_counter()
+-                            LOGGER.info("[trace=%s turn=%s] llm.first_text_delta +%.3fs", session.session_id, turn_id, first_delta_at - llm_started)
++                            LOGGER.info(
++                                "[trace=%s turn=%s] llm.first_text_delta +%.3fs",
++                                session.session_id,
++                                turn_id,
++                                first_delta_at - llm_started,
++                            )
+                         answer_parts.append(delta)
+                         delta_index += 1
+                         text_chars += len(delta)
+                         if text_chars >= next_progress_chars:
+                             LOGGER.info(
+                                 "[trace=%s turn=%s] llm.text.progress chunks=%s chars=%s",
+-                                session.session_id, turn_id, delta_index, text_chars,
++                                session.session_id,
++                                turn_id,
++                                delta_index,
++                                text_chars,
+                             )
+                             next_progress_chars += 100
+-                        yield sequence.make("response.text.delta", delta=delta)
++                        yield sequence.make("response.text.delta", delta=delta, locale=locale)
+                     if cancel_event.is_set():
+                         yield sequence.make(
+                             "turn.cancelled",
+                             reason=self._cancel_reason(session.session_id, turn_id),
+                         )
+                         return
+-                    LOGGER.info("[trace=%s turn=%s] llm.stream.complete +%.3fs chunks=%s chars=%s", session.session_id, turn_id, time.perf_counter() - llm_started, delta_index, text_chars)
++                    LOGGER.info(
++                        "[trace=%s turn=%s] llm.stream.complete +%.3fs chunks=%s chars=%s",
++                        session.session_id,
++                        turn_id,
++                        time.perf_counter() - llm_started,
++                        delta_index,
++                        text_chars,
++                    )
+                 except asyncio.CancelledError:
+                     yield sequence.make("turn.cancelled", reason="transport_closed")
+                     return
+@@ -350,12 +434,19 @@
+                     return
+ 
+             if cancel_event.is_set():
+-                yield sequence.make("turn.cancelled", reason=self._cancel_reason(session.session_id, turn_id))
++                yield sequence.make(
++                    "turn.cancelled", reason=self._cancel_reason(session.session_id, turn_id)
++                )
+                 return
+ 
+-            answer = "".join(answer_parts).strip() or _fallback_answer(question, candidates, history=history)
++            answer = "".join(answer_parts).strip() or _fallback_answer(
++                question,
++                candidates,
++                history=history,
++                locale=locale,
++            )
+             if not answer_parts:
+-                yield sequence.make("response.text.delta", delta=answer)
++                yield sequence.make("response.text.delta", delta=answer, locale=locale)
+             used_sources = _used_sources(answer, candidates)
+             confidence = _confidence(used_sources, answer)
+             source_ids = tuple(item.id for item in used_sources)
+@@ -366,6 +457,7 @@
+                     question=question,
+                     answer=answer,
+                     source_ids=source_ids,
++                    locale=locale,
+                 ),
+             )
+             source_payload = [item_to_dict(item) for item in used_sources]
+@@ -373,12 +465,19 @@
+                 "response.sources",
+                 sources=source_payload,
+             )
+-            LOGGER.info("[trace=%s turn=%s] text.complete chars=%s sources=%s", session.session_id, turn_id, len(answer), len(source_payload))
++            LOGGER.info(
++                "[trace=%s turn=%s] text.complete chars=%s sources=%s",
++                session.session_id,
++                turn_id,
++                len(answer),
++                len(source_payload),
++            )
+             yield sequence.make(
+                 "turn.completed",
+                 answer=answer,
+                 confidence=confidence,
+-                suggested_questions=_suggestions(used_sources),
++                suggested_questions=_suggestions(used_sources, locale=locale),
++                locale=locale,
+             )
+         finally:
+             self.sessions.finish_turn(session.session_id, turn_id, cancel_event)
+@@ -396,11 +495,7 @@
+         normalized = normalize_search_query(question).lower()
+         knowledge_base = getattr(self.search, "knowledge_base", None)
+         source_items = getattr(knowledge_base, "items", ())
+-        titles = {
+-            normalize_search_query(item.title).lower()
+-            for item in source_items
+-            if item.title
+-        }
++        titles = {normalize_search_query(item.title).lower() for item in source_items if item.title}
+         exact_titles = [title for title in titles if title and title in normalized]
+         categories = {
+             normalize_search_query(item.ccl2023_category).lower()
+@@ -408,7 +503,17 @@
+             if item.ccl2023_category
+         }
+         category_match = any(category and category in normalized for category in categories)
+-        focused_broad_markers = ("哪些", "有哪些", "推荐", "值得了解", "想了解", "各类", "比较", "分别", "适合")
++        focused_broad_markers = (
++            "哪些",
++            "有哪些",
++            "推荐",
++            "值得了解",
++            "想了解",
++            "各类",
++            "比较",
++            "分别",
++            "适合",
++        )
+         broad_markers = (*focused_broad_markers, "了解")
+         requested = _requested_item_count(question)
+         if exact_titles and not category_match and requested is None:
+@@ -429,10 +534,14 @@
+         *,
+         short_reply_mode: str | None = None,
+         retrieval_basis: str | None = None,
++        locale: str = DEFAULT_LOCALE,
+     ) -> list[dict[str, str]]:
+         short_reply_mode = short_reply_mode or _short_reply_mode(question)
+         retrieval_basis = retrieval_basis or ("retrieval" if candidates else "none")
++        language_profile = get_language_profile(locale)
+         system = (
++            f"本轮已自动识别用户语言为{language_profile.name}。"
++            f"{language_profile.response_instruction}"
+             "你是识诈，称呼可以是熊猫警官；你是反诈知识助手，不是公安机关工作人员，也不要自称警方。"
+             "说话自然、冷静、具体，不过度戏剧化，不制造恐慌。输出是会被朗读的台词，不写动作、旁白或舞台说明。"
+             "事实只能来自本轮提供的候选案例；没有候选或资料不足时坦白说明，不编造号码、金额、时间线或法律结论。"
+@@ -472,10 +581,12 @@
+                 "content": "用户本轮只是简短回应，未重新点名案例；请沿着最近一条 assistant 回答自然接续，不要把那条回答的内容归到用户身上。",
+             })
+         elif short_reply_mode == "pause":
+-            messages.append({
+-                "role": "system",
+-                "content": "用户本轮是在请求暂缓。简短回应并停住，不要展开新案例，也不要把上一条 assistant 回答说成用户讲过。",
+-            })
++            messages.append(
++                {
++                    "role": "system",
++                    "content": "用户本轮是在请求暂缓。简短回应并停住，不要展开新项目，也不要把上一条 assistant 回答说成用户讲过。",
++                }
++            )
+         messages.append({
+             "role": "system",
+             "content": "下一条 user 消息是用户本轮逐字原话；不要把历史 assistant 内容或检索资料拼接进这条用户消息。",
+@@ -492,7 +603,8 @@
+     for item in items:
+         payload = item_to_dict(item, include_content=True)
+         block = "\n".join(
+-            part for part in (
++            part
++            for part in (
+                 f"[{payload['id']}] {payload['title']}",
+                 f"类别：{payload.get('ccl2023_category') or payload.get('category', '')}；风险等级：{payload.get('risk_level', '')}；受害人群：{payload.get('victim_group', '')}",
+                 f"入口渠道：{'、'.join(payload.get('entry_channels', []))}；关键手法：{'、'.join(payload.get('key_methods', []))}",
+@@ -670,17 +782,197 @@
+             await _close_iterator(iterator)
+ 
+ 
++_FALLBACK_COPY = {
++    "zh-CN": {
++        "greeting": "你好，我是熊猫警官。把可疑消息、电话或操作告诉我，我们一起判断风险。",
++        "pause": "好，你慢慢来。我先停在这里。",
++        "continuation": "好，我们就接着刚才的内容看。你想先听哪一处？",
++        "no_results": "资料库暂时没有找到与这个问题直接对应的项目。你可以换一个项目名称、地区或类别再试试。",
++        "list_intro": "如果想先抓住这一类非遗的不同气质，我会带你从{names}看起。",
++        "list_close": "你对哪一项更有感觉？我可以接着带你往它的历史和现场里走。",
++        "missing_detail": "它的详细资料还在整理中。",
++        "single_missing": "资料库中暂未提供该项目的详细简介。",
++    },
++    "yue-CN": {
++        "greeting": "你好呀。想由边一项非遗开始了解？",
++        "pause": "好呀，你慢慢嚟，我先停喺度。",
++        "continuation": "好，我哋接住头先嘅内容讲。你想先听边一部分？",
++        "no_results": "资料库暂时搵唔到同呢个问题直接对应嘅项目。你可以换个项目名、地区或者类别再试。",
++        "list_intro": "想先睇清呢类非遗各自嘅味道，我会由{names}讲起。",
++        "list_close": "你对边一项最有感觉？我可以继续讲佢嘅历史同现场。",
++        "missing_detail": "呢一项嘅详细资料仲整理紧。",
++        "single_missing": "资料库暂时未有呢个项目嘅详细简介。",
++    },
++    "zh-CN-sichuan": {
++        "greeting": "你好。想从哪一项非遗开始摆起？",
++        "pause": "要得，你慢慢来，我先停到这儿。",
++        "continuation": "要得，我们接到刚才的内容摆。你想先听哪一截？",
++        "no_results": "资料库暂时没找到直接对应的项目。你可以换个项目名、地区或者类别再试一下。",
++        "list_intro": "想先看出这一类非遗各自的味道，我带你从{names}摆起。",
++        "list_close": "你对哪一项更感兴趣？我可以接到讲它的历史和现场。",
++        "missing_detail": "这项的详细资料还在整理中。",
++        "single_missing": "资料库暂时还没有这个项目的详细简介。",
++    },
++    "zh-CN-henan": {
++        "greeting": "恁好。想从哪一项非遗开始聊？",
++        "pause": "中，恁慢慢来，我先停到这儿。",
++        "continuation": "中，咱接着刚才的内容聊。恁想先听哪一段？",
++        "no_results": "资料库暂时没找着直接对应的项目。恁可以换个项目名、地区或者类别再试试。",
++        "list_intro": "想先看看这一类非遗各有啥味道，咱可以从{names}聊起。",
++        "list_close": "恁对哪一项更感兴趣？我可以接着聊它的历史和现在。",
++        "missing_detail": "这一项的详细资料还在整理中。",
++        "single_missing": "资料库暂时还没有这个项目的详细介绍。",
++    },
++    "en-US": {
++        "greeting": "Hello. I’m your anti-fraud assistant. Tell me about the suspicious message, call, or action, and we’ll assess the risk together.",
++        "pause": "Of course. Take your time; I'll pause here.",
++        "continuation": "Let's continue from where we left off. Which part would you like to hear first?",
++        "no_results": "I couldn't find a project in the collection that directly matches that question. Try a project name, region, or category.",
++        "list_intro": "To see the different character of this heritage category, I would begin with {names}.",
++        "list_close": "Which one draws you in most? I can take you further into its history and living practice.",
++        "missing_detail": "Its detailed record is still being prepared.",
++        "single_missing": "The collection does not yet include a detailed introduction for this project.",
++    },
++    "ja-JP": {
++        "greeting": "こんにちは。どの中国無形文化遺産から見てみましょうか。",
++        "pause": "はい、ゆっくりどうぞ。ここでいったん止めます。",
++        "continuation": "では、先ほどの続きから見ていきましょう。まずどこを聞きたいですか。",
++        "no_results": "この質問に直接対応する項目は資料庫で見つかりませんでした。項目名、地域、または分類を変えてお試しください。",
++        "list_intro": "この分野の違いをつかむなら、まず{names}から見ていきましょう。",
++        "list_close": "どの項目が一番気になりましたか。歴史や現在の姿をさらにご案内できます。",
++        "missing_detail": "詳しい資料は現在整理中です。",
++        "single_missing": "この項目の詳しい紹介は、まだ資料庫に収録されていません。",
++    },
++    "ko-KR": {
++        "greeting": "안녕하세요. 어떤 중국 무형문화유산부터 살펴볼까요?",
++        "pause": "네, 천천히 하세요. 여기서 잠시 멈출게요.",
++        "continuation": "그럼 앞의 이야기에서 이어가겠습니다. 어느 부분부터 듣고 싶으세요?",
++        "no_results": "이 질문과 직접 맞는 항목을 자료에서 찾지 못했습니다. 종목명, 지역 또는 분류를 바꿔 다시 시도해 보세요.",
++        "list_intro": "이 분야의 서로 다른 매력을 보려면 {names}부터 살펴보는 것이 좋습니다.",
++        "list_close": "어느 항목이 가장 마음에 닿나요? 역사와 현장의 모습까지 이어서 안내해 드릴게요.",
++        "missing_detail": "상세 자료는 현재 정리 중입니다.",
++        "single_missing": "이 항목의 상세 소개는 아직 자료에 수록되지 않았습니다.",
++    },
++    "fr-FR": {
++        "greeting": "Bonjour. Quel patrimoine culturel immatériel chinois souhaitez-vous découvrir ?",
++        "pause": "Bien sûr. Prenez votre temps ; je m'arrête ici un instant.",
++        "continuation": "Reprenons là où nous en étions. Quelle partie souhaitez-vous entendre d'abord ?",
++        "no_results": "Je n'ai pas trouvé de projet correspondant directement à cette question. Essayez un nom de projet, une région ou une catégorie.",
++        "list_intro": "Pour saisir les différentes facettes de ce patrimoine, je commencerais par {names}.",
++        "list_close": "Lequel vous attire le plus ? Je peux poursuivre avec son histoire et sa pratique vivante.",
++        "missing_detail": "Sa notice détaillée est encore en préparation.",
++        "single_missing": "La collection ne contient pas encore de présentation détaillée de ce projet.",
++    },
++    "es-ES": {
++        "greeting": "Hola. ¿Qué patrimonio cultural inmaterial de China te gustaría descubrir?",
++        "pause": "Claro. Tómate tu tiempo; haré una pausa aquí.",
++        "continuation": "Sigamos desde donde lo dejamos. ¿Qué parte te gustaría escuchar primero?",
++        "no_results": "No encontré un proyecto que coincida directamente con la pregunta. Prueba con el nombre de un proyecto, una región o una categoría.",
++        "list_intro": "Para apreciar los distintos matices de este patrimonio, empezaría por {names}.",
++        "list_close": "¿Cuál te atrae más? Puedo continuar con su historia y su práctica viva.",
++        "missing_detail": "Su ficha detallada todavía está en preparación.",
++        "single_missing": "La colección aún no incluye una introducción detallada de este proyecto.",
++    },
++    "de-DE": {
++        "greeting": "Hallo. Welches immaterielle Kulturerbe Chinas möchten Sie entdecken?",
++        "pause": "Gern. Nehmen Sie sich Zeit; ich pausiere hier.",
++        "continuation": "Machen wir dort weiter, wo wir aufgehört haben. Welchen Teil möchten Sie zuerst hören?",
++        "no_results": "Ich habe kein Projekt gefunden, das direkt zu dieser Frage passt. Versuchen Sie einen Projektnamen, eine Region oder eine Kategorie.",
++        "list_intro": "Um die unterschiedlichen Facetten dieses Kulturerbes zu erfassen, würde ich mit {names} beginnen.",
++        "list_close": "Welches spricht Sie am meisten an? Ich kann seine Geschichte und heutige Praxis weiter erläutern.",
++        "missing_detail": "Der ausführliche Eintrag wird noch vorbereitet.",
++        "single_missing": "Die Sammlung enthält noch keine ausführliche Einführung zu diesem Projekt.",
++    },
++    "ru-RU": {
++        "greeting": "Здравствуйте. С каким объектом нематериального наследия Китая вы хотели бы познакомиться?",
++        "pause": "Конечно. Не спешите — я пока остановлюсь здесь.",
++        "continuation": "Продолжим с того места, где остановились. О чём рассказать сначала?",
++        "no_results": "Я не нашёл в коллекции проект, напрямую соответствующий вопросу. Попробуйте указать название, регион или категорию.",
++        "list_intro": "Чтобы увидеть разные грани этого наследия, я бы начал с {names}.",
++        "list_close": "Что заинтересовало вас больше всего? Я могу продолжить рассказ об истории и живой практике.",
++        "missing_detail": "Подробная запись ещё готовится.",
++        "single_missing": "В коллекции пока нет подробного описания этого проекта.",
++    },
++    "ar-SA": {
++        "greeting": "مرحباً. أي عنصر من التراث الثقافي غير المادي في الصين تود استكشافه؟",
++        "pause": "بكل تأكيد. خذ وقتك؛ سأتوقف هنا قليلاً.",
++        "continuation": "لنواصل من حيث توقفنا. أي جزء تود سماعه أولاً؟",
++        "no_results": "لم أجد في المجموعة مشروعاً يطابق هذا السؤال مباشرة. جرّب اسم مشروع أو منطقة أو فئة.",
++        "list_intro": "لرؤية الجوانب المختلفة لهذا التراث، سأبدأ بـ {names}.",
++        "list_close": "أيها جذبك أكثر؟ يمكنني متابعة الحديث عن تاريخه وممارسته الحية.",
++        "missing_detail": "لا يزال السجل التفصيلي قيد الإعداد.",
++        "single_missing": "لا تتضمن المجموعة بعد مقدمة تفصيلية لهذا المشروع.",
++    },
++    "hi-IN": {
++        "greeting": "नमस्ते। आप चीन की किस अमूर्त सांस्कृतिक विरासत के बारे में जानना चाहेंगे?",
++        "pause": "ज़रूर। आराम से समय लें; मैं यहीं रुकता हूँ।",
++        "continuation": "जहाँ रुके थे वहीं से आगे बढ़ते हैं। आप पहले कौन-सा भाग सुनना चाहेंगे?",
++        "no_results": "संग्रह में इस प्रश्न से सीधे मेल खाने वाली परियोजना नहीं मिली। किसी परियोजना का नाम, क्षेत्र या श्रेणी आज़माएँ।",
++        "list_intro": "इस विरासत के अलग-अलग रूप समझने के लिए मैं {names} से शुरुआत करूँगा।",
++        "list_close": "इनमें से किसने आपको सबसे अधिक आकर्षित किया? मैं उसके इतिहास और जीवित परंपरा पर आगे बता सकता हूँ।",
++        "missing_detail": "इसका विस्तृत अभिलेख अभी तैयार किया जा रहा है।",
++        "single_missing": "संग्रह में अभी इस परियोजना का विस्तृत परिचय उपलब्ध नहीं है।",
++    },
++    "th-TH": {
++        "greeting": "สวัสดี คุณอยากสำรวจมรดกทางวัฒนธรรมที่จับต้องไม่ได้ของจีนรายการใด?",
++        "pause": "ได้เลย ค่อย ๆ ใช้เวลานะ ฉันจะหยุดไว้ตรงนี้ก่อน",
++        "continuation": "มาต่อจากที่เราค้างไว้ คุณอยากฟังส่วนไหนก่อน?",
++        "no_results": "ฉันไม่พบรายการในคลังที่ตรงกับคำถามนี้โดยตรง ลองใช้ชื่อโครงการ ภูมิภาค หรือหมวดหมู่",
++        "list_intro": "หากต้องการเห็นลักษณะที่หลากหลายของมรดกประเภทนี้ ฉันขอเริ่มจาก {names}",
++        "list_close": "รายการไหนดึงดูดคุณมากที่สุด? ฉันเล่าต่อถึงประวัติและการสืบทอดในปัจจุบันได้",
++        "missing_detail": "ข้อมูลฉบับละเอียดยังอยู่ระหว่างการจัดทำ",
++        "single_missing": "คลังยังไม่มีคำแนะนำฉบับละเอียดสำหรับโครงการนี้",
++    },
++}
++
++
++def _copy_catalog(locale: str) -> dict[str, str]:
++    return _FALLBACK_COPY.get(locale, _FALLBACK_COPY["en-US"])
++
++
++def _localized_copy(locale: str, key: str, **values: str) -> str:
++    return _copy_catalog(locale)[key].format(**values)
++
++
++def _localized_greeting_suggestions(locale: str) -> list[str]:
++    suggestions = {
++        "zh-CN": ("按诈骗类别浏览案例", "按风险等级筛选"),
++        "zh-CN-sichuan": ("按诈骗类别浏览案例", "按风险等级筛选"),
++        "zh-CN-henan": ("按诈骗类别找案例", "按风险等级筛选"),
++        "yue-CN": ("按诈骗类别搵案例", "按风险等级筛选"),
++        "en-US": ("Browse cases by scam type", "Filter by risk level"),
++        "ja-JP": ("詐欺類型から事例を探す", "危険度で絞り込む"),
++        "ko-KR": ("사기 유형별 사례 찾기", "위험 수준으로 필터링"),
++        "fr-FR": ("Explorer le patrimoine par région", "Parcourir la collection par catégorie"),
++        "es-ES": ("Explorar el patrimonio por región", "Ver la colección por categoría"),
++        "de-DE": ("Kulturerbe nach Region erkunden", "Sammlung nach Kategorie durchsuchen"),
++        "ru-RU": ("Искать наследие по регионам", "Просматривать коллекцию по категориям"),
++        "ar-SA": ("استكشاف التراث حسب المنطقة", "تصفح المجموعة حسب الفئة"),
++        "hi-IN": ("क्षेत्र के अनुसार विरासत खोजें", "श्रेणी के अनुसार संग्रह देखें"),
++        "th-TH": ("สำรวจมรดกตามภูมิภาค", "ดูคลังตามหมวดหมู่"),
++    }
++    return list(suggestions.get(locale, suggestions["en-US"]))
++
++
++def _is_greeting(question: str, locale: str) -> bool:
++    compact = question.casefold().strip("。！!？?～~，,、；;：: .")
++    if compact in GREETING_QUESTIONS:
++        return True
++    return compact in MULTILINGUAL_GREETINGS.get(locale, ())
++
++
+ def _fallback_answer(
+     question: str,
+     items: Sequence[FraudCase],
+     *,
+     history: Sequence[ConversationTurn] = (),
++    locale: str = DEFAULT_LOCALE,
+ ) -> str:
+     mode = _short_reply_mode(question)
+     if mode == "pause":
+-        return "好，你慢慢来。我先停在这里。"
++        return _localized_copy(locale, "pause")
+     if mode == "continuation" and history:
+-        return "好，我们就接着刚才的内容看。你想先听哪一处？"
++        return _localized_copy(locale, "continuation")
+     if not items:
+         return "我暂时没有找到与这个问题直接对应的案例。你可以补充诈骗类别、联系渠道、风险等级或受害人群。"
+     if any(marker in question for marker in ("有哪些", "推荐", "值得", "几个", "案例")) and len(items) > 1:
+@@ -698,7 +990,12 @@
+                 break
+             if len(selected) >= 6:
+                 break
+-        names = "、".join(item.title for item in selected)
++        separator = (
++            "、"
++            if locale in {"zh-CN", "yue-CN", "zh-CN-sichuan", "zh-CN-henan"}
++            else ", "
++        )
++        names = separator.join(item.title for item in selected)
+         passages = []
+         for item in selected:
+             summary = normalize_text(item.summary or item.content)
+@@ -716,6 +1013,12 @@
+ 
+ def _requested_item_count(question: str) -> int | None:
+     match = re.search(r"(\d{1,2}|[一二两三四五六七八九十])\s*(?:个|项|种|类)", question)
++    if not match:
++        match = re.search(
++            r"\b(\d{1,2})\s*(?:projects?|items?|types?|traditions?|examples?)\b",
++            question,
++            flags=re.IGNORECASE,
++        )
+     if not match:
+         return None
+     token = match.group(1)
+@@ -744,7 +1047,33 @@
+     return frozenset(item_names), frozenset(categories), frozenset(channels)
+ 
+ 
+-def _retrieval_basis(search: SearchService, question: str, category: str = "") -> str:
++def _translated_search_anchor(question: str, locale: str) -> str:
++    folded = normalize_text(question).casefold()
++    for phrases, canonical in MULTILINGUAL_SEARCH_GLOSSES.get(locale, ()):
++        if any(phrase.casefold() in folded for phrase in phrases):
++            return canonical
++    return ""
++
++
++def _localized_search_query(question: str, locale: str, retrieval_basis: str) -> str:
++    canonical = _translated_search_anchor(question, locale)
++    if canonical:
++        return canonical
++    if retrieval_basis == "multilingual_catalogue":
++        # An empty search query intentionally opens a bounded, rotating
++        # catalogue window.  The original user wording remains untouched in
++        # history and in the LLM's user message.
++        return ""
++    return question
++
++
++def _retrieval_basis(
++    search: SearchService,
++    question: str,
++    category: str = "",
++    *,
++    locale: str = DEFAULT_LOCALE,
++) -> str:
+     """Return the explicit user signal that authorizes knowledge retrieval.
+ 
+     Full-text search intentionally accepts weak content matches for the case
+@@ -767,6 +1096,8 @@
+             return "channel"
+     if any(term in text for term in FRAUD_DOMAIN_TERMS):
+         return "fraud_domain"
++    if any(term.casefold() in text for term in MULTILINGUAL_FRAUD_TERMS.get(locale, ())):
++        return "multilingual_catalogue"
+     if (
+         any(action in text for action in CATALOGUE_BROWSE_ACTIONS)
+         and any(target in text for target in CATALOGUE_BROWSE_OBJECTS)
+@@ -813,7 +1144,45 @@
+ 
+ def _short_reply_mode(question: str) -> str | None:
+     compact = normalize_text(question).lower().strip("。！？!?，,、；;：: ")
+-    return SHORT_REPLY_MODES.get(compact)
++    multilingual = {
++        "ok": "continuation",
++        "okay": "continuation",
++        "yes": "continuation",
++        "continue": "continuation",
++        "go on": "continuation",
++        "wait": "pause",
++        "wait a moment": "pause",
++        "hold on": "pause",
++        "stop": "pause",
++        "はい": "continuation",
++        "続けて": "continuation",
++        "ちょっと待って": "pause",
++        "네": "continuation",
++        "계속": "continuation",
++        "잠깐만": "pause",
++        "oui": "continuation",
++        "continuez": "continuation",
++        "attendez": "pause",
++        "sí": "continuation",
++        "continúa": "continuation",
++        "espera": "pause",
++        "ja": "continuation",
++        "weiter": "continuation",
++        "warten": "pause",
++        "да": "continuation",
++        "продолжайте": "continuation",
++        "подождите": "pause",
++        "نعم": "continuation",
++        "تابع": "continuation",
++        "انتظر": "pause",
++        "हाँ": "continuation",
++        "जारी रखें": "continuation",
++        "रुकिए": "pause",
++        "ใช่": "continuation",
++        "ต่อเลย": "continuation",
++        "รอก่อน": "pause",
++    }
++    return SHORT_REPLY_MODES.get(compact) or multilingual.get(compact)
+ 
+ 
+ def _confidence(items: Sequence[FraudCase], answer: str) -> float:
+@@ -858,21 +1227,57 @@
+     return tuple(match[2] for match in matches)
+ 
+ 
+-def _suggestions(items: Sequence[FraudCase]) -> list[str]:
++def _suggestions(
++    items: Sequence[FraudCase],
++    *,
++    locale: str = DEFAULT_LOCALE,
++) -> list[str]:
+     if not items:
+-        return ["按诈骗类别浏览案例", "按风险等级筛选", "遇到转账要求该怎么办？"]
++        return _localized_greeting_suggestions(locale) + [_localized_safety_question(locale)]
+     suggestions: list[str] = []
+     seen: set[str] = set()
++    item_templates = {
++        "zh-CN": "{title}有哪些风险信号？",
++        "zh-CN-sichuan": "{title}有哪些风险信号？",
++        "zh-CN-henan": "{title}有啥风险信号？",
++        "yue-CN": "{title}有咩风险信号？",
++        "en-US": "What are the warning signs in {title}?",
++        "ja-JP": "{title}の危険信号は何ですか？",
++        "ko-KR": "{title}의 위험 신호는 무엇인가요?",
++    }
++    template = item_templates.get(locale, item_templates["en-US"])
+     for item in items:
+         title = normalize_text(item.title)
+         if not title or title in seen:
+             continue
+         seen.add(title)
+-        suggestions.append(f"{title}有哪些风险信号？")
++        suggestions.append(template.format(title=title))
+         if len(suggestions) == 3:
+             break
+-    suggestions.extend(("按渠道继续筛选", "按类别继续浏览"))
++    browse = {
++        "zh-CN": ("按渠道继续筛选", "按类别继续浏览"),
++        "zh-CN-sichuan": ("按渠道继续筛选", "按类别继续浏览"),
++        "zh-CN-henan": ("按渠道接着筛选", "按类别接着看"),
++        "yue-CN": ("按渠道继续筛选", "按类别继续睇"),
++        "en-US": ("Filter by contact channel", "Browse by scam type"),
++        "ja-JP": ("接触経路で絞り込む", "詐欺類型で見る"),
++        "ko-KR": ("접촉 경로로 필터링", "사기 유형별 보기"),
++    }
++    suggestions.extend(browse.get(locale, browse["en-US"]))
+     return suggestions[:3]
+ 
+ 
++def _localized_safety_question(locale: str) -> str:
++    questions = {
++        "zh-CN": "遇到转账要求该怎么办？",
++        "zh-CN-sichuan": "遇到转账要求该怎么办？",
++        "zh-CN-henan": "碰到转账要求咋办？",
++        "yue-CN": "遇到转账要求点算？",
++        "en-US": "What should I do if someone asks me to transfer money?",
++        "ja-JP": "送金を求められたらどうすればよいですか？",
++        "ko-KR": "송금을 요구받으면 어떻게 해야 하나요?",
++    }
++    return questions.get(locale, questions["en-US"])
++
++
+ __all__ = ["AssistantService", "SearchService"]
+
+--- a/src/anti_fraud_explorer/config.py
++++ b/src/anti_fraud_explorer/config.py
+@@ -36,6 +36,20 @@
+ XF_API_KEY = os.getenv("XF_API_KEY", "")
+ XF_API_SECRET = os.getenv("XF_API_SECRET", "")
+ XF_ASR_RES_ID = os.getenv("XF_ASR_RES_ID", "")
++# Xunfei exposes the dialect and multilingual SLM recognisers through the
++# same packet protocol.  Separate credentials remain optional because both
++# capabilities can be enabled on one application, while dedicated service
++# applications can override them without changing the browser contract.
++XF_ASR_HOST = os.getenv("XF_ASR_HOST", "iat.cn-huabei-1.xf-yun.com")
++XF_LEGACY_ASR_HOST = os.getenv("XF_LEGACY_ASR_HOST", "iat.xf-yun.com")
++XF_MULTILINGUAL_APP_ID = os.getenv("XF_MULTILINGUAL_APP_ID", XF_APP_ID)
++XF_MULTILINGUAL_API_KEY = os.getenv("XF_MULTILINGUAL_API_KEY", XF_API_KEY)
++XF_MULTILINGUAL_API_SECRET = os.getenv("XF_MULTILINGUAL_API_SECRET", XF_API_SECRET)
++XF_MULTILINGUAL_ASR_HOST = os.getenv("XF_MULTILINGUAL_ASR_HOST", XF_ASR_HOST)
++XF_MULTILINGUAL_LANGUAGE_HINT = os.getenv(
++    "XF_MULTILINGUAL_LANGUAGE_HINT",
++    "en|ja|ko",
++)
+ 
+ # Edge TTS is deliberately configured here rather than in the HTTP handler so
+ # local, container and hosted deployments can choose the same voice policy.
+
+--- a/src/anti_fraud_explorer/language.py
++++ b/src/anti_fraud_explorer/language.py
+@@ -0,0 +1,307 @@
++"""Automatic conversation-language detection and speech profile selection.
++
++The public APIs accept locale *hints*, never provider voice names.  The text
++itself remains authoritative so one browser session can naturally switch
++languages without adding a settings control to the UI.
++"""
++
++from __future__ import annotations
++
++import re
++import unicodedata
++from dataclasses import dataclass
++
++DEFAULT_LOCALE = "zh-CN"
++
++
++@dataclass(frozen=True)
++class LanguageProfile:
++    code: str
++    name: str
++    response_instruction: str
++    tts_voice: str
++    asr_language: str
++    is_dialect: bool = False
++
++
++LANGUAGE_PROFILES: dict[str, LanguageProfile] = {
++    "zh-CN": LanguageProfile(
++        "zh-CN",
++        "简体中文（普通话）",
++        "使用自然、清晰的简体中文普通话回答。",
++        "zh-CN-XiaoxiaoNeural",
++        "zh",
++    ),
++    "yue-CN": LanguageProfile(
++        "yue-CN",
++        "粤语",
++        "用户正在使用粤语；请用自然、易懂的书面粤语回答，案例名称保持资料中的标准写法。",
++        "zh-HK-HiuMaanNeural",
++        "zh",
++        True,
++    ),
++    "zh-CN-sichuan": LanguageProfile(
++        "zh-CN-sichuan",
++        "四川话",
++        "用户正在使用四川话；请用自然、克制、易懂的四川话口吻回答，不要用生造的谐音字，项目专名保持标准写法。",
++        "zh-CN-YunxiNeural",
++        "zh",
++        True,
++    ),
++    "zh-CN-henan": LanguageProfile(
++        "zh-CN-henan",
++        "河南话",
++        "用户正在使用河南话；请用自然、克制、易懂的河南口吻回答，不要堆砌或生造方言字，项目专名保持标准写法。",
++        "zh-CN-YunxiNeural",
++        "zh",
++        True,
++    ),
++    "en-US": LanguageProfile(
++        "en-US",
++        "English",
++        "Reply in natural English. Keep each fraud case’s canonical Chinese title when it is first mentioned.",
++        "en-US-JennyNeural",
++        "en",
++    ),
++    "ja-JP": LanguageProfile(
++        "ja-JP",
++        "日本語",
++        "自然で分かりやすい日本語で答えてください。詐欺事例の固有名は、初出時に中国語の正式名称も残してください。",
++        "ja-JP-NanamiNeural",
++        "ja",
++    ),
++    "ko-KR": LanguageProfile(
++        "ko-KR",
++        "한국어",
++        "자연스럽고 이해하기 쉬운 한국어로 답하세요. 사기 사례의 고유명은 처음 언급할 때 중국어 정식 명칭도 함께 남기세요.",
++        "ko-KR-SunHiNeural",
++        "ko",
++    ),
++}
++
++
++_LOCALE_ALIASES = {
++    "zh": "zh-CN",
++    "zh-cn": "zh-CN",
++    "zh-hans": "zh-CN",
++    "zh-sg": "zh-CN",
++    "cmn": "zh-CN",
++    "yue": "yue-CN",
++    "yue-cn": "yue-CN",
++    "yue-hk": "yue-CN",
++    "zh-hk": "yue-CN",
++    "zh-cn-sichuan": "zh-CN-sichuan",
++    "zh-sichuan": "zh-CN-sichuan",
++    "sichuan": "zh-CN-sichuan",
++    "zh-cn-henan": "zh-CN-henan",
++    "zh-henan": "zh-CN-henan",
++    "henan": "zh-CN-henan",
++    "en": "en-US",
++    "ja": "ja-JP",
++    "jp": "ja-JP",
++    "ko": "ko-KR",
++    "kr": "ko-KR",
++}
++
++_PROVIDER_LANGUAGE_LOCALES = {
++    "zh": "zh-CN",
++    "cn": "zh-CN",
++    "zh_cn": "zh-CN",
++    "cn_cbm": "zh-CN",
++    "yue": "yue-CN",
++    "yue_cn": "yue-CN",
++    "yue_hk": "yue-CN",
++    "en": "en-US",
++    "ja": "ja-JP",
++    "jp": "ja-JP",
++    "ja_jp": "ja-JP",
++    "ko": "ko-KR",
++    "kr": "ko-KR",
++    "ko_kr": "ko-KR",
++}
++
++_CANTONESE_MARKERS = (
++    "唔",
++    "冇",
++    "喺",
++    "佢",
++    "咩",
++    "嘅",
++    "啲",
++    "嚟",
++    "乜",
++    "噉",
++    "咗",
++    "睇下",
++    "点解",
++)
++_SICHUAN_MARKERS = (
++    "啥子",
++    "咋个",
++    "巴适",
++    "要得",
++    "莫得",
++    "摆龙门阵",
++    "雄起",
++    "安逸得很",
++    "瓜娃子",
++)
++
++_HENAN_STRONG_MARKERS = (
++    "河南话",
++    "豫语",
++    "中不中",
++    "弄啥嘞",
++    "弄啥咧",
++    "可得劲",
++    "喷空",
++    "木牛",
++    "恁好",
++)
++_HENAN_WEAK_MARKERS = (
++    "恁",
++    "俺",
++    "得劲",
++    "咋恁",
++    "啥嘞",
++    "咋弄",
++)
++
++_LATIN_LANGUAGE_WORDS: dict[str, frozenset[str]] = {
++    "en-US": frozenset(
++        {
++            "hello",
++            "thanks",
++            "english",
++            "heritage",
++            "history",
++            "what",
++            "which",
++            "tell",
++            "about",
++            "the",
++            "and",
++            "is",
++            "are",
++        }
++    ),
++}
++
++_SCRIPT_PATTERNS = (
++    (re.compile(r"[\u3040-\u30ff]"), "ja-JP"),
++    (re.compile(r"[\uac00-\ud7af]"), "ko-KR"),
++)
++_HAN = re.compile(r"[\u3400-\u4dbf\u4e00-\u9fff]")
++_LATIN = re.compile(r"[A-Za-zÀ-ÖØ-öø-ÿ]")
++_LATIN_WORD = re.compile(r"[A-Za-zÀ-ÖØ-öø-ÿ]+")
++
++
++def normalize_locale_hint(value: object) -> str | None:
++    """Return a supported canonical locale for an untrusted BCP-47 hint."""
++
++    raw = str(value or "").strip().replace("_", "-")
++    if not raw or raw.casefold() == "auto":
++        return None
++    folded = raw.casefold()
++    if folded in _LOCALE_ALIASES:
++        return _LOCALE_ALIASES[folded]
++    for code in LANGUAGE_PROFILES:
++        if code.casefold() == folded:
++            return code
++    primary = folded.split("-", 1)[0]
++    return _LOCALE_ALIASES.get(primary)
++
++
++def _dialect_locale(text: str) -> str | None:
++    cantonese_hits = sum(marker in text for marker in _CANTONESE_MARKERS)
++    sichuan_hits = sum(marker in text for marker in _SICHUAN_MARKERS)
++    henan_strong_hits = sum(marker in text for marker in _HENAN_STRONG_MARKERS)
++    henan_weak_hits = sum(marker in text for marker in _HENAN_WEAK_MARKERS)
++    henan_hits = (henan_strong_hits * 2) + (henan_weak_hits if henan_weak_hits >= 2 else 0)
++    candidates = (
++        (cantonese_hits, "yue-CN"),
++        (sichuan_hits, "zh-CN-sichuan"),
++        (henan_hits, "zh-CN-henan"),
++    )
++    score, locale = max(candidates, key=lambda item: item[0])
++    return locale if score else None
++
++
++def _latin_locale(text: str, hint: str | None) -> str:
++    normalized = unicodedata.normalize("NFKC", text).casefold()
++    words = _LATIN_WORD.findall(normalized)
++    scores = {
++        locale: sum(word in vocabulary for word in words)
++        for locale, vocabulary in _LATIN_LANGUAGE_WORDS.items()
++    }
++    best = max(scores, key=scores.get)
++    best_score = scores[best]
++    if best_score:
++        tied = [locale for locale, score in scores.items() if score == best_score]
++        if hint in tied:
++            return hint
++        return best
++    if hint in {"en-US", "ja-JP", "ko-KR"}:
++        return hint
++    return "en-US"
++
++
++def detect_locale(text: object, *, hint: object = None) -> str:
++    """Detect a response/TTS locale, using the browser locale only as a tie-breaker."""
++
++    content = str(text or "").strip()
++    normalized_hint = normalize_locale_hint(hint)
++    if not content:
++        return normalized_hint or DEFAULT_LOCALE
++
++    dialect = _dialect_locale(content)
++    if dialect:
++        return dialect
++    for pattern, locale in _SCRIPT_PATTERNS:
++        if pattern.search(content):
++            return locale
++
++    han_count = len(_HAN.findall(content))
++    latin_count = len(_LATIN.findall(content))
++    if latin_count and (not han_count or latin_count >= han_count * 2):
++        return _latin_locale(content, normalized_hint)
++    if han_count:
++        # Han-only text is ambiguous between Chinese and Japanese.  Preserve
++        # text authority for explicit dialect markers above, then let the
++        # browser/provider hint break this otherwise undecidable tie.
++        if normalized_hint in {"yue-CN", "zh-CN-sichuan", "zh-CN-henan", "ja-JP"}:
++            return normalized_hint
++        return "zh-CN"
++    if latin_count:
++        return _latin_locale(content, normalized_hint)
++    return normalized_hint or DEFAULT_LOCALE
++
++
++def get_language_profile(locale: object = None, *, text: object = "") -> LanguageProfile:
++    code = (
++        detect_locale(text, hint=locale)
++        if text
++        else (normalize_locale_hint(locale) or DEFAULT_LOCALE)
++    )
++    return LANGUAGE_PROFILES.get(code, LANGUAGE_PROFILES[DEFAULT_LOCALE])
++
++
++def locale_from_provider_language(value: object) -> str | None:
++    tag = str(value or "").strip().casefold().replace("-", "_")
++    return _PROVIDER_LANGUAGE_LOCALES.get(tag)
++
++
++def is_chinese_locale(locale: object) -> bool:
++    return get_language_profile(locale).asr_language == "zh"
++
++
++__all__ = [
++    "DEFAULT_LOCALE",
++    "LANGUAGE_PROFILES",
++    "LanguageProfile",
++    "detect_locale",
++    "get_language_profile",
++    "is_chinese_locale",
++    "locale_from_provider_language",
++    "normalize_locale_hint",
++]
+
+--- a/src/anti_fraud_explorer/models.py
++++ b/src/anti_fraud_explorer/models.py
+@@ -19,6 +19,7 @@
+     question: str
+     answer: str
+     source_ids: tuple[str, ...] = ()
++    locale: str = "zh-CN"
+     created_at: datetime = field(default_factory=utc_now)
+ 
+     def context_dict(self) -> dict[str, Any]:
+@@ -27,6 +28,7 @@
+             "question": self.question,
+             "answer": self.answer,
+             "source_ids": list(self.source_ids),
++            "locale": self.locale,
+         }
+ 
+ 
+
+--- a/src/anti_fraud_explorer/voice.py
++++ b/src/anti_fraud_explorer/voice.py
+@@ -1,4 +1,9 @@
+-"""Streaming Xunfei ASR transport for browser-captured 16 kHz PCM audio."""
++"""Streaming Xunfei ASR transport for browser-captured 16 kHz PCM audio.
++
++识诈只使用讯飞“中英识别大模型”这一条实时识别链路。该模型本身支持
++普通话、英语以及 202 种中文方言免切换识别，因此不再并行探测方言模型
++和多语种模型，也不再做三路结果仲裁。
++"""
+ 
+ from __future__ import annotations
+ 
+@@ -47,10 +52,26 @@
+         on_partial: Callable[[str], Awaitable[None]] | None = None,
+         hotwords: str | list[str] | tuple[str, ...] | None = None,
+         resource_id: str | None = None,
++        host: str | None = None,
++        path: str = "/v1",
++        language: str = "zh_cn",
++        accent: str = "mandarin",
++        domain: str = "slm",
++        language_hint: str = "",
++        dynamic_correction: bool = True,
++        eos: int = 1800,
+     ) -> None:
+         self.app_id = app_id.strip()
+         self.api_key = api_key.strip()
+         self.api_secret = api_secret.strip()
++        self.host = str(host or type(self).host).strip()
++        self.path = str(path or "/v1").strip()
++        self.language = str(language or "zh_cn").strip()
++        self.accent = str(accent or "mandarin").strip()
++        self.domain = str(domain or "slm").strip()
++        self.language_hint = str(language_hint or "").strip()
++        self.dynamic_correction = bool(dynamic_correction)
++        self.eos = min(max(int(eos), 600), 10000)
+         self.resource_id = (resource_id or "").strip()
+         self._hotword_spec = self._format_hotwords(hotwords)
+         self._socket: ClientConnection | None = None
+@@ -61,11 +82,8 @@
+         self._send_queue: asyncio.Queue[bytes | _FinishRequest] = asyncio.Queue()
+         self._send_lock = asyncio.Lock()
+         self._pieces: dict[int, str] = {}
+-        # Keep the candidates at result-sequence granularity.  WPGS can
+-        # replace a range of old sequences, so retaining this mapping lets us
+-        # discard every hypothesis from the replaced range together with its
+-        # top-1 text.
+         self._candidate_pieces: dict[int, tuple[str, ...]] = {}
++        self._language_pieces: dict[int, str] = {}
+         self._sequence = 0
+         self._first = True
+         self._has_audio = False
+@@ -81,13 +99,8 @@
+ 
+     @staticmethod
+     def _format_hotwords(hotwords: str | list[str] | tuple[str, ...] | None) -> str:
+-        """Return Xunfei's ``dhw`` value, bounded to 1024 UTF-8 bytes.
+-
+-        The service uses ``|`` as a separator and ``utf-8;`` as an encoding
+-        marker.  Accepting a delimited string as well as a sequence keeps the
+-        constructor convenient while stripping separators/control whitespace
+-        prevents malformed provider parameters.
+-        """
++        """Return Xunfei's ``dhw`` value, bounded to 1024 UTF-8 bytes."""
++
+         if hotwords is None:
+             return ""
+         values = [hotwords] if isinstance(hotwords, str) else hotwords
+@@ -95,8 +108,6 @@
+         seen: set[str] = set()
+         for value in values:
+             text = str(value or "")
+-            # A pipe/comma-delimited value is common when the list originates
+-            # in an environment variable or a form field.
+             for item in re.split(r"[|,，、;；\r\n\t]+", text):
+                 item = "".join(item.split())
+                 if not item or item in seen:
+@@ -115,8 +126,6 @@
+                 selected.append(item)
+                 used += required
+                 continue
+-            # Preserve order and stop at the first item that cannot fit.  If
+-            # it is the first item, retain as much as the provider permits.
+             if not selected and remaining > 0:
+                 item = encoded[:remaining].decode("utf-8", errors="ignore")
+                 if item:
+@@ -167,8 +176,6 @@
+         if should_close:
+             await socket.close()
+             raise VoiceProviderError("voice_stream_closed")
+-        # Give the pump one turn to deliver the first frame immediately.  The
+-        # remaining handshake cache stays queued and is paced by the pump.
+         await asyncio.sleep(0)
+ 
+     async def send_audio(self, data: bytes) -> None:
+@@ -210,12 +217,8 @@
+                 now = asyncio.get_running_loop().time()
+                 while self._next_send_at is not None and self._next_send_at > now:
+                     await asyncio.sleep(self._next_send_at - now)
+-                    # Some event loops wake timers a little early. Recheck so
+-                    # a coarse timer cannot turn 40 ms frames into a burst.
+                     now = asyncio.get_running_loop().time()
+                 await self._send_frame(current)
+-                # Schedule from the actual completion time so a slow network
+-                # write never causes the next frame to burst immediately.
+                 self._next_send_at = asyncio.get_running_loop().time() + self.frame_interval
+                 current = None
+         except asyncio.CancelledError:
+@@ -259,9 +262,6 @@
+                     self._send_queue.put_nowait(request)
+             if empty:
+                 return ""
+-            # The barrier is consumed only after every queued audio frame has
+-            # been written. Shield it so cancellation can be followed by the
+-            # normal close path without leaving a canceled queue item behind.
+             await asyncio.shield(request.done)
+             await asyncio.wait_for(self._done.wait(), timeout=8)
+         except TimeoutError as exc:
+@@ -364,13 +364,8 @@
+ 
+     @staticmethod
+     def extract_candidates(result: dict[str, object]) -> tuple[str, ...]:
+-        """Extract full-text hypotheses, preserving provider candidate order.
+-
+-        ``cw`` contains alternatives for each word segment.  Candidate index
+-        is stable across segments in Xunfei's response; where a segment has
+-        fewer alternatives, its top-1 word is used for the remaining joined
+-        hypotheses.
+-        """
++        """Extract full-text hypotheses, preserving provider candidate order."""
++
+         words: list[list[str]] = []
+         segments = result.get("ws", [])
+         if not isinstance(segments, list):
+@@ -392,7 +387,9 @@
+         count = max(len(items) for items in words)
+         output: list[str] = []
+         for index in range(count):
+-            output.append("".join(items[index] if index < len(items) else items[0] for items in words))
++            output.append(
++                "".join(items[index] if index < len(items) else items[0] for items in words)
++            )
+         return tuple(output)
+ 
+     @staticmethod
+@@ -413,20 +410,55 @@
+             for key in range(start, end + 1):
+                 self._pieces.pop(key, None)
+                 self._candidate_pieces.pop(key, None)
++                self._language_pieces.pop(key, None)
+         if piece:
+             self._pieces[sequence] = piece
+         if candidates and any(candidates):
+             self._candidate_pieces[sequence] = tuple(
+-                candidate for index, candidate in enumerate(candidates) if candidate and candidate not in candidates[:index]
++                candidate
++                for index, candidate in enumerate(candidates)
++                if candidate and candidate not in candidates[:index]
+             )
++        source_language = self.extract_language(result)
++        if source_language:
++            self._language_pieces[sequence] = source_language
+         return bool(piece or replacement)
+ 
+     def current_text(self) -> str:
+         return "".join(self._pieces[key] for key in sorted(self._pieces)).strip()
++
++    @staticmethod
++    def extract_language(result: dict[str, object]) -> str:
++        """Return the dominant provider ``cw.lg`` source-language tag."""
++
++        counts: dict[str, int] = {}
++        segments = result.get("ws", [])
++        if not isinstance(segments, list):
++            return ""
++        for segment in segments:
++            candidates = segment.get("cw", []) if isinstance(segment, dict) else []
++            if not isinstance(candidates, list):
++                continue
++            for candidate in candidates:
++                if not isinstance(candidate, dict):
++                    continue
++                language = str(candidate.get("lg") or "").strip().casefold()
++                if language:
++                    counts[language] = counts.get(language, 0) + 1
++                    break
++        return max(counts, key=counts.get) if counts else ""
++
++    @property
++    def detected_language(self) -> str:
++        counts: dict[str, int] = {}
++        for language in self._language_pieces.values():
++            counts[language] = counts.get(language, 0) + 1
++        return max(counts, key=counts.get) if counts else ""
+ 
+     @property
+     def alternative_texts(self) -> tuple[str, ...]:
+         """Final, de-duplicated full-transcript hypotheses (top-1 first)."""
++
+         if not self._candidate_pieces:
+             text = self.current_text()
+             return (text,) if text else ()
+@@ -441,7 +473,6 @@
+             text = "".join(parts).strip()
+             if text and text not in texts:
+                 texts.append(text)
+-        # Results without a candidate payload should never hide top-1.
+         top1 = self.current_text()
+         if top1 and top1 not in texts:
+             texts.insert(0, top1)
+@@ -449,7 +480,6 @@
+ 
+     @property
+     def candidates(self) -> tuple[str, ...]:
+-        """Alias for consumers that call the n-best result ``candidates``."""
+         return self.alternative_texts
+ 
+     def _next_sequence(self) -> int:
+@@ -475,20 +505,16 @@
+ 
+     def _first_packet(self, audio: str) -> dict[str, object]:
+         iat: dict[str, object] = {
+-            "domain": "slm",
+-            "language": "zh_cn",
+-            # iat.xf-yun.com/v1 is the Chinese/English SLM endpoint. Its
+-            # documented fixed accent is mandarin; mulacc belongs to the
+-            # separate dialect endpoint and must not be mixed into this
+-            # request contract.
+-            "accent": "mandarin",
+-            "eos": 1800,
+-            # Enable Xunfei's dynamic correction mode.  Without WPGS
+-            # the provider tends to hold results until the utterance
+-            # ends, which makes the browser look non-streaming.
+-            "dwa": "wpgs",
++            "domain": self.domain,
++            "language": self.language,
++            "accent": self.accent,
++            "eos": self.eos,
+             "result": {"encoding": "utf8", "compress": "raw", "format": "json"},
+         }
++        if self.dynamic_correction:
++            iat["dwa"] = "wpgs"
++        if self.language_hint:
++            iat["ln"] = self.language_hint
+         if self._hotword_spec:
+             iat["dhw"] = self._hotword_spec
+         return {
+@@ -510,4 +536,93 @@
+         }
+ 
+ 
+-__all__ = ["VoiceProviderError", "XfyunStream"]
++class AutoXfyunStream:
++    """Compatibility facade backed by one Xunfei Chinese/English ASR stream.
++
++    Older callers still pass the three-stream configuration fields.  They are
++    intentionally accepted here so the browser WebSocket contract can stay
++    unchanged while the runtime only opens the official Chinese/English model
++    endpoint (``zh_cn`` + ``mandarin``).  That model also covers 202 Chinese
++    dialects, so no multilingual/dialect arbitration is necessary.
++    """
++
++    CHINESE = "chinese"
++    DIALECT = "dialect"  # compatibility-only constants for older callers
++    MULTILINGUAL = "multilingual"
++    LEGACY = "legacy"
++    AUTO = "auto"
++
++    def __init__(
++        self,
++        *,
++        app_id: str,
++        api_key: str,
++        api_secret: str,
++        multilingual_app_id: str = "",
++        multilingual_api_key: str = "",
++        multilingual_api_secret: str = "",
++        host: str | None = None,
++        multilingual_host: str | None = None,
++        multilingual_language_hint: str = "",
++        legacy_host: str | None = "iat.xf-yun.com",
++        on_partial: Callable[[str], Awaitable[None]] | None = None,
++        hotwords: str | list[str] | tuple[str, ...] | None = None,
++        resource_id: str | None = None,
++        mode: str = AUTO,
++        preferred_mode: str = DIALECT,
++    ) -> None:
++        # The unused parameters stay in the signature temporarily so a rolling
++        # deployment does not require an atomic api.py/config.py migration.
++        del (
++            multilingual_app_id,
++            multilingual_api_key,
++            multilingual_api_secret,
++            host,
++            multilingual_host,
++            multilingual_language_hint,
++            mode,
++            preferred_mode,
++        )
++        self._stream = XfyunStream(
++            app_id=app_id,
++            api_key=api_key,
++            api_secret=api_secret,
++            host=legacy_host or "iat.xf-yun.com",
++            language="zh_cn",
++            accent="mandarin",
++            domain="slm",
++            dynamic_correction=True,
++            on_partial=on_partial,
++            hotwords=hotwords,
++            resource_id=resource_id,
++        )
++        self._selected_mode = ""
++
++    async def start(self) -> None:
++        await self._stream.start()
++
++    async def send_audio(self, data: bytes) -> None:
++        await self._stream.send_audio(data)
++
++    async def finish(self) -> str:
++        result = await self._stream.finish()
++        self._selected_mode = self.CHINESE
++        return result
++
++    async def close(self) -> None:
++        await self._stream.close()
++
++    @property
++    def selected_mode(self) -> str:
++        return self._selected_mode or self.CHINESE
++
++    @property
++    def detected_language(self) -> str:
++        return self._stream.detected_language
++
++    @property
++    def candidates(self) -> tuple[str, ...]:
++        return self._stream.candidates
++
++
++__all__ = ["AutoXfyunStream", "VoiceProviderError", "XfyunStream"]
+
+--- a/tests/test_api_contract.py
++++ b/tests/test_api_contract.py
+@@ -89,6 +89,7 @@
+         session_id: str | None = None,
+         turn_id: str | None = None,
+         category: str = "",
++        locale_hint: str = "",
+     ) -> AsyncIterator[AssistantEvent]:
+         self.calls.append(
+             {
+@@ -96,6 +97,7 @@
+                 "session_id": session_id,
+                 "turn_id": turn_id,
+                 "category": category,
++                "locale_hint": locale_hint,
+             }
+         )
+         for event in self.events:
+@@ -126,12 +128,18 @@
+ 
+ 
+ class FakeXfyunStream:
+-    """Deterministic ASR stream used to exercise the websocket orchestration."""
++    """Deterministic auto-ASR stream used to exercise websocket orchestration."""
++
++    AUTO = "auto"
++    DIALECT = "dialect"
++    MULTILINGUAL = "multilingual"
++    LEGACY = "legacy"
+ 
+     instances: ClassVar[list[FakeXfyunStream]] = []
+     transcript = ""
+     candidate_texts: tuple[str, ...] = ()
+     partial = ""
++    provider_language = "zh"
+     block_finish = False
+     block_start = False
+     finish_gate = threading.Event()
+@@ -150,6 +158,8 @@
+             (self.transcript,) if self.transcript else ()
+         )
+         self.partial = self.__class__.partial
++        self.selected_mode = str(kwargs.get("preferred_mode") or self.DIALECT)
++        self.detected_language = self.__class__.provider_language
+         self.__class__.instances.append(self)
+ 
+     async def start(self) -> None:
+@@ -187,6 +197,7 @@
+         session_id: str | None = None,
+         turn_id: str | None = None,
+         category: str = "",
++        locale_hint: str = "",
+     ) -> AsyncIterator[AssistantEvent]:
+         assert turn_id is not None
+         session = session_id or "voice-session"
+@@ -196,6 +207,7 @@
+                 "session_id": session_id,
+                 "turn_id": turn_id,
+                 "category": category,
++                "locale_hint": locale_hint,
+             }
+         )
+         self.started.set()
+@@ -230,9 +242,10 @@
+     FakeXfyunStream.block_start = False
+     FakeXfyunStream.partial = ""
+     FakeXfyunStream.candidate_texts = ()
++    FakeXfyunStream.provider_language = "zh"
+     FakeXfyunStream.finish_gate.set()
+     FakeXfyunStream.start_gate.set()
+-    monkeypatch.setattr(api_module, "XfyunStream", FakeXfyunStream)
++    monkeypatch.setattr(api_module, "AutoXfyunStream", FakeXfyunStream)
+     search = RecordingSearch(make_kb())
+     return TestClient(
+         create_app(
+@@ -412,9 +425,10 @@
+         {
+             "question": "介绍",
+             "session_id": "session-1",
+-            "turn_id": None,
+-            "category": "刷单返利类",
+-        }
++                "turn_id": None,
++                "category": "刷单返利类",
++                "locale_hint": "",
++            }
+     ]
+ 
+ 
+@@ -430,8 +444,9 @@
+             assert assistant.started.wait(2)
+             receive_until(
+                 websocket,
+-                lambda message: message.get("type") == "status"
+-                and message.get("status") == "thinking",
++                lambda message: (
++                    message.get("type") == "status" and message.get("status") == "thinking"
++                ),
+             )
+ 
+             websocket.send_json({"type": "utterance.start", "interrupt": True})
+@@ -443,8 +458,7 @@
+                 lambda message: message.get("type") == "utterance.rejected",
+             )
+             assert not any(
+-                message.get("type") == "status"
+-                and message.get("status") == "user_speaking"
++                message.get("type") == "status" and message.get("status") == "user_speaking"
+                 for message in messages
+             )
+             assert not assistant.cancelled.is_set()
+@@ -468,8 +482,9 @@
+             websocket.send_json({"type": "utterance.start"})
+             receive_until(
+                 websocket,
+-                lambda message: message.get("type") == "status"
+-                and message.get("status") == "user_speaking",
++                lambda message: (
++                    message.get("type") == "status" and message.get("status") == "user_speaking"
++                ),
+             )
+             websocket.send_json({"type": "utterance.end"})
+             messages = receive_until(
+@@ -490,8 +505,9 @@
+             websocket.send_json({"type": "utterance.start"})
+             receive_until(
+                 websocket,
+-                lambda message: message.get("type") == "status"
+-                and message.get("status") == "user_speaking",
++                lambda message: (
++                    message.get("type") == "status" and message.get("status") == "user_speaking"
++                ),
+             )
+             websocket.send_json({"type": "utterance.end"})
+             messages = receive_until(
+@@ -500,7 +516,9 @@
+             )
+ 
+             partial = next(message for message in messages if message.get("type") == "user.partial")
+-            final = next(message for message in messages if message.get("type") == "user.transcript")
++            final = next(
++                message for message in messages if message.get("type") == "user.transcript"
++            )
+             assert partial["utterance_id"] == 1
+             assert partial["revision"] == 1
+             assert partial["text"] == "你"
+@@ -521,8 +539,9 @@
+             websocket.send_json({"type": "utterance.start"})
+             receive_until(
+                 websocket,
+-                lambda message: message.get("type") == "status"
+-                and message.get("status") == "user_speaking",
++                lambda message: (
++                    message.get("type") == "status" and message.get("status") == "user_speaking"
++                ),
+             )
+             websocket.send_json({"type": "utterance.end"})
+             receive_until(websocket, lambda message: message.get("type") == "assistant.done")
+@@ -532,9 +551,11 @@
+             websocket.send_json({"type": "utterance.start"})
+             receive_until(
+                 websocket,
+-                lambda message: message.get("type") == "status"
+-                and message.get("status") == "user_speaking"
+-                and message.get("utterance_id") == 2,
++                lambda message: (
++                    message.get("type") == "status"
++                    and message.get("status") == "user_speaking"
++                    and message.get("utterance_id") == 2
++                ),
+             )
+             websocket.send_json({"type": "utterance.end"})
+             second_turn = receive_until(
+@@ -542,8 +563,12 @@
+                 lambda message: message.get("type") == "assistant.done",
+             )
+ 
+-            partial = next(message for message in second_turn if message.get("type") == "user.partial")
+-            final = next(message for message in second_turn if message.get("type") == "user.transcript")
++            partial = next(
++                message for message in second_turn if message.get("type") == "user.partial"
++            )
++            final = next(
++                message for message in second_turn if message.get("type") == "user.transcript"
++            )
+             assert partial["text"] == "苏"
+             assert partial["revision"] == 1
+             assert final["text"] == "刷单返利"
+@@ -561,16 +586,20 @@
+             websocket.send_json({"type": "utterance.start"})
+             receive_until(
+                 websocket,
+-                lambda message: message.get("type") == "status"
+-                and message.get("status") == "user_speaking"
+-                and message.get("utterance_id") == 1,
+-            )
+-            websocket.send_json({"type": "utterance.end"})
+-            receive_until(
+-                websocket,
+-                lambda message: message.get("type") == "status"
+-                and message.get("status") == "transcribing"
+-                and message.get("utterance_id") == 1,
++                lambda message: (
++                    message.get("type") == "status"
++                    and message.get("status") == "user_speaking"
++                    and message.get("utterance_id") == 1
++                ),
++            )
++            websocket.send_json({"type": "utterance.end"})
++            receive_until(
++                websocket,
++                lambda message: (
++                    message.get("type") == "status"
++                    and message.get("status") == "transcribing"
++                    and message.get("utterance_id") == 1
++                ),
+             )
+             first = FakeXfyunStream.instances[0]
+ 
+@@ -580,9 +609,11 @@
+             websocket.send_json({"type": "utterance.start"})
+             messages = receive_until(
+                 websocket,
+-                lambda message: message.get("type") == "status"
+-                and message.get("status") == "user_speaking"
+-                and message.get("utterance_id") == 2,
++                lambda message: (
++                    message.get("type") == "status"
++                    and message.get("status") == "user_speaking"
++                    and message.get("utterance_id") == 2
++                ),
+             )
+             assert not first.closed.is_set()
+             websocket.send_json({"type": "utterance.end"})
+@@ -614,9 +645,11 @@
+             websocket.send_json({"type": "utterance.start"})
+             receive_until(
+                 websocket,
+-                lambda message: message.get("type") == "status"
+-                and message.get("status") == "user_speaking"
+-                and message.get("utterance_id") == 1,
++                lambda message: (
++                    message.get("type") == "status"
++                    and message.get("status") == "user_speaking"
++                    and message.get("utterance_id") == 1
++                ),
+             )
+ 
+             # No utterance.end arrives for the first phrase. A new VAD onset
+@@ -627,9 +660,11 @@
+             websocket.send_json({"type": "utterance.start"})
+             receive_until(
+                 websocket,
+-                lambda message: message.get("type") == "status"
+-                and message.get("status") == "user_speaking"
+-                and message.get("utterance_id") == 2,
++                lambda message: (
++                    message.get("type") == "status"
++                    and message.get("status") == "user_speaking"
++                    and message.get("utterance_id") == 2
++                ),
+             )
+             websocket.send_json({"type": "utterance.end"})
+             FakeXfyunStream.finish_gate.set()
+@@ -657,14 +692,16 @@
+             websocket.send_json({"type": "utterance.start"})
+             receive_until(
+                 websocket,
+-                lambda message: message.get("type") == "status"
+-                and message.get("status") == "user_speaking",
+-            )
+-            websocket.send_json({"type": "utterance.end"})
+-            receive_until(
+-                websocket,
+-                lambda message: message.get("type") == "status"
+-                and message.get("status") == "transcribing",
++                lambda message: (
++                    message.get("type") == "status" and message.get("status") == "user_speaking"
++                ),
++            )
++            websocket.send_json({"type": "utterance.end"})
++            receive_until(
++                websocket,
++                lambda message: (
++                    message.get("type") == "status" and message.get("status") == "transcribing"
++                ),
+             )
+ 
+             # Invalidating the generation before canceling the blocked final
+@@ -697,8 +734,9 @@
+             websocket.send_json({"type": "utterance.start"})
+             receive_until(
+                 websocket,
+-                lambda message: message.get("type") == "status"
+-                and message.get("status") == "user_speaking",
++                lambda message: (
++                    message.get("type") == "status" and message.get("status") == "user_speaking"
++                ),
+             )
+             websocket.send_json({"type": "utterance.end"})
+             messages = receive_until(
+@@ -742,10 +780,7 @@
+                 message
+                 for message in messages
+                 if message.get("type") == "user.partial"
+-                or (
+-                    message.get("type") == "status"
+-                    and message.get("status") == "user_speaking"
+-                )
++                or (message.get("type") == "status" and message.get("status") == "user_speaking")
+             ]
+             assert [message["type"] for message in speech_events] == [
+                 "status",
+@@ -764,8 +799,9 @@
+             websocket.send_json({"type": "utterance.start", "interrupt": False})
+             messages = receive_until(
+                 websocket,
+-                lambda message: message.get("type") == "status"
+-                and message.get("status") == "user_speaking",
++                lambda message: (
++                    message.get("type") == "status" and message.get("status") == "user_speaking"
++                ),
+             )
+             assert messages[-1]["utterance_id"] == 1
+             assert not any(message.get("type") == "user.partial" for message in messages)
+@@ -782,14 +818,16 @@
+             assert assistant.started.wait(2)
+             receive_until(
+                 websocket,
+-                lambda message: message.get("type") == "status"
+-                and message.get("status") == "thinking",
+-            )
+-            websocket.send_json({"type": "utterance.start"})
+-            receive_until(
+-                websocket,
+-                lambda message: message.get("type") == "status"
+-                and message.get("status") == "user_speaking",
++                lambda message: (
++                    message.get("type") == "status" and message.get("status") == "thinking"
++                ),
++            )
++            websocket.send_json({"type": "utterance.start"})
++            receive_until(
++                websocket,
++                lambda message: (
++                    message.get("type") == "status" and message.get("status") == "user_speaking"
++                ),
+             )
+             asr_stream = FakeXfyunStream.instances[-1]
+             assert not asr_stream.closed.is_set()
+@@ -797,8 +835,9 @@
+             websocket.send_json({"type": "barge_in"})
+             receive_until(
+                 websocket,
+-                lambda message: message.get("type") == "status"
+-                and message.get("status") == "user_speaking",
++                lambda message: (
++                    message.get("type") == "status" and message.get("status") == "user_speaking"
++                ),
+             )
+             assert assistant.cancelled.wait(2)
+             assert not asr_stream.closed.is_set()
+@@ -816,8 +855,9 @@
+                 assert assistant.started.wait(2)
+                 receive_until(
+                     websocket,
+-                    lambda message: message.get("type") == "status"
+-                    and message.get("status") == "thinking",
++                    lambda message: (
++                        message.get("type") == "status" and message.get("status") == "thinking"
++                    ),
+                 )
+ 
+                 websocket.send_json({"type": "utterance.start", "interrupt": True})
+@@ -830,8 +870,9 @@
+                 websocket.send_json({"type": "barge_in"})
+                 receive_until(
+                     websocket,
+-                    lambda message: message.get("type") == "status"
+-                    and message.get("status") == "user_speaking",
++                    lambda message: (
++                        message.get("type") == "status" and message.get("status") == "user_speaking"
++                    ),
+                 )
+                 assert assistant.cancelled.wait(2)
+         finally:
+@@ -864,8 +905,9 @@
+             websocket.send_json({"type": "utterance.start"})
+             receive_until(
+                 websocket,
+-                lambda message: message.get("type") == "status"
+-                and message.get("status") == "user_speaking",
++                lambda message: (
++                    message.get("type") == "status" and message.get("status") == "user_speaking"
++                ),
+             )
+             websocket.send_json({"type": "utterance.end"})
+             messages = receive_until(
+
+--- a/tests/test_asr_normalization.py
++++ b/tests/test_asr_normalization.py
+@@ -65,3 +65,17 @@
+     )
+     assert result.canonical_text == text
+     assert result.spans == ()
++
++
++def test_non_chinese_transcript_skips_pinyin_normalization_even_with_context() -> None:
++    result = normalize_asr_final(
++        "刷单反利詐欺について教えてください。",
++        kb=_kb(),
++        category="刷单返利类",
++        asr_candidates=("刷单返利詐欺",),
++        language="ja",
++    )
++
++    assert result.raw_text == "刷单反利詐欺について教えてください。"
++    assert result.canonical_text == result.raw_text
++    assert result.spans == ()
+
+--- a/tests/test_assistant_core.py
++++ b/tests/test_assistant_core.py
+@@ -163,7 +163,9 @@
+             raise AssertionError("a greeting must not enter retrieval")
+ 
+     llm = FakeLLM()
+-    events = collect(AssistantService(search=NoSearch(), sessions=SessionStore(), llm=llm).stream_turn("你好。"))
++    events = collect(
++        AssistantService(search=NoSearch(), sessions=SessionStore(), llm=llm).stream_turn("你好。")
++    )
+ 
+     assert events[-1].type == "turn.completed"
+     assert events[-1].payload["answer"] == "你好，我是熊猫警官。把可疑消息、电话或操作告诉我，我们一起判断风险。"
+@@ -283,7 +285,13 @@
+     )
+ 
+     assert [message["role"] for message in messages] == [
+-        "system", "user", "assistant", "system", "system", "system", "user",
++        "system",
++        "user",
++        "assistant",
++        "system",
++        "system",
++        "system",
++        "user",
+     ]
+     assert messages[1]["content"] == "介绍一下刷单返利"
+     assert messages[2]["content"] == "刷单返利常用小额返利建立信任。"
+@@ -318,8 +326,14 @@
+         def stream(self, *args, **kwargs):
+             raise AssertionError("network must not be attempted")
+ 
+-    provider = OpenAICompatibleLLM(api_key="", base_url="https://example.invalid", model="x", client=RaisingClient())
+-    events = collect(AssistantService(search=FakeSearch(), sessions=SessionStore(), llm=provider).stream_turn("hello"))
++    provider = OpenAICompatibleLLM(
++        api_key="", base_url="https://example.invalid", model="x", client=RaisingClient()
++    )
++    events = collect(
++        AssistantService(search=FakeSearch(), sessions=SessionStore(), llm=provider).stream_turn(
++            "tell me more"
++        )
++    )
+     assert events[-1].type == "turn.completed"
+     assert any(event.type == "response.text.delta" for event in events)
+     assert not any(event.type == "warning" for event in events)
+@@ -331,7 +345,11 @@
+             raise RuntimeError("offline")
+             yield "never"
+ 
+-    events = collect(AssistantService(search=FakeSearch(), sessions=SessionStore(), llm=BrokenLLM()).stream_turn("hello"))
++    events = collect(
++        AssistantService(search=FakeSearch(), sessions=SessionStore(), llm=BrokenLLM()).stream_turn(
++            "tell me more"
++        )
++    )
+     assert events[-1].type == "turn.failed"
+     assert events[-1].payload["code"] == "llm_unavailable"
+     assert not any(event.type == "turn.completed" for event in events)
+@@ -361,11 +379,17 @@
+ 
+     monkeypatch.setattr(assistant_module, "AI_FIRST_TOKEN_TIMEOUT", 0.01)
+     llm = SlowThenFastLLM()
+-    events = collect(AssistantService(search=FakeSearch(), sessions=SessionStore(), llm=llm).stream_turn("hello"))
++    events = collect(
++        AssistantService(search=FakeSearch(), sessions=SessionStore(), llm=llm).stream_turn(
++            "tell me more"
++        )
++    )
+ 
+     assert llm.calls == 2
+     assert llm.second_started.is_set()
+-    assert [event.payload.get("delta") for event in events if event.type == "response.text.delta"] == ["重试成功"]
++    assert [
++        event.payload.get("delta") for event in events if event.type == "response.text.delta"
++    ] == ["重试成功"]
+     assert events[-1].type == "turn.completed"
+ 
+ 
+@@ -382,10 +406,16 @@
+             raise RuntimeError("connection lost")
+ 
+     llm = PartialThenBrokenLLM()
+-    events = collect(AssistantService(search=FakeSearch(), sessions=SessionStore(), llm=llm).stream_turn("hello"))
++    events = collect(
++        AssistantService(search=FakeSearch(), sessions=SessionStore(), llm=llm).stream_turn(
++            "tell me more"
++        )
++    )
+ 
+     assert llm.calls == 1
+-    assert [event.payload.get("delta") for event in events if event.type == "response.text.delta"] == ["已有片段"]
++    assert [
++        event.payload.get("delta") for event in events if event.type == "response.text.delta"
++    ] == ["已有片段"]
+     assert events[-1].type == "turn.failed"
+     assert events[-1].payload["code"] == "llm_unavailable"
+ 
+@@ -404,7 +434,11 @@
+ 
+     monkeypatch.setattr(assistant_module, "AI_FIRST_TOKEN_TIMEOUT", 0.01)
+     llm = EmptyLLM()
+-    events = collect(AssistantService(search=FakeSearch(), sessions=SessionStore(), llm=llm).stream_turn("hello"))
++    events = collect(
++        AssistantService(search=FakeSearch(), sessions=SessionStore(), llm=llm).stream_turn(
++            "tell me more"
++        )
++    )
+ 
+     assert llm.calls == 2
+     assert events[-1].type == "turn.failed"
+
+--- a/tests/test_lab_installer.py
++++ b/tests/test_lab_installer.py
+@@ -0,0 +1,34 @@
++import json
++from pathlib import Path
++
++
++ROOT = Path(__file__).resolve().parents[1]
++
++
++def test_model_manifest_has_unique_destinations_and_hashes() -> None:
++    payload = json.loads((ROOT / "deploy" / "models.manifest.json").read_text("utf-8"))
++    models = payload["models"]
++    assert len(models) == 4
++    assert len({model["destination"] for model in models}) == len(models)
++    for model in models:
++        assert model["repo_id"]
++        assert model["revision"]
++        assert model["files"]
++        for digest in model["sha256"].values():
++            assert len(digest) == 64
++            int(digest, 16)
++
++
++def test_bootstrap_targets_repository_installer() -> None:
++    text = (ROOT / "bootstrap-shizha.cmd").read_text("utf-8")
++    assert "RinoPaw/shizha/main/deploy/install-lab.ps1" in text
++    assert "ExecutionPolicy Bypass -File $i" in text
++    assert "shizha.env" in text
++
++
++def test_installer_keeps_secrets_out_of_git() -> None:
++    text = (ROOT / "deploy" / "install-lab.ps1").read_text("utf-8")
++    assert "shizha.env" in text
++    assert 'Destination (Join-Path $Project ".env")' in text
++    assert "AI_API_KEY=" not in text
++    assert "XF_API_SECRET=" not in text
+
+--- a/tests/test_language.py
++++ b/tests/test_language.py
+@@ -0,0 +1,70 @@
++from __future__ import annotations
++
++from anti_fraud_explorer.language import (
++    LANGUAGE_PROFILES,
++    detect_locale,
++    get_language_profile,
++    is_chinese_locale,
++    locale_from_provider_language,
++    normalize_locale_hint,
++)
++
++
++def test_supported_scope_is_chinese_dialects_english_japanese_and_korean() -> None:
++    assert set(LANGUAGE_PROFILES) == {
++        "zh-CN",
++        "yue-CN",
++        "zh-CN-sichuan",
++        "zh-CN-henan",
++        "en-US",
++        "ja-JP",
++        "ko-KR",
++    }
++
++
++def test_locale_hints_are_canonicalized_without_accepting_unknown_values() -> None:
++    assert normalize_locale_hint("zh_Hans") == "zh-CN"
++    assert normalize_locale_hint("ZH-hk") == "yue-CN"
++    assert normalize_locale_hint("zh_henan") == "zh-CN-henan"
++    assert normalize_locale_hint("jp") == "ja-JP"
++    assert normalize_locale_hint("fr-FR") is None
++    assert normalize_locale_hint("auto") is None
++    assert normalize_locale_hint("xx-Unknown") is None
++
++
++def test_text_is_authoritative_for_language_and_dialect_detection() -> None:
++    assert detect_locale("この無形文化遺産を紹介して", hint="en-US") == "ja-JP"
++    assert detect_locale("佢嘕传统手艺有咩特色？", hint="zh-CN") == "yue-CN"
++    assert detect_locale("这个手艺好巴适，咋个做的？") == "zh-CN-sichuan"
++    assert detect_locale("恁看看这个手艺中不中？") == "zh-CN-henan"
++    assert detect_locale("河南话呢") == "zh-CN-henan"
++    assert detect_locale("Tell me about this heritage project", hint="zh-CN") == "en-US"
++    assert detect_locale("곤곡이라는 전통 예술을 소개해 주세요") == "ko-KR"
++    assert detect_locale("昆曲", hint="ja-JP") == "ja-JP"
++
++
++def test_provider_language_tags_map_to_response_and_tts_profiles() -> None:
++    expected = {
++        "zh_cn": ("zh-CN", "zh-CN-XiaoxiaoNeural"),
++        "en": ("en-US", "en-US-JennyNeural"),
++        "ja": ("ja-JP", "ja-JP-NanamiNeural"),
++        "ko": ("ko-KR", "ko-KR-SunHiNeural"),
++        "yue": ("yue-CN", "zh-HK-HiuMaanNeural"),
++    }
++
++    for provider_tag, (locale, voice) in expected.items():
++        assert locale_from_provider_language(provider_tag) == locale
++        assert get_language_profile(locale).tts_voice == voice
++
++    assert locale_from_provider_language("unknown") is None
++
++
++def test_chinese_dialect_profiles_share_chinese_asr_and_use_available_voices() -> None:
++    assert is_chinese_locale("zh-CN")
++    assert is_chinese_locale("yue-CN")
++    assert is_chinese_locale("zh-CN-sichuan")
++    assert is_chinese_locale("zh-CN-henan")
++    assert not is_chinese_locale("en-US")
++    assert get_language_profile("yue-CN").tts_voice == "zh-HK-HiuMaanNeural"
++    assert get_language_profile("zh-CN-sichuan").tts_voice == "zh-CN-YunxiNeural"
++    assert get_language_profile("zh-CN-henan").tts_voice == "zh-CN-YunxiNeural"
+
+--- a/tests/test_voice.py
++++ b/tests/test_voice.py
+@@ -3,9 +3,10 @@
+ import asyncio
+ import base64
+ import json
++from urllib.parse import parse_qs, urlparse
+ 
+ import anti_fraud_explorer.voice as voice_module
+-from anti_fraud_explorer.voice import XfyunStream
++from anti_fraud_explorer.voice import AutoXfyunStream, XfyunStream
+ 
+ 
+ def make_stream() -> XfyunStream:
+@@ -40,17 +41,9 @@
+ 
+ def test_wpgs_replacement_discards_stale_top1_and_alternatives() -> None:
+     stream = make_stream()
++    assert stream.apply_result({"sn": 0, "ws": [{"cw": [{"w": "前文"}]}]})
+     assert stream.apply_result(
+-        {
+-            "sn": 0,
+-            "ws": [{"cw": [{"w": "前文"}]}],
+-        }
+-    )
+-    assert stream.apply_result(
+-        {
+-            "sn": 1,
+-            "ws": [{"cw": [{"w": "书秀"}, {"w": "旧候选"}]}],
+-        }
++        {"sn": 1, "ws": [{"cw": [{"w": "书秀"}, {"w": "旧候选"}]}]}
+     )
+     assert stream.alternative_texts == ("前文书秀", "前文旧候选")
+ 
+@@ -67,7 +60,7 @@
+     assert "旧候选" not in "|".join(stream.alternative_texts)
+ 
+ 
+-def test_packets_contain_chinese_slm_options_resource_and_clean_hotwords() -> None:
++def test_chinese_model_packet_matches_official_contract() -> None:
+     stream = XfyunStream(
+         app_id="app",
+         api_key="key",
+@@ -78,9 +71,12 @@
+     packet = stream._first_packet("")
+     iat = packet["parameter"]["iat"]
+ 
++    assert stream.host == "iat.xf-yun.com"
+     assert packet["header"]["res_id"] == "res-123"
+     assert stream._middle_packet("")["header"]["res_id"] == "res-123"
+     assert stream._last_packet()["header"]["res_id"] == "res-123"
++    assert iat["domain"] == "slm"
++    assert iat["language"] == "zh_cn"
+     assert iat["accent"] == "mandarin"
+     assert "nbest" not in iat
+     assert "wbest" not in iat
+@@ -88,8 +84,147 @@
+     assert len(iat["dhw"].encode("utf-8")) <= 1024
+ 
+ 
++def test_signed_url_uses_selected_host() -> None:
++    stream = XfyunStream(
++        app_id="app",
++        api_key="key",
++        api_secret="secret",
++        host="iat.xf-yun.com",
++    )
++
++    parsed = urlparse(stream.signed_url())
++
++    assert parsed.hostname == "iat.xf-yun.com"
++    assert parse_qs(parsed.query)["host"] == ["iat.xf-yun.com"]
++
++
++def test_provider_language_tracks_dominant_cw_lg_and_wpgs_replacement() -> None:
++    result = {
++        "ws": [
++            {"cw": [{"w": "hello", "lg": "en"}]},
++            {"cw": [{"w": "heritage", "lg": "en"}]},
++            {"cw": [{"w": "遗产", "lg": "zh"}]},
++        ]
++    }
++    assert XfyunStream.extract_language(result) == "en"
++
++    stream = make_stream()
++    stream.apply_result({"sn": 0, "ws": [{"cw": [{"w": "hello", "lg": "en"}]}]})
++    stream.apply_result({"sn": 1, "ws": [{"cw": [{"w": "there", "lg": "en"}]}]})
++    assert stream.detected_language == "en"
++
++    stream.apply_result(
++        {
++            "sn": 2,
++            "pgs": "rpl",
++            "rg": [0, 1],
++            "ws": [{"cw": [{"w": "你好", "lg": "zh"}]}],
++        }
++    )
++    assert stream.detected_language == "zh"
++    assert stream.current_text() == "你好"
++
++
++def test_auto_stream_builds_only_one_chinese_english_model(monkeypatch) -> None:
++    class FakeProviderStream:
++        instances: list["FakeProviderStream"] = []
++
++        def __init__(self, **kwargs: object) -> None:
++            self.kwargs = kwargs
++            self.detected_language = ""
++            self.candidates: tuple[str, ...] = ()
++            self.__class__.instances.append(self)
++
++        async def start(self) -> None:
++            return
++
++        async def send_audio(self, _data: bytes) -> None:
++            return
++
++        async def finish(self) -> str:
++            return ""
++
++        async def close(self) -> None:
++            return
++
++    monkeypatch.setattr(voice_module, "XfyunStream", FakeProviderStream)
++
++    AutoXfyunStream(
++        app_id="main-app",
++        api_key="main-key",
++        api_secret="main-secret",
++        multilingual_app_id="unused-app",
++        multilingual_api_key="unused-key",
++        multilingual_api_secret="unused-secret",
++        host="iat.cn-huabei-1.xf-yun.com",
++        multilingual_host="some-multilingual-host",
++        multilingual_language_hint="en|ja|ko",
++        legacy_host="iat.xf-yun.com",
++        hotwords=("苏绣",),
++        resource_id="resource-1",
++    )
++
++    assert len(FakeProviderStream.instances) == 1
++    kwargs = FakeProviderStream.instances[0].kwargs
++    assert kwargs["app_id"] == "main-app"
++    assert kwargs["api_key"] == "main-key"
++    assert kwargs["api_secret"] == "main-secret"
++    assert kwargs["host"] == "iat.xf-yun.com"
++    assert kwargs["language"] == "zh_cn"
++    assert kwargs["accent"] == "mandarin"
++    assert kwargs["domain"] == "slm"
++    assert kwargs["dynamic_correction"] is True
++    assert kwargs["hotwords"] == ("苏绣",)
++    assert kwargs["resource_id"] == "resource-1"
++
++
++def test_auto_stream_delegates_chinese_english_and_dialect_results(monkeypatch) -> None:
++    class FakeProviderStream:
++        def __init__(self, **_kwargs: object) -> None:
++            self.detected_language = "en"
++            self.candidates = ("hello heritage", "hello")
++            self.audio: list[bytes] = []
++            self.started = False
++            self.closed = False
++
++        async def start(self) -> None:
++            self.started = True
++
++        async def send_audio(self, data: bytes) -> None:
++            self.audio.append(data)
++
++        async def finish(self) -> str:
++            return "hello heritage"
++
++        async def close(self) -> None:
++            self.closed = True
++
++    monkeypatch.setattr(voice_module, "XfyunStream", FakeProviderStream)
++
++    async def scenario() -> None:
++        stream = AutoXfyunStream(app_id="app", api_key="key", api_secret="secret")
++        await stream.start()
++        await stream.send_audio(b"pcm")
++
++        assert await stream.finish() == "hello heritage"
++        assert stream.selected_mode == AutoXfyunStream.CHINESE
++        assert stream.detected_language == "en"
++        assert stream.candidates == ("hello heritage", "hello")
++        assert stream._stream.audio == [b"pcm"]
++
++        await stream.close()
++        assert stream._stream.closed
++
++    asyncio.run(scenario())
++
++
+ def test_hotwords_are_bounded_to_1024_utf8_bytes() -> None:
+-    stream = XfyunStream(app_id="app", api_key="key", api_secret="secret", hotwords=["词" * 1000])
++    stream = XfyunStream(
++        app_id="app",
++        api_key="key",
++        api_secret="secret",
++        hotwords=["词" * 1000],
++    )
+ 
+     assert len(stream._hotword_spec.encode("utf-8")) <= 1024
+     assert stream._hotword_spec.startswith("utf-8;")
+@@ -126,7 +261,7 @@
+     asyncio.run(scenario())
+ 
+ 
+-def test_dynamic_correction_replaces_only_the_requested_range() -> None:
++def test_dynamic_correction_replaces_only_requested_range() -> None:
+     stream = make_stream()
+     assert stream.apply_result({"sn": 0, "ws": [{"cw": [{"w": "后还有"}]}]})
+     assert stream.apply_result({"sn": 1, "ws": [{"cw": [{"w": "书秀"}]}]})
+@@ -270,7 +405,7 @@
+     asyncio.run(scenario())
+ 
+ 
+-def test_cancel_and_close_stop_the_sender_without_leaking_queued_frames(monkeypatch) -> None:
++def test_cancel_and_close_stop_sender_without_leaking_queued_frames(monkeypatch) -> None:
+     class FakeSocket:
+         async def send(self, _packet: str) -> None:
+             return
+
+--- a/frontend/package.json
++++ b/frontend/package.json
+@@ -5,9 +5,10 @@
+   "type": "module",
+   "scripts": {
+     "dev": "vite",
+-    "build": "vite build",
++    "build": "vite build && node scripts/prepare-sites-build.mjs",
+     "preview": "vite preview",
+-    "test": "node --test tests/*.test.mjs"
++    "test": "node --test tests/*.test.mjs",
++    "test:sites": "node --test tests/sites-worker.test.mjs"
+   },
+   "dependencies": {
+     "@phosphor-icons/react": "2.1.10",
+
+--- a/frontend/.openai/hosting.json
++++ b/frontend/.openai/hosting.json
+@@ -0,0 +1,4 @@
++{
++  "d1": null,
++  "r2": null
++}
+
+--- a/frontend/worker/index.js
++++ b/frontend/worker/index.js
+@@ -0,0 +1,15 @@
++export default {
++  async fetch(request, env) {
++    const response = await env.ASSETS.fetch(request);
++    const acceptsHtml = request.headers.get("accept")?.includes("text/html");
++
++    if (response.status !== 404 || !acceptsHtml || !["GET", "HEAD"].includes(request.method)) {
++      return response;
++    }
++
++    const indexUrl = new URL(request.url);
++    indexUrl.pathname = "/index.html";
++    indexUrl.search = "";
++    return env.ASSETS.fetch(new Request(indexUrl, request));
++  },
++};
+
+--- a/frontend/scripts/prepare-sites-build.mjs
++++ b/frontend/scripts/prepare-sites-build.mjs
+@@ -0,0 +1,21 @@
++#!/usr/bin/env node
++import { copyFileSync, existsSync, mkdirSync } from "node:fs";
++import path from "node:path";
++import { fileURLToPath } from "node:url";
++
++const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
++const dist = path.join(root, "dist");
++const index = path.join(dist, "client", "index.html");
++const worker = path.join(root, "worker", "index.js");
++const hosting = path.join(root, ".openai", "hosting.json");
++
++for (const file of [index, worker, hosting]) {
++  if (!existsSync(file)) throw new Error("Missing Sites build input: " + file);
++}
++
++mkdirSync(path.join(dist, "server"), { recursive: true });
++mkdirSync(path.join(dist, ".openai"), { recursive: true });
++copyFileSync(worker, path.join(dist, "server", "index.js"));
++copyFileSync(hosting, path.join(dist, ".openai", "hosting.json"));
++
++console.log("Prepared Sites build: dist/server/index.js and dist/.openai/hosting.json");
+
+--- a/frontend/tests/sites-worker.test.mjs
++++ b/frontend/tests/sites-worker.test.mjs
+@@ -0,0 +1,68 @@
++import assert from "node:assert/strict";
++import { access } from "node:fs/promises";
++import test from "node:test";
++import worker from "../worker/index.js";
++
++test("serves existing static assets without a fallback", async () => {
++  const calls = [];
++  const response = await worker.fetch(new Request("https://example.test/assets/app.js"), {
++    ASSETS: {
++      fetch: async (request) => {
++        calls.push(new URL(request.url).pathname);
++        return new Response("asset", { status: 200 });
++      },
++    },
++  });
++
++  assert.equal(response.status, 200);
++  assert.deepEqual(calls, ["/assets/app.js"]);
++});
++
++test("falls back to index.html for an unknown app route", async () => {
++  const calls = [];
++  const response = await worker.fetch(
++    new Request("https://example.test/flow/step-two?source=share", {
++      headers: { accept: "text/html" },
++    }),
++    {
++      ASSETS: {
++        fetch: async (request) => {
++          const url = new URL(request.url);
++          calls.push(url.pathname + url.search);
++          return new Response(url.pathname === "/index.html" ? "app" : "missing", {
++            status: url.pathname === "/index.html" ? 200 : 404,
++          });
++        },
++      },
++    },
++  );
++
++  assert.equal(response.status, 200);
++  assert.deepEqual(calls, ["/flow/step-two?source=share", "/index.html"]);
++});
++
++test("does not turn missing API or write requests into the app shell", async () => {
++  for (const request of [
++    new Request("https://example.test/api/missing", { headers: { accept: "application/json" } }),
++    new Request("https://example.test/flow", { method: "POST", headers: { accept: "text/html" } }),
++  ]) {
++    let calls = 0;
++    const response = await worker.fetch(request, {
++      ASSETS: {
++        fetch: async () => {
++          calls += 1;
++          return new Response("missing", { status: 404 });
++        },
++      },
++    });
++
++    assert.equal(response.status, 404);
++    assert.equal(calls, 1);
++  }
++});
++
++test("emits the files required by Sites packaging", async () => {
++  await access(new URL("../dist/client/index.html", import.meta.url));
++  await access(new URL("../dist/server/index.js", import.meta.url));
++  await access(new URL("../dist/.openai/hosting.json", import.meta.url));
++});

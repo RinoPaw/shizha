@@ -1,0 +1,2 @@
+bootstrap-shizha.cmd -text
+deploy/install-lab.ps1 -text

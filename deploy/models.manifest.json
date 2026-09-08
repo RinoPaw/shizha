@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "models": [
+    {
+      "name": "qwen3.5-9b-q4-k-m",
+      "repo_id": "tinnlab/Qwen3.5-9B-GGUF",
+      "revision": "main",
+      "files": ["Qwen3.5-9B-Q4_K_M.gguf"],
+      "destination": "llm/qwen3.5-9b",
+      "sha256": {
+        "Qwen3.5-9B-Q4_K_M.gguf": "03b74727a860a56338e042c4420bb3f04b2fec5734175f4cb9fa853daf52b7e8"
+      }
+    },
+    {
+      "name": "qwen3-embedding-0.6b",
+      "repo_id": "Qwen/Qwen3-Embedding-0.6B",
+      "revision": "97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3",
+      "files": ["*"],
+      "destination": "embedding/Qwen3-Embedding-0.6B",
+      "sha256": {}
+    },
+    {
+      "name": "sensevoice-small-int8",
+      "repo_id": "newbeeforever/sensevoice-small-sherpa-onnx",
+      "revision": "main",
+      "files": ["model.int8.onnx", "tokens.txt"],
+      "destination": "asr/sensevoice-small-int8",
+      "sha256": {
+        "model.int8.onnx": "c71f0ce00bec95b07744e116345e33d8cbbe08cef896382cf907bf4b51a2cd51",
+        "tokens.txt": "f449eb28dc567533d7fa59be34e2abca8784f771850c78a47fb731a31429a1dc"
+      }
+    },
+    {
+      "name": "zipformer-ctc-zh-xlarge-int8",
+      "repo_id": "csukuangfj/sherpa-onnx-streaming-zipformer-ctc-zh-xlarge-int8-2025-06-30",
+      "revision": "main",
+      "files": ["model.int8.onnx", "tokens.txt"],
+      "destination": "asr/zipformer-ctc-zh-xlarge-int8",
+      "sha256": {
+        "model.int8.onnx": "5c04e1ba8c200e9ca1a9229d46641ce06fa563162e60d9997ef92c306549aa05",
+        "tokens.txt": "6722bd1585f46f84456b29c3550a343a3cc375b971645773c02ed8e0b4e2405c"
+      }
+    }
+  ]
+}

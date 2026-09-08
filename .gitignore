@@ -21,6 +21,6 @@ skills-lock.json
 新形象/
 Thumbs.db
 .DS_Store
-.hermes/
-.git-rewrite/
-.envrc
+.superdesign/tmp/
+frontend/node_modules/
+frontend/dist/

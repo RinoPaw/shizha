@@ -1,0 +1,250 @@
+[
+  {
+    "source": ".env.example",
+    "target": ".env.example",
+    "action": "merged",
+    "existed": true,
+    "original_sha256": "f4a89427f066752634dd39c0059712464526432f6718efd104f3bd02a5299ae4",
+    "modified_sha256": "6faab24ca167004e13080ec1d6054ce01d28407f950caa6420fc46c2134d93f0"
+  },
+  {
+    "source": ".gitattributes",
+    "target": ".gitattributes",
+    "action": "added",
+    "existed": false,
+    "original_sha256": null,
+    "modified_sha256": "d7c5e4b0688e8566f1d36ea937240b912bdb57cea8ff5cc758c167f379a6266e"
+  },
+  {
+    "source": "README.md",
+    "target": "README.md",
+    "action": "merged",
+    "existed": true,
+    "original_sha256": "2c1607bff7a8d4626671394f562b382c03225fe25c7ef96069d6156e273a3a8f",
+    "modified_sha256": "2c1607bff7a8d4626671394f562b382c03225fe25c7ef96069d6156e273a3a8f"
+  },
+  {
+    "source": "bootstrap-xuhua.cmd",
+    "target": "bootstrap-shizha.cmd",
+    "action": "added",
+    "existed": false,
+    "original_sha256": null,
+    "modified_sha256": "296d424cd85e89d72553eff7d9b3eb0d3a60d8bd1aa598a2781f0e19b432b832"
+  },
+  {
+    "source": "deploy/install-lab.ps1",
+    "target": "deploy/install-lab.ps1",
+    "action": "added",
+    "existed": false,
+    "original_sha256": null,
+    "modified_sha256": "640603004aa2a26c4ba5e051d85f0b31d1829b2323de76bf05adb4e7bf6c9429"
+  },
+  {
+    "source": "deploy/models.manifest.json",
+    "target": "deploy/models.manifest.json",
+    "action": "added",
+    "existed": false,
+    "original_sha256": null,
+    "modified_sha256": "678bd1e3ff820527207b3083dceb031acb5493bc900f4540ab4fc6869e684627"
+  },
+  {
+    "source": "frontend/AGENTS.md",
+    "target": "frontend/AGENTS.md",
+    "action": "added",
+    "existed": false,
+    "original_sha256": null,
+    "modified_sha256": "e901ea7774c5d86f2e54b2d39306246159e225bb1169630ef3d67aa1a3a2efdf"
+  },
+  {
+    "source": "frontend/src/App.jsx",
+    "target": "frontend/src/App.jsx",
+    "action": "merged",
+    "existed": true,
+    "original_sha256": "a63a03cf8425b0ac99359b3b7564df7ec09a71a8177501ce15b484da3c5a3691",
+    "modified_sha256": "ce5a1c143e07a2319aaa6dbcde6cadc020b3218c4c090249e3a7d610cf6bddda"
+  },
+  {
+    "source": "frontend/src/hooks/useBrowserDuplexVoice.js",
+    "target": "frontend/src/hooks/useBrowserDuplexVoice.js",
+    "action": "merged",
+    "existed": true,
+    "original_sha256": "cf683f722d4070a84bbae2bf5e0df19a26c8470bd2fa1443e6c7c51b387fbc30",
+    "modified_sha256": "69d570584207768a727111d206a5b4eccef4c85fbdf128198506d022b94ac357"
+  },
+  {
+    "source": "frontend/src/lib/locale.js",
+    "target": "frontend/src/lib/locale.js",
+    "action": "added",
+    "existed": false,
+    "original_sha256": null,
+    "modified_sha256": "7f35ffbdf453c6b91c9a8b2fe130758b74d8e112ce35ba2319b02d89c23ba7b6"
+  },
+  {
+    "source": "frontend/src/lib/ttsTextPlan.js",
+    "target": "frontend/src/lib/ttsTextPlan.js",
+    "action": "merged",
+    "existed": true,
+    "original_sha256": "6adc8500eb376720c5eeaa753ad37c023dff5fe9d7367573f58fba9d912ee4be",
+    "modified_sha256": "871f740608e28fad5c8ddca07d24ef68157839ffeee35802efe0df2c815445ba"
+  },
+  {
+    "source": "frontend/tests/locale.test.mjs",
+    "target": "frontend/tests/locale.test.mjs",
+    "action": "added",
+    "existed": false,
+    "original_sha256": null,
+    "modified_sha256": "565737199a6aea70c46cc3d7612500d4f2e64500d6f353d994370e084aad975a"
+  },
+  {
+    "source": "frontend/tests/tts-text-plan.test.mjs",
+    "target": "frontend/tests/tts-text-plan.test.mjs",
+    "action": "merged",
+    "existed": true,
+    "original_sha256": "05aa0cb05a989bbae63d69df7f6c54d7f0a900094be3ff200e4ab3c438debd5e",
+    "modified_sha256": "c27f75cc8a3407879c4da6687fc90b57b7cf3db5c769a7b0aad8342da0dbdc7d"
+  },
+  {
+    "source": "src/heritage_explorer/api.py",
+    "target": "src/anti_fraud_explorer/api.py",
+    "action": "merged",
+    "existed": true,
+    "original_sha256": "b5aab082704884c4e1925480219c70a8a15cce6f8a406d9d453999aec688db64",
+    "modified_sha256": "7e58257ef1aac95294bb9fbd6a10a5d81665e30aaa629be5d95a4bd300d70331"
+  },
+  {
+    "source": "src/heritage_explorer/asr_normalization.py",
+    "target": "src/anti_fraud_explorer/asr_normalization.py",
+    "action": "merged",
+    "existed": true,
+    "original_sha256": "2200af2a4c10d68956e7c92daee7571f2f3f2d55aa4bb701cee65c49555ef74a",
+    "modified_sha256": "d0287a680b5a0c70ad1d67f7f83258646c697c9b629f3ff58e64e31e4be1187c"
+  },
+  {
+    "source": "src/heritage_explorer/assistant.py",
+    "target": "src/anti_fraud_explorer/assistant.py",
+    "action": "merged",
+    "existed": true,
+    "original_sha256": "f37f76931b1b3386cdc72481445d7150dcd3517272d4d15a60ec97402091cdbf",
+    "modified_sha256": "cbbd5d519fa234af09c158fda305617e46043c910621be2c89a06a45e8879220"
+  },
+  {
+    "source": "src/heritage_explorer/config.py",
+    "target": "src/anti_fraud_explorer/config.py",
+    "action": "merged",
+    "existed": true,
+    "original_sha256": "5cf42ebfb5d0dc8120c12d699865bcc1dbe818003d45aff7d986e90de234fe9c",
+    "modified_sha256": "cdf8c2c8f68261d3d9b96e3e846cf34a18093c9d5779a8ac427b8ba9bad14660"
+  },
+  {
+    "source": "src/heritage_explorer/language.py",
+    "target": "src/anti_fraud_explorer/language.py",
+    "action": "added",
+    "existed": false,
+    "original_sha256": null,
+    "modified_sha256": "8aee6adaacda00bbeaa6951d1a2d4463bc6cefd49ab3a1c023d45f4062089dd5"
+  },
+  {
+    "source": "src/heritage_explorer/models.py",
+    "target": "src/anti_fraud_explorer/models.py",
+    "action": "merged",
+    "existed": true,
+    "original_sha256": "3af743982e6a4ca1140ceb7afdd31950f212dcfcf7663c30d0549b091b5a6c91",
+    "modified_sha256": "23d7d253886a130046e6e4712180030a9ed1175230ec97183b29d1023b7aaa4b"
+  },
+  {
+    "source": "src/heritage_explorer/voice.py",
+    "target": "src/anti_fraud_explorer/voice.py",
+    "action": "merged",
+    "existed": true,
+    "original_sha256": "1da1ea3015f38b35e03f453e1763f311d9287bfcb90c6df2a8b67e7f8ee81faa",
+    "modified_sha256": "56a0c13369057abd21dd84a97086a77074beab7222f737233f1a9d2bf7294757"
+  },
+  {
+    "source": "tests/test_api_contract.py",
+    "target": "tests/test_api_contract.py",
+    "action": "merged",
+    "existed": true,
+    "original_sha256": "9d882eda6470df0f152c345b99a012c5f8313cdfc323201a3ea0a753a9e522fc",
+    "modified_sha256": "04a170e880aa5a486a9ab1a2c0150ead0dabe7f67eabd48e02492d3a1dbb83c3"
+  },
+  {
+    "source": "tests/test_asr_normalization.py",
+    "target": "tests/test_asr_normalization.py",
+    "action": "merged",
+    "existed": true,
+    "original_sha256": "754c336b844f31021b979594724c0b0eab24bafed3b1cd194dfb42fee8f0d7e0",
+    "modified_sha256": "f0445f26f2ee245be33876913e3ac20a5576754f8b9f7a990489b519adb44a47"
+  },
+  {
+    "source": "tests/test_assistant_core.py",
+    "target": "tests/test_assistant_core.py",
+    "action": "merged",
+    "existed": true,
+    "original_sha256": "d33ed4aea31f2138cff9941bf384c1cd49a1ba99d564dc6b595f1553ecc42488",
+    "modified_sha256": "d6b3365213c4fdc5d43eebc29337fa13bf9e55de6f05267a0c361064dfad0b38"
+  },
+  {
+    "source": "tests/test_lab_installer.py",
+    "target": "tests/test_lab_installer.py",
+    "action": "added",
+    "existed": false,
+    "original_sha256": null,
+    "modified_sha256": "7fe98cefaea7183dc4474e97b0634130d1eafdba05f2940bd1583e921a12770d"
+  },
+  {
+    "source": "tests/test_language.py",
+    "target": "tests/test_language.py",
+    "action": "added",
+    "existed": false,
+    "original_sha256": null,
+    "modified_sha256": "fb4a366c86d58c4cc6dc51f2e66c7fc8f6742b7aea8a5b6b6c5272adcb23d44b"
+  },
+  {
+    "source": "tests/test_voice.py",
+    "target": "tests/test_voice.py",
+    "action": "merged",
+    "existed": true,
+    "original_sha256": "181668d36154e74a11e1fffc63b7fb5f716236c6c30bcfdac259bed1795e1df2",
+    "modified_sha256": "970e89b707434c3d3df787c65ee03f07d66f12fae4484e8f4903ca33c6749438"
+  },
+  {
+    "source": "叙华/frontend/package.json",
+    "target": "frontend/package.json",
+    "action": "merged",
+    "existed": true,
+    "original_sha256": "43efe3fb09a384c8986b6d2f58959da0034e6e58b2e23b1e94cd2a6ea311f160",
+    "modified_sha256": "9ee11199390d86306d8dcf6bb325124425ba6d64978c37eb38cf26bed700837d"
+  },
+  {
+    "source": "叙华/frontend/.openai/hosting.json",
+    "target": "frontend/.openai/hosting.json",
+    "action": "added",
+    "existed": false,
+    "original_sha256": null,
+    "modified_sha256": "d532abb65cf9ae20634b464d954cb4a08a0de9f3cd3cdf7f9c3ec8948826d947"
+  },
+  {
+    "source": "叙华/frontend/worker/index.js",
+    "target": "frontend/worker/index.js",
+    "action": "added",
+    "existed": false,
+    "original_sha256": null,
+    "modified_sha256": "2dd0615a445143933d88d4271f54f5d63ee951421fcd08c5a7617bb09c564389"
+  },
+  {
+    "source": "叙华/frontend/scripts/prepare-sites-build.mjs",
+    "target": "frontend/scripts/prepare-sites-build.mjs",
+    "action": "added",
+    "existed": false,
+    "original_sha256": null,
+    "modified_sha256": "b6a6adaa4fab3234676116dd1c9cb6611275ab9d92dd26f5bf402393e3744bf6"
+  },
+  {
+    "source": "叙华/frontend/tests/sites-worker.test.mjs",
+    "target": "frontend/tests/sites-worker.test.mjs",
+    "action": "added",
+    "existed": false,
+    "original_sha256": null,
+    "modified_sha256": "96af7b48906c6460c793356d7b6952f7d5026dbf5a502bec0d9297ff04201c26"
+  }
+]

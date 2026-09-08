@@ -1,6 +1,6 @@
 {
   "schema_version": 4,
-  "generated_at": "2026-05-20T02:45:23.801978+00:00",
+  "generated_at": "",
   "source": {
     "project": "anti_fraud_cases",
     "file": "dataset.json",
@@ -203,8 +203,11 @@
       ],
       "involved_platforms": [],
       "victim_group": "老人",
+      "emergency_plan_id": "",
       "law_basis_ids": [],
-      "source_links": []
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
     },
     {
       "case_id": "FZ-004",
@@ -414,8 +417,11 @@
       ],
       "involved_platforms": [],
       "victim_group": "老人",
+      "emergency_plan_id": "",
       "law_basis_ids": [],
-      "source_links": []
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
     },
     {
       "case_id": "FZ-008",
@@ -3462,6 +3468,11 @@
       "loss_type": [
         "金钱损失"
       ],
+      "prevention_advice": "免费领养宠物多为诱饵，凡是以运费、检疫费、用品费为由提前收费的，全是诈骗，领养宠物务必当面核实，不私下转账。",
+      "source_name": "社交平台高发诈骗案例",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
       "official_category": [
         "其他/无法对应"
       ],
@@ -3473,15 +3484,10 @@
       ],
       "involved_platforms": [],
       "victim_group": "普通用户",
-      "prevention_advice": "免费领养宠物多为诱饵，凡是以运费、检疫费、用品费为由提前收费的，全是诈骗，领养宠物务必当面核实，不私下转账。",
       "emergency_plan_id": "",
       "law_basis_ids": [],
-      "source_name": "社交平台高发诈骗案例",
-      "source_type": "官方",
       "source_links": [],
       "publish_date": "2025-08-20",
-      "collection_date": "2026-05-15",
-      "is_desensitized": "是",
       "remark": ""
     },
     {

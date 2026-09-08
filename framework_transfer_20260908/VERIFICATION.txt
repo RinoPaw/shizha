@@ -1,0 +1,37 @@
+识诈框架移植验证记录
+
+变更分支：main
+变更字段：locale（贯通文本、语音、TTS 与会话事件）；voice pipeline（讯飞中英单流 AutoXfyunStream）；Sites build（静态交付入口）。
+迁移范围：31 个受控路径；保留识诈的反诈数据模型、案例字段、检索筛选、紧急处置提示与熊猫警官身份。
+代表文件：src/anti_fraud_explorer/voice.py
+原始 SHA-256：1da1ea3015f38b35e03f453e1763f311d9287bfcb90c6df2a8b67e7f8ee81faa
+修改后 SHA-256：56a0c13369057abd21dd84a97086a77074beab7222f737233f1a9d2bf7294757
+
+四个交付路径：
+MODIFIED_FILE：D:\Projects\Packages\识诈\framework_transfer_20260908\MODIFIED_FILE
+DIFF_FILE：D:\Projects\Packages\识诈\framework_transfer_20260908\DIFF_FILE.patch
+VERIFICATION.txt：D:\Projects\Packages\识诈\framework_transfer_20260908\VERIFICATION.txt
+ROLLBACK.sh：D:\Projects\Packages\识诈\framework_transfer_20260908\ROLLBACK.sh
+
+BASELINE
+命令：$env:PYTHONPATH='src'; & '..\.venv\Scripts\python.exe' -m pytest -q；随后在 frontend 运行 npm test -- --runInBand
+输入：D:\Projects\Packages\识诈（迁移前快照）
+字面输出/结果：67 passed, 1 warning in 5.59s；tests 36 / pass 36 / fail 0
+退出状态：Python=0，Frontend=0
+行为：原有识诈案例检索、文字问答和连续语音测试全部通过。
+
+MODIFIED
+命令：校验 31 个修改哈希；$env:PYTHONPATH='src'; & '..\.venv\Scripts\python.exe' -m pytest -q -p no:cacheprovider；在 frontend 依次运行 npm test -- --runInBand、npm run build、npm run test:sites
+输入：D:\Projects\Packages\识诈（迁移后的 main 工作树）
+字面输出/结果：modified hashes: 31/31 paths；80 passed in 5.52s；tests 47 / pass 47 / fail 0；Prepared Sites build: dist/server/index.js and dist/.openai/hosting.json；tests 4 / pass 4 / fail 0；MODIFIED_RESULT hashes=31/31 python=0 frontend=0 build=0 sites=0
+退出状态：0
+行为：识诈保留反诈领域逻辑，并获得自动语言识别、按 locale 选择 TTS、讯飞中英单流语音、实验室安装脚本和 Sites 构建框架。
+
+ROLLBACK
+命令：bash framework_transfer_20260908/ROLLBACK.sh /mnt/d/Projects/Packages/识诈/framework_transfer_20260908/rollback_test；随后校验原始哈希并运行 $env:PYTHONPATH='src'; & '..\..\..\.venv\Scripts\python.exe' -m pytest -q -p no:cacheprovider；在 frontend 运行 npm test -- --runInBand
+输入：D:\Projects\Packages\识诈\framework_transfer_20260908\rollback_test（迁移后副本）
+字面输出/结果：restored 31 paths；hash restoration: 31/31 paths；67 passed in 5.71s；tests 36 / pass 36 / fail 0；ROLLBACK_RESULT python=0 frontend=0
+退出状态：0
+恢复行为/状态：31/31 路径恢复到原始 SHA-256；新增框架文件被移除；迁移前后端测试行为恢复并全部通过；实际 D:\Projects\Packages\识诈 仍保持修改后状态。
+
+预览验证：http://127.0.0.1:5051/healthz 服务已启动；Codex 浏览器预览已排队打开。

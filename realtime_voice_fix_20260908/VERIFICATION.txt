@@ -1,0 +1,50 @@
+REALTIME VOICE FIX VERIFICATION
+
+Changed branch/field:
+GET /api/tts -> audio_stream -> primary zh-CN-XiaoshuangNeural exception before first audio -> retry zh-CN-XiaoyiNeural; once audio has started, errors are not replayed through another voice.
+
+Artifacts:
+MODIFIED_FILE=D:\Projects\Packages\识诈\realtime_voice_fix_20260908\api.py.modified
+DIFF_FILE=D:\Projects\Packages\识诈\realtime_voice_fix_20260908\api.py.diff
+VERIFICATION=D:\Projects\Packages\识诈\realtime_voice_fix_20260908\VERIFICATION.txt
+ROLLBACK=D:\Projects\Packages\识诈\realtime_voice_fix_20260908\ROLLBACK.sh
+LIVE_SOURCE=D:\Projects\Packages\识诈\src\anti_fraud_explorer\api.py
+
+Original SHA256:
+10f0d84b52c9608524d9f4734b037bbac92c6bfd06127c4a7ed0f59151cc012e
+Modified SHA256:
+1ec39f51c4cc9f88b2458b47a7ec400ddcbe72dd2effe7c5d6689e14580656db
+
+BASELINE
+Command: Invoke-WebRequest -UseBasicParsing 'http://127.0.0.1:5051/api/tts?text=你好&locale=zh-CN' -TimeoutSec 20
+Input: text=你好; locale=zh-CN; preferred voice=zh-CN-XiaoshuangNeural
+Literal output/result: ERROR=The response ended prematurely. (ResponseEnded)
+Exit status: 0 (the verification wrapper captured the failed HTTP stream)
+Behavior/status: the Xiaoshuang-only stream ended before any playable audio.
+
+MODIFIED
+Command: Invoke-WebRequest -UseBasicParsing 'http://127.0.0.1:5051/api/tts?text=你好，我是识诈助手。&locale=zh-CN' -TimeoutSec 30
+Input: text=你好，我是识诈助手。; locale=zh-CN; primary=zh-CN-XiaoshuangNeural; fallback=zh-CN-XiaoyiNeural
+Literal output/result: LIVE_TTS status=200 bytes=16416 type=audio/mpeg locale=zh-CN
+Exit status: 0
+Behavior/status: playable MP3 audio was returned; the requested Xiaoshuang voice remains primary and the compatible neutral voice recovers unavailable-region failures.
+
+MODIFIED TESTS
+Command: $env:PYTHONPATH='D:\Projects\Packages\识诈\src'; D:\Projects\Packages\叙华\.venv\Scripts\python.exe -m pytest -q; cd D:\Projects\Packages\识诈\frontend; npm test -- --run
+Input: backend suite including primary-voice-failure regression; frontend suite
+Literal output/result: 81 passed, 1 warning in 5.63s | tests 47 | pass 47 | fail 0 | MODIFIED_EXIT backend=0 frontend=0
+Exit status: 0
+
+LIVE ASR
+Command: WebSocket ws://127.0.0.1:5051/api/voice; send context zh-CN, utterance.start, 10 x 3200-byte PCM silence, utterance.end
+Input: 1 second, 16 kHz mono PCM silence
+Literal output/result: LIVE_ASR [{"type": "ready", "status": null}, {"type": "status", "status": "user_speaking"}, {"type": "status", "status": "transcribing"}, {"type": "utterance.rejected", "status": null}] | HAS_ERROR=false
+Exit status: 0
+Behavior/status: the realtime transport and Xunfei recognition path connected; silence was rejected normally without an error event.
+
+ROLLBACK
+Command: /mnt/d/Projects/Packages/识诈/realtime_voice_fix_20260908/ROLLBACK.sh /mnt/d/Projects/Packages/识诈/realtime_voice_fix_20260908/rollback_test_api.py
+Input: a second copy of api.py.modified
+Literal output/result: ROLLBACK PASS restored_sha=10f0d84b52c9608524d9f4734b037bbac92c6bfd06127c4a7ed0f59151cc012e fallback=false | ROLLBACK_EXIT=0 restored_match=True fallback_present=False
+Exit status: 0
+Restored behavior/status: the rollback copy exactly matches the original hash and restores the original Xiaoshuang-only branch. LIVE_SOURCE remains modified.

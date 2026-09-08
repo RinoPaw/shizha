@@ -1,0 +1,26 @@
+[
+  {
+    "target": ".env",
+    "existed": true,
+    "original_sha256": "d88009de5d27fd8bd18c978536ff91e6c58d0fee9e30cc416ff7ca4549f165da",
+    "modified_sha256": "042765f926e57e73955b455bce5453061a0f523ddadcc7195890647c4703c83a"
+  },
+  {
+    "target": ".env.example",
+    "existed": true,
+    "original_sha256": "6faab24ca167004e13080ec1d6054ce01d28407f950caa6420fc46c2134d93f0",
+    "modified_sha256": "42c95bdd83306dab1089973be3550f9e7a737e64d9f1f9b822d02fe091816246"
+  },
+  {
+    "target": "src/anti_fraud_explorer/config.py",
+    "existed": true,
+    "original_sha256": "cdf8c2c8f68261d3d9b96e3e846cf34a18093c9d5779a8ac427b8ba9bad14660",
+    "modified_sha256": "f585667aa6723871149301ef6fe04e08578f9c0b48a52eeaac763d30f0813738"
+  },
+  {
+    "target": "src/anti_fraud_explorer/api.py",
+    "existed": true,
+    "original_sha256": "7e58257ef1aac95294bb9fbd6a10a5d81665e30aaa629be5d95a4bd300d70331",
+    "modified_sha256": "10f0d84b52c9608524d9f4734b037bbac92c6bfd06127c4a7ed0f59151cc012e"
+  }
+]

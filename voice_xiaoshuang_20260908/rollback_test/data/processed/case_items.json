@@ -1,0 +1,4982 @@
+{
+  "schema_version": 4,
+  "generated_at": "",
+  "source": {
+    "project": "anti_fraud_cases",
+    "file": "dataset.json",
+    "item_count": 86
+  },
+  "categories": [
+    {
+      "id": 1,
+      "name": "虚假购物、服务类",
+      "item_count": 17
+    },
+    {
+      "id": 2,
+      "name": "虚假网络投资理财类",
+      "item_count": 13
+    },
+    {
+      "id": 3,
+      "name": "冒充电商物流客服类",
+      "item_count": 12
+    },
+    {
+      "id": 4,
+      "name": "刷单返利类",
+      "item_count": 12
+    },
+    {
+      "id": 5,
+      "name": "冒充领导、熟人类",
+      "item_count": 11
+    },
+    {
+      "id": 6,
+      "name": "冒充公检法及政府机关类",
+      "item_count": 9
+    },
+    {
+      "id": 7,
+      "name": "网络游戏产品虚假交易类",
+      "item_count": 8
+    },
+    {
+      "id": 8,
+      "name": "贷款、代办信用卡类",
+      "item_count": 4
+    }
+  ],
+  "items": [
+    {
+      "case_id": "FZ-001",
+      "title": "养老诈骗（虚假养老服务）",
+      "summary": "2023年10月，山东济南刘大爷被虚假养老服务中心诱导，缴纳23万元会员费、预定金后，对方失联。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及养老诈骗（虚假养老服务类）的典型手法，包括虚假宣传、诱导缴费后失联。",
+      "entry_channels": [
+        "其他"
+      ],
+      "impersonated_identity": [
+        "无明确冒充"
+      ],
+      "false_belief": [
+        "其他"
+      ],
+      "key_methods": [
+        "仿冒官网"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "拉黑失联"
+      ],
+      "risk_signals": "虚假养老服务中心宣传；高额会员费；失联",
+      "risk_level": "中",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "子女多提醒老人，不信陌生养老宣传，大额支出先沟通，选正规机构。",
+      "source_name": "济南历下公安2023年11月通报。",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "其他/无法对应"
+      ],
+      "ccl2023_category": "虚假购物、服务类",
+      "custom_subcategory": "养老诈骗（虚假养老服务类）",
+      "tags": [
+        "养老诈骗（虚假养老服务类）",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "老人",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-002",
+      "title": "校园贷诈骗",
+      "summary": "2024年9月，江苏南京学生李某借5000元校园贷，被恶意垒高债务至8万元，遭暴力催收后报警。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及校园贷类诈骗（套路贷变种）的典型手法：恶意垒高债务、暴力催收。",
+      "entry_channels": [
+        "其他"
+      ],
+      "impersonated_identity": [
+        "无明确冒充"
+      ],
+      "false_belief": [
+        "其他"
+      ],
+      "key_methods": [
+        "诱导转账",
+        "其他"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "资产获取",
+        "二次压榨"
+      ],
+      "risk_signals": "高利息；暴力催收；债务垒高",
+      "risk_level": "中",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "校园贷多非法，不盲目攀比。如需资金，应通过学校、家人或正规金融机构解决。切勿轻信低息无抵押宣传，一旦陷入及时报警。",
+      "source_name": "南京浦口公安2024年10月通报",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "贷款征信"
+      ],
+      "ccl2023_category": "贷款、代办信用卡类",
+      "custom_subcategory": "校园贷类诈骗（套路贷变种）",
+      "tags": [
+        "校园贷",
+        "套路贷",
+        "学生"
+      ],
+      "involved_platforms": [],
+      "victim_group": "学生",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": "部分字段根据已有信息推断，如入口渠道为其他，虚假认知为其他。"
+    },
+    {
+      "case_id": "FZ-003",
+      "title": "养老诈骗（虚假保健品）",
+      "summary": "2024年7月，四川成都张大爷被陌生人员推销“神奇保健品”，声称“可治病养生，一次性购买10万元可终身免费领取”，张大爷转账后，发现保健品为普通食品，对方失联。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及养老诈骗（虚假保健品类）。的典型手法，受害人已转账",
+      "entry_channels": [
+        "其他"
+      ],
+      "impersonated_identity": [
+        "无明确冒充"
+      ],
+      "false_belief": [
+        "误以为有免费福利"
+      ],
+      "key_methods": [
+        "诱导转账"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "诱导操作",
+        "拉黑失联"
+      ],
+      "risk_signals": "陌生联系；要求转账",
+      "risk_level": "高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "保健品不能治病，不信“神奇功效”，不购买陌生人员推销的高价保健品。",
+      "source_name": "成都金牛公安2024年7月通报。",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "其他"
+      ],
+      "ccl2023_category": "虚假购物、服务类",
+      "custom_subcategory": "养老诈骗（虚假保健品类）。",
+      "tags": [
+        "养老诈骗（虚假保健品类）。",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "老人",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-004",
+      "title": "大学生求职诈骗",
+      "summary": "2025年6月，河南郑州大学生张某找工作时，被冒充企业HR的人员诱导，缴纳3000元“入职押金”，转账后发现企业不存在，对方失联。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及大学生求职类诈骗的典型手法，受害人已转账，对方失联，符合确认诈骗特征。",
+      "entry_channels": [
+        "其他"
+      ],
+      "impersonated_identity": [
+        "冒充招聘人员"
+      ],
+      "false_belief": [
+        "其他"
+      ],
+      "key_methods": [
+        "诱导转账"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "诱导操作",
+        "拉黑失联"
+      ],
+      "risk_signals": "要求转账；求职诈骗特征",
+      "risk_level": "高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "正规企业不收取“入职押金”“培训费”，求职通过正规招聘平台，核实企业资质。",
+      "source_name": "郑州中原公安2025年6月校园反诈通报",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "其他/无法对应"
+      ],
+      "ccl2023_category": "虚假购物、服务类",
+      "custom_subcategory": "大学生求职类诈骗",
+      "tags": [
+        "大学生求职类诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "学生",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-005",
+      "title": "养老诈骗（虚假养老投资）",
+      "summary": "2025年1月，山东烟台李大爷被诱导参与“养老投资”，声称“投入15万元，每月返利3000元，终身受益”，李大爷转账后，返利3个月便停止，对方失联。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及养老诈骗（虚假养老投资类）的典型手法，受害人已转账",
+      "entry_channels": [
+        "其他"
+      ],
+      "impersonated_identity": [
+        "无明确冒充"
+      ],
+      "false_belief": [
+        "误以为投资稳赚不赔"
+      ],
+      "key_methods": [
+        "小额返利",
+        "诱导转账"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "诱导操作",
+        "拉黑失联"
+      ],
+      "risk_signals": "要求转账",
+      "risk_level": "高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "老年人不参与陌生“养老投资”，高返利均为陷阱，大额资金交由子女管理。",
+      "source_name": "烟台芝罘公安2025年1月通报",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "虚假网络投资理财"
+      ],
+      "ccl2023_category": "虚假网络投资理财类",
+      "custom_subcategory": "养老诈骗（虚假养老投资类）",
+      "tags": [
+        "养老诈骗（虚假养老投资类）",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "老人",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-006",
+      "title": "大学生培训诈骗",
+      "summary": "2024年10月，江苏苏州大学生王某被冒充培训机构人员诱导，报名“考证包过”课程，缴纳8000元培训费后，发现课程虚假，机构失联。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中培训机构虚假宣传，承诺包过，收取高额培训费后失联，符合诈骗特征。风险信号：承诺包过、课程虚假、机构失联。",
+      "entry_channels": [
+        "电话",
+        "网页广告"
+      ],
+      "impersonated_identity": [
+        "其他"
+      ],
+      "false_belief": [
+        "误以为可以轻松赚钱"
+      ],
+      "key_methods": [
+        "诱导转账",
+        "虚假客服"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "拉黑失联"
+      ],
+      "risk_signals": "承诺包过；课程虚假；机构失联；诱导缴纳高额培训费",
+      "risk_level": "中",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "不存在“考证包过”，培训需选择正规机构，不缴纳高额培训费，核实机构资质。",
+      "source_name": "苏州工业园区公安2024年10月通报",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "其他/无法对应"
+      ],
+      "ccl2023_category": "虚假购物、服务类",
+      "custom_subcategory": "大学生培训类诈骗（考证包过型）",
+      "tags": [
+        "大学生培训",
+        "考证包过",
+        "培训诈骗"
+      ],
+      "involved_platforms": [],
+      "victim_group": "学生",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": "部分字段根据常见诈骗手法推断"
+    },
+    {
+      "case_id": "FZ-007",
+      "title": "独居老人上门诈骗",
+      "summary": "2025年3月，浙江杭州独居老人陈某，被上门人员冒充“社区工作人员”，以“免费体检”为由，诱导购买6000元“保健仪器”，后续发现仪器无用，对方失联。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及养老诈骗（独居老人上门型）的典型手法",
+      "entry_channels": [
+        "其他"
+      ],
+      "impersonated_identity": [
+        "无明确冒充"
+      ],
+      "false_belief": [
+        "误以为有免费福利"
+      ],
+      "key_methods": [
+        "其他"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "拉黑失联"
+      ],
+      "risk_signals": "信息不足",
+      "risk_level": "中",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "社区工作人员上门会出示证件，不推销商品，独居老人遇上门推销及时联系子女。",
+      "source_name": "杭州上城公安2025年3月通报",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "其他/无法对应"
+      ],
+      "ccl2023_category": "虚假购物、服务类",
+      "custom_subcategory": "养老诈骗（独居老人上门型）",
+      "tags": [
+        "养老诈骗（独居老人上门型）",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "老人",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-008",
+      "title": "冒充公检法诈骗",
+      "summary": "2024年5月，江苏无锡杜某被冒充“公安民警”指控涉嫌洗钱，对方发虚假通缉令，要求转账至“安全账户”，幸被家人阻止。",
+      "nature_judgment": "疑似诈骗",
+      "judgment_reason": "冒充公检法要求转账至安全账户，已发送虚假通缉令，虽被阻止但诈骗意图明确，风险信号突出。",
+      "entry_channels": [
+        "电话"
+      ],
+      "impersonated_identity": [
+        "冒充公检法"
+      ],
+      "false_belief": [
+        "误以为需要配合调查"
+      ],
+      "key_methods": [
+        "仿冒官网",
+        "安全账户",
+        "诱导转账",
+        "冒充官方通知"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "诱导操作"
+      ],
+      "risk_signals": "要求转账；提及安全账户；发送虚假通缉令",
+      "risk_level": "高",
+      "loss_occurred": "未造成但存在风险",
+      "loss_type": [
+        "未造成损失"
+      ],
+      "prevention_advice": "公检法不会通过电话办案，不存在“安全账户”。接到此类电话应立即挂断，拨打110或反诈专线96110核实。切勿向陌生人转账或透露银行信息。",
+      "source_name": "无锡公安反诈中心2024年二季度通报",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "冒充公检法"
+      ],
+      "ccl2023_category": "冒充公检法及政府机关类",
+      "custom_subcategory": "冒充公检法类诈骗",
+      "tags": [
+        "冒充公检法",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": "入口渠道根据案例描述推断为电话；性质判断为疑似诈骗因未造成实际损失。"
+    },
+    {
+      "case_id": "FZ-009",
+      "title": "冒充法院工作人员诈骗",
+      "summary": "2023年12月，福建福州郑先生被冒充“法院人员”谎称有未签收传票，恐慌中泄露银行卡信息，7.3万元被转走。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及冒充法院工作人员类诈骗的典型手法，涉及银行卡信息泄露和资金损失。",
+      "entry_channels": [
+        "其他"
+      ],
+      "impersonated_identity": [
+        "冒充公检法"
+      ],
+      "false_belief": [
+        "其他"
+      ],
+      "key_methods": [
+        "其他"
+      ],
+      "target_assets": [
+        "钱款",
+        "银行卡信息"
+      ],
+      "fraud_stage": [
+        "资产获取"
+      ],
+      "risk_signals": "索要敏感信息；冒充公检法；制造恐慌",
+      "risk_level": "中",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失",
+        "个人信息泄露"
+      ],
+      "prevention_advice": "法院传票不会通过电话通知，更不会索要银行卡信息；如接到类似电话，请立即挂断并通过12368法院服务热线核实。",
+      "source_name": "福州晋安公安2023年12月通报",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "冒充公检法"
+      ],
+      "ccl2023_category": "冒充公检法及政府机关类",
+      "custom_subcategory": "冒充法院工作人员类诈骗",
+      "tags": [
+        "冒充法院工作人员类诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": "部分字段（如关键手法、虚假认知）根据原始信息推断为'其他'，实际可能涉及诱导操作等。"
+    },
+    {
+      "case_id": "FZ-010",
+      "title": "冒充银行工作人员诈骗",
+      "summary": "2025年5月，四川成都周先生被冒充“银行人员”谎称银行卡异常，诱导将15万元转入“安全账户”，核实后发现被骗。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "冒充银行人员谎称银行卡异常，要求转账至安全账户，是典型的冒充银行诈骗手法，涉及索要敏感信息和诱导转账。",
+      "entry_channels": [
+        "电话"
+      ],
+      "impersonated_identity": [
+        "冒充银行/金融机构"
+      ],
+      "false_belief": [
+        "误以为账号存在风险"
+      ],
+      "key_methods": [
+        "安全账户"
+      ],
+      "target_assets": [
+        "钱款",
+        "银行卡信息"
+      ],
+      "fraud_stage": [
+        "资产获取"
+      ],
+      "risk_signals": "索要敏感信息；提及安全账户",
+      "risk_level": "极高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "银行不电话要求转账至“安全账户”，不信“账户异常”恐吓，可拨银行官方客服核实。",
+      "source_name": "成都锦江公安2025年5月通报",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "其他/无法对应"
+      ],
+      "ccl2023_category": "冒充电商物流客服类",
+      "custom_subcategory": "冒充银行工作人员类诈骗",
+      "tags": [
+        "冒充银行工作人员类诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": "推断：采集日期根据案例发生时间推测为2026年，实际应为2025年，但按用户输入保留。"
+    },
+    {
+      "case_id": "FZ-011",
+      "title": "冒充医保工作人员诈骗",
+      "summary": "2024年11月，湖北武汉张阿姨接到自称医保局人员的电话，称其医保账户异常，需配合处理。张阿姨在对方引导下提供了银行卡号和验证码，随后账户内5.2万元被转走。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中诈骗分子冒充医保局工作人员，以账户异常为由诱导受害人提供敏感信息并转账，符合冒充公检法类诈骗特征。风险信号包括：陌生来电自称政府机关；制造恐慌要求立即操作；索要银行卡信息和验证码。",
+      "entry_channels": [
+        "电话"
+      ],
+      "impersonated_identity": [
+        "冒充公检法"
+      ],
+      "false_belief": [
+        "误以为账号存在风险",
+        "误以为必须立即操作"
+      ],
+      "key_methods": [
+        "诱导转账",
+        "索要验证码"
+      ],
+      "target_assets": [
+        "钱款",
+        "银行卡信息",
+        "验证码"
+      ],
+      "fraud_stage": [
+        "资产获取"
+      ],
+      "risk_signals": "冒充医保局工作人员；声称账户异常；要求提供银行卡和验证码；制造紧迫感",
+      "risk_level": "中",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失",
+        "个人信息泄露"
+      ],
+      "prevention_advice": "医保业务不会通过电话索要银行卡信息或验证码；遇到此类情况应立即挂断并拨打官方医保热线核实；切勿向陌生人泄露银行账户信息。",
+      "source_name": "武汉武昌公安2024年11月通报",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "冒充公检法"
+      ],
+      "ccl2023_category": "冒充公检法及政府机关类",
+      "custom_subcategory": "冒充医保工作人员类诈骗",
+      "tags": [
+        "冒充医保工作人员类诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "老人",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-012",
+      "title": "冒充消防工作人员诈骗",
+      "summary": "2024年4月，广东深圳林先生接到冒充消防人员的电话，对方谎称其店铺消防不达标，要求购买指定器材，林先生信以为真，转账4.5万元后对方失联。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及冒充消防工作人员类诈骗的典型手法，受害人已转账",
+      "entry_channels": [
+        "电话"
+      ],
+      "impersonated_identity": [
+        "冒充平台官方"
+      ],
+      "false_belief": [
+        "其他"
+      ],
+      "key_methods": [
+        "诱导转账"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "诱导操作",
+        "拉黑失联"
+      ],
+      "risk_signals": "要求转账；冒充官方身份",
+      "risk_level": "高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "消防部门不会通过电话要求购买指定器材，消防器材需通过正规渠道购买；接到类似电话应立即挂断并拨打119或110核实。",
+      "source_name": "深圳南山公安2024年4月通报",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "其他/无法对应"
+      ],
+      "ccl2023_category": "冒充公检法及政府机关类",
+      "custom_subcategory": "冒充消防工作人员类诈骗",
+      "tags": [
+        "冒充消防工作人员类诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-013",
+      "title": "冒充烟草公司领导诈骗",
+      "summary": "2014-2025年，江西宜春彭某某冒充烟草公司人员，以办许可证、安排工作等为由，骗取13人430余万元。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及冒充领导熟人类诈骗的典型手法，即冒充企事业单位领导，以内部渠道办事为名骗取钱财。",
+      "entry_channels": [
+        "其他"
+      ],
+      "impersonated_identity": [
+        "冒充领导熟人",
+        "冒充平台官方"
+      ],
+      "false_belief": [
+        "误以为对方有权威身份",
+        "误以为可以轻松赚钱"
+      ],
+      "key_methods": [
+        "冒充官方通知",
+        "其他"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "资产获取"
+      ],
+      "risk_signals": "冒充领导熟人；虚构办事能力；诱导转账",
+      "risk_level": "中",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "不信“内部指标、关系运作”，办业务走正规渠道。遇到自称领导要求转账或办事，务必线下核实身份。",
+      "source_name": "江西政法网",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "冒充领导熟人"
+      ],
+      "ccl2023_category": "冒充领导、熟人类",
+      "custom_subcategory": "冒充企事业单位领导类诈骗",
+      "tags": [
+        "冒充企事业单位领导类诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": "部分字段根据案例描述推断：入口渠道为其他；虚假认知为误以为对方有权威身份和误以为可以轻松赚钱；关键手法补充了冒充官方通知；诈骗阶段推断为资产获取；风险信号为冒充领导熟人、虚构办事能力、诱导转账。"
+    },
+    {
+      "case_id": "FZ-014",
+      "title": "冒充海关工作人员诈骗",
+      "summary": "2025年6月，上海市民王女士和女儿小胡在辖区某商场内，被男子仓某冒充机场海关工作人员，以“特殊渠道低价出售进口化妆品”为由，骗取1000元购买6件假冒化妆品，回家后怀疑被骗遂报警。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及冒充海关工作人员，以特殊渠道低价为诱饵，诱导受害人购买假冒化妆品，属于典型的冒充公检法及政府机关类诈骗，且已造成金钱损失。",
+      "entry_channels": [
+        "其他"
+      ],
+      "impersonated_identity": [
+        "冒充公检法"
+      ],
+      "false_belief": [
+        "误以为对方有权威身份",
+        "误以为可以低价购买"
+      ],
+      "key_methods": [
+        "冒充官方通知",
+        "虚假交易"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "建立信任",
+        "诱导操作",
+        "资产获取"
+      ],
+      "risk_signals": "冒充公职人员；线下交易；无正规渠道；低价诱惑",
+      "risk_level": "中",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "海关工作人员不会私自兜售商品，切勿轻信“特殊渠道低价正品”，购买化妆品等商品需通过官方授权渠道，如遇到可疑人员冒充公职人员，立即拨打110报警。",
+      "source_name": "上海市公安局轨道公交分局2025年6月通报",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "其他/无法对应"
+      ],
+      "ccl2023_category": "冒充公检法及政府机关类",
+      "custom_subcategory": "冒充海关工作人员类诈骗",
+      "tags": [
+        "冒充海关",
+        "低价诱骗",
+        "线下交易",
+        "假冒化妆品"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通市民",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": "推断：collection_date为2026年，但案发2025年，可能为录入日期；entry_channels为其他，因线下接触；impersonated_identity根据实际冒充身份修正为冒充公检法；false_belief、key_methods、fraud_stage等为合理推断。"
+    },
+    {
+      "case_id": "FZ-015",
+      "title": "AI语音冒充客服诈骗（新型高发）",
+      "summary": "2025年底，甘肃金昌王阿姨接到一通电话，对方用高度逼真的AI语音冒充某短视频平台官方客服，称其开通的直播会员每月会自动扣费800元，若要取消需按指引操作。王阿姨信以为真，通过对方发送的链接下载APP，被远程操控手机，短短十几秒内，银行卡内十几万元被转走，随后对方失联。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "该案例符合冒充客服类诈骗典型特征：使用AI语音冒充官方客服，以自动扣费为由制造紧迫感，诱导受害者点击链接下载陌生APP并远程操控手机，最终转走银行卡资金。主要风险信号包括：陌生来电、AI语音、要求下载不明APP、远程操控、快速转移资金。",
+      "entry_channels": [
+        "电话",
+        "App"
+      ],
+      "impersonated_identity": [
+        "冒充客服"
+      ],
+      "false_belief": [
+        "误以为对方是官方"
+      ],
+      "key_methods": [
+        "钓鱼链接",
+        "诱导下载陌生App",
+        "屏幕共享",
+        "虚假客服",
+        "AI换脸/变声"
+      ],
+      "target_assets": [
+        "钱款",
+        "银行卡信息",
+        "手机号",
+        "设备权限"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "诱导操作",
+        "资产获取",
+        "拉黑失联"
+      ],
+      "risk_signals": "冒充客服来电；AI语音；自动扣费借口；诱导下载陌生APP；远程操控手机；资金被转走",
+      "risk_level": "中",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "1. 接到自称客服的电话，尤其是涉及自动扣费、订单异常等，务必通过官方渠道核实。2. 不要下载陌生人提供的APP，更不要允许远程操控手机。3. 绝不向任何人透露银行卡密码、短信验证码等敏感信息。4. 如遇可疑情况，立即挂断电话并报警。",
+      "source_name": "新华网",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "冒充电商物流客服"
+      ],
+      "ccl2023_category": "冒充电商物流客服类",
+      "custom_subcategory": "AI语音冒充官方客服类诈骗",
+      "tags": [
+        "AI语音冒充官方客服类诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [
+        "某短视频平台"
+      ],
+      "victim_group": "老年人",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": "部分字段如入口渠道中的'社交平台私信'为推断，实际未在描述中明确，已删除；判断理由进行了补充；关键手法中去掉了'虚假投资平台'；CCL2023类别由'无法对应'调整为'冒充电商物流客服类'。"
+    },
+    {
+      "case_id": "FZ-016",
+      "title": "冒充快递客服退款诈骗（高频高发）",
+      "summary": "2024年8月，浙江杭州陈女士接到自称某快递公司客服的电话，称其网购的包裹在运输中破损、丢失，可提供双倍退款，需提供银行卡号、手机验证码核实信息。陈女士未核实对方身份，如实提供相关信息后，银行卡内的8.6万元被瞬间转走，随后对方电话无法接通。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及冒充快递客服退款诈骗的典型手法，包括索要验证码、银行卡信息，并导致资金被转走，属于确认诈骗。",
+      "entry_channels": [
+        "电话"
+      ],
+      "impersonated_identity": [
+        "冒充客服"
+      ],
+      "false_belief": [
+        "误以为对方是官方"
+      ],
+      "key_methods": [
+        "索要验证码",
+        "虚假客服"
+      ],
+      "target_assets": [
+        "钱款",
+        "银行卡信息",
+        "手机号",
+        "验证码"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "资产获取"
+      ],
+      "risk_signals": "索要验证码；索要敏感信息；冒充客服来电",
+      "risk_level": "极高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "1. 遇到自称快递客服的退款电话，第一时间通过购物平台官方渠道核实订单状态。2. 任何要求提供银行卡号、密码、验证码的行为都是诈骗，切勿泄露。3. 手机验证码是资金安全的最后一道防线，绝不向任何人提供。4. 拒绝通过非官方渠道进行退款操作，如扫描二维码或下载陌生APP。",
+      "source_name": "浙江省杭州市公安局余杭分局官方微信公众号“余杭公安”2024年8月反诈案例通报。",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "冒充电商物流客服"
+      ],
+      "ccl2023_category": "冒充电商物流客服类",
+      "custom_subcategory": "冒充快递/网购客服退款类诈骗",
+      "tags": [
+        "冒充快递/网购客服退款类诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "网购用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-017",
+      "title": "冒充银行工作人员诈骗",
+      "summary": "2025年5月，四川成都周先生接到自称某银行工作人员的电话，称其银行卡存在“异常交易”，涉嫌非法洗钱，需立即将卡内资金转入“银行安全账户”进行核查，否则银行卡将被冻结，还会影响个人征信。周先生恐慌之下，将卡内15万元全部转入对方提供的账户，转账后联系银行核实，才发现是诈骗。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及冒充银行工作人员类诈骗的典型手法，受害人已转账，涉及银行卡信息",
+      "entry_channels": [
+        "电话"
+      ],
+      "impersonated_identity": [
+        "冒充银行/金融机构"
+      ],
+      "false_belief": [
+        "误以为需要配合调查",
+        "误以为必须立即操作"
+      ],
+      "key_methods": [
+        "安全账户",
+        "诱导转账"
+      ],
+      "target_assets": [
+        "钱款",
+        "银行卡信息"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "诱导操作"
+      ],
+      "risk_signals": "要求转账；索要敏感信息；提及安全账户",
+      "risk_level": "极高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "1. 权威常识：银行不会通过电话要求客户转账至“安全账户”，不会以“账户异常、涉嫌洗钱”为由恐吓客户。2. 核心套路：冒充银行工作人员→谎称账户异常、涉嫌违法→恐吓客户→诱导转账至“安全账户”。3. 防范要点：接到银行相关来电，可挂断后拨打银行官方客服电话核实；不相信“安全账户”说法，任何要求转账核实的都是诈骗。",
+      "source_name": "四川省成都市公安局锦江分局官方网站2025年5月反诈案例通报。",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "其他/无法对应"
+      ],
+      "ccl2023_category": "冒充电商物流客服类",
+      "custom_subcategory": "冒充银行工作人员类诈骗。",
+      "tags": [
+        "冒充银行工作人员类诈骗。",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-018",
+      "title": "冒充医保工作人员诈骗（老年人高发）",
+      "summary": "2024年11月，湖北武汉张阿姨接到自称“医保局工作人员”的电话，称其医保账户异常，医保报销资格即将被取消，需按指引提供身份证号、银行卡号、手机验证码，才能恢复资格。张阿姨未核实身份，如实提供相关信息后，银行卡内的5.2万元被转走，随后联系医保局核实，确认是诈骗。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及冒充医保/社保工作人员类诈骗的典型手法，包括索要验证码、银行卡信息，导致资金损失。",
+      "entry_channels": [
+        "电话"
+      ],
+      "impersonated_identity": [
+        "其他"
+      ],
+      "false_belief": [
+        "误以为对方是官方",
+        "误以为不操作会造成损失"
+      ],
+      "key_methods": [
+        "索要验证码",
+        "诱导泄露信息"
+      ],
+      "target_assets": [
+        "钱款",
+        "银行卡信息",
+        "身份证信息",
+        "手机号",
+        "验证码"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "资产获取"
+      ],
+      "risk_signals": "索要敏感信息；索要验证码；冒充官方身份",
+      "risk_level": "极高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "1. 核心套路：冒充医保/社保工作人员→谎称账户异常、资格被取消→以“恢复资格”为诱饵→索要个人敏感信息、验证码→转走资金。2. 权威常识：医保、社保相关业务需通过线下网点或官方APP办理，不会通过电话索要银行卡信息和验证码。3. 防范要点：接到医保、社保相关来电，可挂断后拨打官方客服电话核实；不泄露个人敏感信息和验证码。",
+      "source_name": "湖北省武汉市公安局武昌分局官方微信公众号“武昌公安”",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "其他/无法对应"
+      ],
+      "ccl2023_category": "冒充公检法及政府机关类",
+      "custom_subcategory": "冒充医保/社保工作人员类诈骗",
+      "tags": [
+        "冒充医保/社保工作人员类诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "老年人",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": "推断：将原始信息中‘无明确冒充’修正为‘其他’，并补充了虚假认知和关键手法枚举值。"
+    },
+    {
+      "case_id": "FZ-019",
+      "title": "ETC诈骗（车主群体高发）",
+      "summary": "2025年2月，河北石家庄张先生收到一条短信，自称“ETC客服”，称其ETC设备即将过期，需点击链接完成升级，否则将影响通行。张先生点击链接后，跳转至虚假页面，要求输入银行卡号、密码、手机验证码，张先生如实填写后，银行卡内的6.8万元被转走，随后发现链接无法打开。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例涉及ETC类诈骗的典型手法，包括发送虚假ETC升级短信、钓鱼链接、仿冒官网、索要验证码和银行卡信息，导致用户资金被转走。",
+      "entry_channels": [
+        "短信"
+      ],
+      "impersonated_identity": [
+        "冒充客服"
+      ],
+      "false_belief": [
+        "误以为对方是官方"
+      ],
+      "key_methods": [
+        "钓鱼链接",
+        "仿冒官网",
+        "索要验证码",
+        "虚假客服"
+      ],
+      "target_assets": [
+        "钱款",
+        "银行卡信息",
+        "手机号",
+        "验证码",
+        "平台账号",
+        "账号密码"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "诱导操作",
+        "资产获取"
+      ],
+      "risk_signals": "不明链接；索要验证码；索要敏感信息",
+      "risk_level": "极高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "1. 核心套路：发送虚假ETC升级/激活短信→附带恶意链接→诱导填写银行卡信息、验证码→转走账户资金。2. 关键提醒：ETC升级、激活需通过银行官方APP或线下网点办理，不会通过陌生短信链接操作。3. 防范要点：不点击陌生短信链接，尤其是涉及ETC、银行卡、手机卡的相关信息，需通过官方渠道核实。",
+      "source_name": "河北省石家庄市公安局桥西分局官方微博“桥西公安”2025年2月反诈预警案例。",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "冒充电商物流客服"
+      ],
+      "ccl2023_category": "冒充电商物流客服类",
+      "custom_subcategory": "ETC类诈骗（虚假升级/激活型，冒充官方客服衍生）。",
+      "tags": [
+        "ETC类诈骗（虚假升级/激活型，冒充官方客服衍生）。",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "车主",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-020",
+      "title": "注销校园贷诈骗（毕业生高发）",
+      "summary": "2024年6月，江苏苏州毕业生陈某接到自称“网贷平台客服”的电话，称其大学期间申请的校园贷未注销，会影响个人征信，需按指引注销账户，否则将产生高额罚息。陈某恐慌之下，按对方要求下载陌生APP，绑定银行卡，先后转账9万元“注销费用”，后续联系网贷平台核实，才发现是诈骗。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及注销校园贷/网贷类诈骗（冒充官方客服衍生）的典型手法，受害人已转账，涉及银行卡信息",
+      "entry_channels": [
+        "电话",
+        "App"
+      ],
+      "impersonated_identity": [
+        "冒充客服"
+      ],
+      "false_belief": [
+        "误以为对方是官方"
+      ],
+      "key_methods": [
+        "诱导下载陌生App",
+        "虚假客服",
+        "诱导转账",
+        "虚假投资平台"
+      ],
+      "target_assets": [
+        "钱款",
+        "银行卡信息"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "诱导操作"
+      ],
+      "risk_signals": "陌生联系；要求转账；索要敏感信息",
+      "risk_level": "高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "1. 核心套路：冒充网贷平台客服→谎称“校园贷未注销、影响征信”→恐吓受害人→诱导下载陌生APP、转账“注销费用”。2. 关键提醒：个人征信由中国人民银行征信中心统一管理，网贷注销无需缴纳任何费用，不会影响征信。3. 防范要点：不相信陌生“注销网贷”来电，注销网贷需通过平台官方渠道操作；不向陌生账号转账。",
+      "source_name": "江苏省苏州市公安局姑苏分局官方微信公众号“姑苏公安”2024年6月反诈案例通报。",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "冒充电商物流客服"
+      ],
+      "ccl2023_category": "贷款、代办信用卡类",
+      "custom_subcategory": "注销校园贷/网贷类诈骗（冒充官方客服衍生）。",
+      "tags": [
+        "注销校园贷/网贷类诈骗（冒充官方客服衍生）。",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "学生",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-021",
+      "title": "冒充信用卡客服提额诈骗",
+      "summary": "2025年7月，广东广州赵某被冒充信用卡客服，声称“可提升信用卡额度，需缴纳5000元手续费”，转账后额度未提升，对方失联。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及冒充信用卡客服类诈骗（提额型）的典型手法，受害人已转账",
+      "entry_channels": [
+        "其他"
+      ],
+      "impersonated_identity": [
+        "冒充银行/金融机构"
+      ],
+      "false_belief": [
+        "误以为对方是官方"
+      ],
+      "key_methods": [
+        "保证金/解冻费",
+        "虚假客服",
+        "诱导转账"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "诱导操作",
+        "拉黑失联"
+      ],
+      "risk_signals": "要求转账",
+      "risk_level": "高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "信用卡提额无需缴纳手续费，可通过银行官方APP或客服申请，不信陌生提额电话。",
+      "source_name": "广州天河公安2025年7月通报。",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "冒充电商物流客服"
+      ],
+      "ccl2023_category": "冒充电商物流客服类",
+      "custom_subcategory": "冒充信用卡客服类诈骗（提额型）。",
+      "tags": [
+        "冒充信用卡客服类诈骗（提额型）。",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-022",
+      "title": "冒充视频平台客服诈骗",
+      "summary": "2024年12月，江苏南京周某被冒充视频平台客服，声称“开通的会员自动续费，需缴纳2000元注销费”，转账后发现被骗。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及冒充视频平台客服类诈骗（会员注销型）的典型手法，受害人已转账，确认诈骗。",
+      "entry_channels": [
+        "电话"
+      ],
+      "impersonated_identity": [
+        "冒充平台官方"
+      ],
+      "false_belief": [
+        "误以为对方是官方"
+      ],
+      "key_methods": [
+        "虚假客服",
+        "诱导转账"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "诱导操作"
+      ],
+      "risk_signals": "要求转账；会员注销需缴费",
+      "risk_level": "高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "会员自动续费可在平台内自行操作关闭，无需缴纳注销费，不信陌生客服说辞。",
+      "source_name": "南京玄武公安2024年12月通报",
+      "source_type": "官方",
+      "collection_date": "2024-12",
+      "is_desensitized": "是",
+      "official_category": [
+        "冒充电商物流客服"
+      ],
+      "ccl2023_category": "冒充电商物流客服类",
+      "custom_subcategory": "冒充视频平台客服类诈骗（会员注销型）",
+      "tags": [
+        "冒充视频平台客服类诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-023",
+      "title": "冒充外卖客服退款诈骗",
+      "summary": "2025年3月，浙江温州吴某点外卖后，被冒充外卖客服告知“餐品变质，可全额退款+赔偿”，诱导泄露银行卡信息后，4.5万元被转走。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及冒充外卖客服退款类诈骗的典型手法，通过虚假退款诱导受害人泄露银行卡信息，造成金钱损失。",
+      "entry_channels": [
+        "其他"
+      ],
+      "impersonated_identity": [
+        "冒充客服"
+      ],
+      "false_belief": [
+        "误以为对方是官方"
+      ],
+      "key_methods": [
+        "虚假客服"
+      ],
+      "target_assets": [
+        "钱款",
+        "银行卡信息"
+      ],
+      "fraud_stage": [
+        "资产获取"
+      ],
+      "risk_signals": "冒充客服退款索要银行卡信息；诱导泄露个人信息",
+      "risk_level": "中",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失",
+        "个人信息泄露"
+      ],
+      "prevention_advice": "遇到外卖退款通知，请通过外卖App官方渠道联系客服核实，切勿点击陌生人发送的链接或提供银行卡号、密码、验证码等信息。",
+      "source_name": "温州龙湾公安2025年3月通报",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "冒充电商物流客服"
+      ],
+      "ccl2023_category": "冒充电商物流客服类",
+      "custom_subcategory": "外卖退款诈骗",
+      "tags": [
+        "冒充客服",
+        "退款诈骗",
+        "银行卡信息泄露"
+      ],
+      "involved_platforms": [
+        "外卖平台"
+      ],
+      "victim_group": "外卖用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-024",
+      "title": "冒充保险客服理赔诈骗",
+      "summary": "2024年8月，河南郑州郑某接到冒充保险客服的电话，对方声称其购买的保险可理赔，但需先缴纳1万元手续费。郑某转账后发现并无理赔事宜，对方失联。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "受害人已转账1万元，对方失联，符合冒充保险客服类诈骗的典型特征，属于确认诈骗。",
+      "entry_channels": [
+        "电话"
+      ],
+      "impersonated_identity": [
+        "冒充保险客服"
+      ],
+      "false_belief": [
+        "误以为对方是官方"
+      ],
+      "key_methods": [
+        "保证金/解冻费",
+        "虚假客服",
+        "诱导转账"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "诱导操作",
+        "拉黑失联"
+      ],
+      "risk_signals": "要求转账；冒充客服；失联",
+      "risk_level": "高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "接到自称保险客服的电话，务必通过保险公司官方客服电话或官方网站核实理赔事宜，切勿向陌生账户缴纳任何手续费、保证金等。",
+      "source_name": "郑州金水公安2024年8月通报",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "冒充电商物流客服"
+      ],
+      "ccl2023_category": "冒充电商物流客服类",
+      "custom_subcategory": "冒充保险客服类诈骗（理赔型）",
+      "tags": [
+        "冒充保险客服",
+        "理赔诈骗"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-025",
+      "title": "冒充熟人诈骗",
+      "summary": "2024年1月，江苏镇江方某被高仿亲姐姐账号要求垫付名牌包尾款，转账后发现被骗。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及冒充熟人类诈骗的典型手法，受害人已转账，存在金钱损失。风险信号：要求转账、冒充亲友身份。",
+      "entry_channels": [
+        "其他"
+      ],
+      "impersonated_identity": [
+        "冒充亲友"
+      ],
+      "false_belief": [
+        "其他"
+      ],
+      "key_methods": [
+        "诱导转账"
+      ],
+      "target_assets": [
+        "钱款",
+        "平台账号",
+        "账号密码"
+      ],
+      "fraud_stage": [
+        "诱导操作"
+      ],
+      "risk_signals": "要求转账；冒充亲友身份",
+      "risk_level": "高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "熟人线上借钱，务必电话、视频核实身份，不轻易代付。",
+      "source_name": "镇江京口公安2024年1月预警",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "冒充领导熟人"
+      ],
+      "ccl2023_category": "冒充领导、熟人类",
+      "custom_subcategory": "冒充熟人类诈骗",
+      "tags": [
+        "冒充熟人类诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": "推断：案例编号、标题、场景简述、性质判断等由原始信息提供，风险信号根据案情补充。"
+    },
+    {
+      "case_id": "FZ-026",
+      "title": "冒充学校老师诈骗",
+      "summary": "2024年3月，广东广州张先生被高仿孩子班主任账号，以收资料费为由转账1800元，核实后发现被骗。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及冒充学校老师类诈骗的典型手法，受害人已转账",
+      "entry_channels": [
+        "其他"
+      ],
+      "impersonated_identity": [
+        "冒充领导熟人"
+      ],
+      "false_belief": [
+        "其他"
+      ],
+      "key_methods": [
+        "诱导转账"
+      ],
+      "target_assets": [
+        "钱款",
+        "平台账号",
+        "账号密码"
+      ],
+      "fraud_stage": [
+        "诱导操作",
+        "资产获取"
+      ],
+      "risk_signals": "要求转账",
+      "risk_level": "高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "学校收费需核实老师身份，不向陌生账号转账。建议通过电话或当面与老师确认后再转账。",
+      "source_name": "广州天河公安2024年3月预警。",
+      "source_type": "官方",
+      "collection_date": "2024-03-01",
+      "is_desensitized": "是",
+      "official_category": [
+        "冒充领导熟人"
+      ],
+      "ccl2023_category": "冒充领导、熟人类",
+      "custom_subcategory": "冒充学校老师类诈骗",
+      "tags": [
+        "冒充学校老师类诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "学生家长",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": "原采集日期为2026-05-15，根据案例时间调整为2024-03-01；判断理由和虚假认知等字段进行了微调。"
+    },
+    {
+      "case_id": "FZ-027",
+      "title": "冒充培训老师诈骗",
+      "summary": "2024年5月，江苏徐州孙女士被高仿培训老师账号，以暑期班优惠为由转账2800元，核实后发现被骗。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及冒充培训老师类诈骗的典型手法，受害人已转账。",
+      "entry_channels": [
+        "其他"
+      ],
+      "impersonated_identity": [
+        "其他"
+      ],
+      "false_belief": [
+        "误以为对方是官方"
+      ],
+      "key_methods": [
+        "诱导转账"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "诱导操作"
+      ],
+      "risk_signals": "要求转账",
+      "risk_level": "高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "培训缴费走官方渠道，接到通知先核实老师身份。",
+      "source_name": "徐州云龙公安2024年5月预警",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "其他/无法对应"
+      ],
+      "ccl2023_category": "虚假购物、服务类",
+      "custom_subcategory": "冒充培训老师类诈骗",
+      "tags": [
+        "冒充培训老师类诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-028",
+      "title": "冒充朋友借钱救急诈骗",
+      "summary": "2024年4月，浙江台州金先生接到陌生电话，对方声音酷似好友李某，声称“家人突发疾病，急需用钱，手机没带，先借5万元，后续归还”，金先生未核实身份，直接转账5万元，后续联系好友李某，发现并未借钱，才意识到被骗。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及冒充熟人类诈骗（朋友借钱型）的典型手法，受害人已转账",
+      "entry_channels": [
+        "电话"
+      ],
+      "impersonated_identity": [
+        "冒充亲友"
+      ],
+      "false_belief": [
+        "其他"
+      ],
+      "key_methods": [
+        "诱导转账"
+      ],
+      "target_assets": [
+        "钱款",
+        "手机号"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "诱导操作"
+      ],
+      "risk_signals": "陌生联系；要求转账",
+      "risk_level": "高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "熟人借钱无论情况多紧急，务必通过电话、视频核实身份，不轻易向陌生账号转账。",
+      "source_name": "台州黄岩公安2024年4月反诈案例通报。",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "冒充领导熟人"
+      ],
+      "ccl2023_category": "冒充领导、熟人类",
+      "custom_subcategory": "冒充熟人类诈骗（朋友借钱型）。",
+      "tags": [
+        "冒充熟人类诈骗（朋友借钱型）。",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-029",
+      "title": "冒充同事代付诈骗",
+      "summary": "2025年9月，广东深圳王某在公司工作群内，被高仿同事张某账号私聊，声称“手机欠费，无法付款，帮代付2000元货款，下班归还”，王某未核实，直接转账2000元，后续发现同事张某并未联系自己，高仿账号已退出群聊。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及冒充熟人类诈骗（同事代付型）的典型手法，受害人已转账，存在冒充身份、诱导转账等风险信号。",
+      "entry_channels": [
+        "社交平台私信"
+      ],
+      "impersonated_identity": [
+        "冒充亲友"
+      ],
+      "false_belief": [
+        "其他"
+      ],
+      "key_methods": [
+        "诱导转账"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "诱导操作"
+      ],
+      "risk_signals": "要求转账",
+      "risk_level": "高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "工作群内私聊代付、借钱，需通过公司内部渠道核实同事身份，不轻易代付陌生订单。",
+      "source_name": "深圳福田公安2025年9月反诈预警",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "冒充领导熟人"
+      ],
+      "ccl2023_category": "冒充领导、熟人类",
+      "custom_subcategory": "冒充熟人类诈骗（同事代付型）",
+      "tags": [
+        "冒充熟人类诈骗（同事代付型）",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-030",
+      "title": "冒充领导办事诈骗",
+      "summary": "2024年7月，江苏苏州某公司员工吴某，被高仿公司领导账号添加微信，对方声称“有一笔紧急业务需要打点，自己不方便转账，先借8万元，后续公款报销”，吴某轻信后转账8万元，后续向领导核实，发现是诈骗。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及冒充领导类诈骗（办事借钱型）的典型手法，受害人已转账。",
+      "entry_channels": [
+        "微信"
+      ],
+      "impersonated_identity": [
+        "冒充领导熟人"
+      ],
+      "false_belief": [
+        "误以为有免费福利",
+        "误以为必须立即操作"
+      ],
+      "key_methods": [
+        "私信引流",
+        "诱导转账"
+      ],
+      "target_assets": [
+        "钱款",
+        "平台账号",
+        "账号密码"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "制造压力/诱惑",
+        "诱导操作"
+      ],
+      "risk_signals": "要求转账",
+      "risk_level": "高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "领导不会通过私人微信要求下属借钱、转账，涉及公款、打点等事宜，务必当面或电话核实。",
+      "source_name": "苏州工业园区公安2024年7月反诈通报",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "冒充领导熟人"
+      ],
+      "ccl2023_category": "冒充领导、熟人类",
+      "custom_subcategory": "冒充领导类诈骗（办事借钱型）",
+      "tags": [
+        "冒充领导类诈骗（办事借钱型）",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-031",
+      "title": "冒充驾校教练诈骗",
+      "summary": "2025年1月，河南郑州学员马某，被高仿驾校教练账号添加微信，对方声称“可以走内部渠道，缴纳3000元免考拿驾照，无需练车”，马某轻信后转账3000元，后续联系驾校教练，发现并无此事，高仿账号已失联。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及冒充特定身份类诈骗（驾校教练型）的典型手法，受害人已转账，且对方失联。",
+      "entry_channels": [
+        "微信"
+      ],
+      "impersonated_identity": [
+        "冒充领导熟人"
+      ],
+      "false_belief": [
+        "其他"
+      ],
+      "key_methods": [
+        "私信引流",
+        "诱导转账"
+      ],
+      "target_assets": [
+        "钱款",
+        "平台账号",
+        "账号密码"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "诱导操作",
+        "拉黑失联"
+      ],
+      "risk_signals": "要求转账",
+      "risk_level": "高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "驾照考试无“内部渠道”“免考拿证”，切勿轻信教练或陌生账号的“捷径”说法，不缴纳额外费用。",
+      "source_name": "郑州二七公安2025年1月反诈案例通报。",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "其他/无法对应"
+      ],
+      "ccl2023_category": "虚假购物、服务类",
+      "custom_subcategory": "冒充特定身份类诈骗（驾校教练型）。",
+      "tags": [
+        "冒充特定身份类诈骗（驾校教练型）。",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": "推断"
+    },
+    {
+      "case_id": "FZ-032",
+      "title": "冒充远房亲戚借钱诈骗",
+      "summary": "2024年11月，山东聊城刘某接到自称“远房表哥”的电话，对方声称“生意失败，欠了外债，急需6万元周转，暂时不方便让家人知道”，刘某因多年未联系，未核实身份便转账6万元，后续联系家人，发现并无此事，对方电话已停机。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "冒充熟人类诈骗的典型手法，受害人已转账，且事后无法联系对方，联系家人确认无此事。",
+      "entry_channels": [
+        "电话"
+      ],
+      "impersonated_identity": [
+        "冒充亲友"
+      ],
+      "false_belief": [
+        "其他"
+      ],
+      "key_methods": [
+        "诱导转账"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "诱导操作"
+      ],
+      "risk_signals": "陌生来电自称亲友；要求转账至陌生账户；要求保密不让他人知晓；账号停机无法联系",
+      "risk_level": "高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "久未联系的远房亲戚借钱，务必通过共同亲友核实身份，不轻易相信“保密、紧急周转”的说辞。",
+      "source_name": "聊城东昌府公安2024年11月反诈通报",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "冒充领导熟人"
+      ],
+      "ccl2023_category": "冒充领导、熟人类",
+      "custom_subcategory": "冒充熟人类诈骗（远房亲戚型）",
+      "tags": [
+        "冒充熟人类诈骗",
+        "远房亲戚",
+        "电话诈骗"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-033",
+      "title": "冒充月嫂介绍人诈骗",
+      "summary": "2025年8月，四川成都产妇李某在母婴群内被自称“月嫂介绍人”的账号添加好友。对方声称有金牌月嫂，要求先交2000元定金锁定名额，月嫂上门后再付尾款。李某转账2000元后，对方失联。联系母婴群核实，发现该账号为诈骗账号。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "受害人通过母婴群被陌生人添加，对方冒充月嫂介绍人，以支付定金为由诱导转账2000元，转账后对方失联。典型风险信号包括：陌生人主动添加、要求提前转账、非正规交易渠道。",
+      "entry_channels": [
+        "社交平台私信"
+      ],
+      "impersonated_identity": [
+        "其他"
+      ],
+      "false_belief": [
+        "其他"
+      ],
+      "key_methods": [
+        "私信引流",
+        "诱导转账"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "诱导操作",
+        "拉黑失联"
+      ],
+      "risk_signals": "陌生人主动添加好友；要求提前支付定金；非正规交易渠道；失联",
+      "risk_level": "高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "找月嫂、育儿嫂需通过正规中介，不向陌生介绍人缴纳定金，核实对方资质后再交易。",
+      "source_name": "成都武侯公安2025年8月反诈案例通报",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "其他/无法对应"
+      ],
+      "ccl2023_category": "虚假购物、服务类",
+      "custom_subcategory": "冒充特定身份类诈骗（月嫂介绍人型）",
+      "tags": [
+        "冒充特定身份类诈骗（月嫂介绍人型）",
+        "反诈案例"
+      ],
+      "involved_platforms": [
+        "微信"
+      ],
+      "victim_group": "宝妈",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-034",
+      "title": "冒充合作伙伴诈骗",
+      "summary": "2024年8月，浙江宁波某个体户陈某，被高仿合作伙伴账号添加微信，对方声称“有一笔大额订单，需先缴纳5万元定金锁定货源”，陈某未核实身份，直接转账5万元，后续联系合作伙伴，发现并未有该订单，高仿账号已拉黑。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及冒充熟人类诈骗（合作伙伴型）的典型手法，受害人已转账，损失已发生。风险信号包括：高仿账号、突然要求转账定金、未核实身份、转账后拉黑。",
+      "entry_channels": [
+        "微信"
+      ],
+      "impersonated_identity": [
+        "冒充亲友"
+      ],
+      "false_belief": [
+        "其他"
+      ],
+      "key_methods": [
+        "私信引流",
+        "诱导转账",
+        "虚假订单/任务"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "诱导操作",
+        "拉黑失联"
+      ],
+      "risk_signals": "要求转账；未核实身份；高仿账号",
+      "risk_level": "极高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "商业合作中，涉及定金、转账等事宜，务必通过官方电话、企业微信核实对方身份，不轻易转账。",
+      "source_name": "宁波江东公安2024年8月反诈通报",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "冒充领导熟人"
+      ],
+      "ccl2023_category": "冒充领导、熟人类",
+      "custom_subcategory": "冒充熟人类诈骗（合作伙伴型）",
+      "tags": [
+        "冒充熟人类诈骗（合作伙伴型）",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": "根据原始信息生成，部分字段如false_belief选择'其他'，因为枚举中无'误以为对方是合作伙伴'。"
+    },
+    {
+      "case_id": "FZ-035",
+      "title": "兼职刷单返利诈骗",
+      "summary": "2026年1月，安徽舒城邓女士被“直播间下单返利”广告吸引，小额返利后被诱导垫付12.44万元，提现时被拒、对方失联。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及刷单返利类诈骗的典型手法，包括小额返利引诱、垫付大额资金后提现失败、对方失联。",
+      "entry_channels": [
+        "搜索引擎",
+        "社交平台私信"
+      ],
+      "impersonated_identity": [
+        "无明确冒充"
+      ],
+      "false_belief": [
+        "误以为投资稳赚不赔"
+      ],
+      "key_methods": [
+        "小额返利",
+        "提现失败"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "拉黑失联"
+      ],
+      "risk_signals": "垫资要求；提现失败；拉黑失联",
+      "risk_level": "中",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "刷单违法；核心套路：小额返利→大额垫资→拒提现拉黑；凡是要求先垫资的兼职均为诈骗。",
+      "source_name": "舒城公安2026年1月反诈通报",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "刷单返利"
+      ],
+      "ccl2023_category": "刷单返利类",
+      "custom_subcategory": "刷单返利类诈骗",
+      "tags": [
+        "刷单返利类诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": "风险信号为根据案例补充"
+    },
+    {
+      "case_id": "FZ-036",
+      "title": "短视频引流刷单诈骗",
+      "summary": "2025年10月，云南昆明赵女士刷到短视频刷单广告，小额返利后垫付10.2万元，因“任务未完成”被拒提现、拉黑。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及刷单返利类诈骗的典型手法：短视频引流、小额返利诱骗垫付、以任务未完成拒绝提现并拉黑。",
+      "entry_channels": [
+        "社交平台私信"
+      ],
+      "impersonated_identity": [
+        "无明确冒充"
+      ],
+      "false_belief": [
+        "误以为投资稳赚不赔"
+      ],
+      "key_methods": [
+        "小额返利",
+        "提现失败",
+        "虚假订单/任务"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "拉黑失联"
+      ],
+      "risk_signals": "短视频引流；小额返利诱导；要求垫付大额资金；无法提现",
+      "risk_level": "中",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "短视频“高返利”兼职均为诈骗，刷单本身违法，切勿参与。不要轻信陌生链接或广告，任何要求垫资的兼职都是诈骗。",
+      "source_name": "昆明五华公安2025年10月案例通报",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "刷单返利"
+      ],
+      "ccl2023_category": "刷单返利类",
+      "custom_subcategory": "刷单返利类诈骗（短视频引流型）",
+      "tags": [
+        "刷单返利类诈骗（短视频引流型）",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-037",
+      "title": "微信朋友圈刷单诈骗",
+      "summary": "2025年8月，浙江温州陈女士看到朋友圈发布“微信点赞、刷单返利”广告，声称“日赚200元，只需手机操作”，添加对方微信后，小额刷单返利到账，随后被诱导参与“连单任务”，累计垫付8.7万元，申请提现时被对方以“连单未完成”拒绝，随后被拉黑。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及刷单返利类诈骗（朋友圈引流型）的典型手法，包括小额返利、诱导垫付、连单任务、提现失败、拉黑失联。",
+      "entry_channels": [
+        "微信",
+        "搜索引擎"
+      ],
+      "impersonated_identity": [
+        "冒充亲友"
+      ],
+      "false_belief": [
+        "误以为可以轻松赚钱"
+      ],
+      "key_methods": [
+        "小额返利",
+        "提现失败",
+        "私信引流",
+        "虚假订单/任务"
+      ],
+      "target_assets": [
+        "钱款",
+        "手机号"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "建立信任",
+        "制造压力/诱惑",
+        "诱导操作",
+        "资产获取",
+        "拉黑失联"
+      ],
+      "risk_signals": "朋友圈兼职广告；小额返利诱惑；连单任务要求；垫资后无法提现",
+      "risk_level": "中",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "朋友圈陌生兼职广告切勿轻信，“连单任务”“垫资刷单”均为诈骗套路，不向陌生账号转账。若遇要求连续刷单或垫资，立即停止操作并报警。",
+      "source_name": "温州鹿城公安2025年8月反诈案例通报",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "刷单返利"
+      ],
+      "ccl2023_category": "刷单返利类",
+      "custom_subcategory": "刷单返利类诈骗（朋友圈引流型）",
+      "tags": [
+        "刷单返利",
+        "朋友圈引流",
+        "连单任务",
+        "垫资诈骗"
+      ],
+      "involved_platforms": [
+        "微信"
+      ],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-038",
+      "title": "宝妈专属刷单诈骗",
+      "summary": "2024年10月，广东珠海宝妈刘某加入“宝妈兼职群”，群内发布“居家刷单、时间自由、日结返利”信息，刘某参与后，初期小额返利到账，后被诱导垫付大额资金参与“家庭单”，先后转账6.3万元，提现时发现群被解散、对方失联。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及刷单返利类诈骗（宝妈群体定向型）的典型手法，受害人已转账6.3万元，群聊解散、失联，符合诈骗特征。风险信号包括：陌生群聊诱导垫资、小额返利引诱、提现失败后失联。",
+      "entry_channels": [
+        "微信"
+      ],
+      "impersonated_identity": [
+        "无明确冒充"
+      ],
+      "false_belief": [
+        "误以为投资稳赚不赔"
+      ],
+      "key_methods": [
+        "小额返利",
+        "提现失败",
+        "诱导转账"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "诱导操作",
+        "拉黑失联"
+      ],
+      "risk_signals": "要求转账",
+      "risk_level": "极高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "针对宝妈的“居家兼职”多为诈骗，切勿因“时间自由、日结”放松警惕，任何垫资要求均为诈骗。建议通过正规招聘平台寻找兼职，不加入不明群聊，不向陌生账户转账。",
+      "source_name": "珠海香洲公安2024年10月反诈通报",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "刷单返利"
+      ],
+      "ccl2023_category": "刷单返利类",
+      "custom_subcategory": "刷单返利类诈骗（宝妈群体定向型）",
+      "tags": [
+        "刷单返利类诈骗（宝妈群体定向型）",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "宝妈",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-039",
+      "title": "APP内置刷单诈骗",
+      "summary": "2025年3月，四川绵阳张某下载某“兼职APP”，APP内有“刷单返利”板块，声称“充值越多、返利比例越高”，张某初期充值500元返利60元，随后陆续充值11万元，后续APP无法登录，客服失联。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及刷单返利类诈骗（APP内置型）的典型手法",
+      "entry_channels": [
+        "App"
+      ],
+      "impersonated_identity": [
+        "冒充客服"
+      ],
+      "false_belief": [
+        "误以为对方是官方",
+        "误以为投资稳赚不赔"
+      ],
+      "key_methods": [
+        "诱导下载陌生App",
+        "小额返利",
+        "虚假客服",
+        "虚假投资平台"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "诱导操作",
+        "拉黑失联"
+      ],
+      "risk_signals": "高额返利诱惑；诱导下载陌生App；无法提现；客服失联",
+      "risk_level": "中",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "不轻信高额返利兼职，不下载非官方应用商店的APP，不向陌生账户充值",
+      "source_name": "绵阳涪城公安2025年3月反诈预警",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "刷单返利"
+      ],
+      "ccl2023_category": "刷单返利类",
+      "custom_subcategory": "刷单返利类诈骗（APP内置型）",
+      "tags": [
+        "刷单返利类诈骗（APP内置型）",
+        "反诈案例"
+      ],
+      "involved_platforms": [
+        "兼职APP"
+      ],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-040",
+      "title": "学生兼职刷单诈骗",
+      "summary": "2024年6月，山西太原大学生郭某看到校园内张贴的“学生兼职刷单，简单易做、不影响学习”广告，添加对方QQ后，被诱导完成小额刷单任务并获得返利，随后被要求垫付5万元参与“大额返利单”，转账后对方失联，郭某无奈报警。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及刷单返利类诈骗（学生群体定向型）的典型手法，受害人已转账。",
+      "entry_channels": [
+        "QQ",
+        "搜索引擎"
+      ],
+      "impersonated_identity": [
+        "无明确冒充"
+      ],
+      "false_belief": [
+        "误以为投资稳赚不赔"
+      ],
+      "key_methods": [
+        "小额返利",
+        "私信引流",
+        "诱导转账",
+        "虚假订单/任务"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "诱导操作",
+        "拉黑失联"
+      ],
+      "risk_signals": "要求转账",
+      "risk_level": "极高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "校园内陌生兼职广告多为诈骗，学生切勿因“轻松赚钱”被骗，刷单本身违法，且不受法律保护。",
+      "source_name": "太原迎泽公安2024年6月校园反诈通报。",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "刷单返利"
+      ],
+      "ccl2023_category": "刷单返利类",
+      "custom_subcategory": "刷单返利类诈骗（学生群体定向型）。",
+      "tags": [
+        "刷单返利类诈骗（学生群体定向型）。",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "学生",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-041",
+      "title": "跨境刷单诈骗",
+      "summary": "2025年7月，福建厦门林先生被陌生微信好友诱导，参与“跨境电商刷单”，声称“帮国外商家刷销量，返利比例15%”，林先生初期垫付1万元返利1500元，随后被诱导垫付20万元，申请提现时被对方以“跨境税费未缴纳”为由拒绝，后续失联。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及刷单返利类诈骗（跨境电商型）的典型手法，包括小额返利诱骗、垫付资金、提现失败及要求缴纳费用后失联。",
+      "entry_channels": [
+        "微信"
+      ],
+      "impersonated_identity": [
+        "无明确冒充"
+      ],
+      "false_belief": [
+        "误以为投资稳赚不赔"
+      ],
+      "key_methods": [
+        "小额返利",
+        "提现失败",
+        "保证金/解冻费"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "拉黑失联"
+      ],
+      "risk_signals": "陌生联系；高额返利；垫付资金；提现失败；要求缴费",
+      "risk_level": "中",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "切勿轻信陌生人的刷单邀请，任何要求垫付资金的刷单都是诈骗。不要点击不明链接或下载不明App。如遇提现困难或要求缴费，应立即停止操作并报警。",
+      "source_name": "厦门思明公安2025年7月反诈案例通报",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "刷单返利"
+      ],
+      "ccl2023_category": "刷单返利类",
+      "custom_subcategory": "刷单返利类诈骗（跨境电商型）",
+      "tags": [
+        "刷单返利类诈骗（跨境电商型）",
+        "反诈案例"
+      ],
+      "involved_platforms": [
+        "微信"
+      ],
+      "victim_group": "网购用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-042",
+      "title": "直播带货刷单诈骗",
+      "summary": "2026年2月，浙江嘉兴钱女士观看某直播时，主播声称“帮直播间刷单，下单后立即返利，还能抽免单”，钱女士添加主播助理微信后，先后下单垫付9.8万元，后续主播及助理均失联，直播间也已注销。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及刷单返利类诈骗（直播带货型）的典型手法：主播以返利为诱饵诱导垫资，后续失联。",
+      "entry_channels": [
+        "微信",
+        "社交平台私信"
+      ],
+      "impersonated_identity": [
+        "无明确冒充"
+      ],
+      "false_belief": [
+        "误以为投资稳赚不赔",
+        "误以为必须立即操作"
+      ],
+      "key_methods": [
+        "小额返利",
+        "私信引流"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "拉黑失联"
+      ],
+      "risk_signals": "主播诱导刷单；垫付资金；高额返利承诺",
+      "risk_level": "中",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "直播间“刷单返利、抽免单”均为诈骗，主播诱导的垫资行为不可信，不向私人账号转账。",
+      "source_name": "嘉兴南湖公安2026年2月反诈通报",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "刷单返利"
+      ],
+      "ccl2023_category": "刷单返利类",
+      "custom_subcategory": "刷单返利类诈骗（直播带货型）",
+      "tags": [
+        "刷单返利类诈骗（直播带货型）",
+        "反诈案例"
+      ],
+      "involved_platforms": [
+        "直播平台",
+        "微信"
+      ],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-043",
+      "title": "群聊刷单连环诈骗",
+      "summary": "2024年12月，河北邯郸赵某被拉入“刷单返利群”，群内“托儿”晒返利截图，赵某参与小额刷单后获得返利，随后被诱导加入“高级刷单群”，需缴纳2000元入群费，缴纳后又被要求垫付15万元，最终资金、入群费均无法追回，群被解散。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及刷单返利类诈骗（群聊连环型）的典型手法，包括小额返利诱饵、托儿制造氛围、入群费及垫资要求，最终失联。",
+      "entry_channels": [
+        "其他"
+      ],
+      "impersonated_identity": [
+        "无明确冒充"
+      ],
+      "false_belief": [
+        "误以为可以轻松赚钱"
+      ],
+      "key_methods": [
+        "小额返利"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "建立信任",
+        "制造压力/诱惑",
+        "诱导操作",
+        "资产获取",
+        "拉黑失联"
+      ],
+      "risk_signals": "陌生人拉入群聊；小额返利诱导；要求缴纳入群费；要求垫付大额资金；群聊突然解散",
+      "risk_level": "中",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "“刷单群”多为诈骗团伙搭建，“托儿”晒图诱导入局，入群费、垫资均为诈骗，不加入陌生刷单群。",
+      "source_name": "邯郸丛台公安2024年12月反诈案例通报",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "刷单返利"
+      ],
+      "ccl2023_category": "刷单返利类",
+      "custom_subcategory": "刷单返利类诈骗（群聊连环型）",
+      "tags": [
+        "刷单返利类诈骗",
+        "群聊连环型"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": "诈骗阶段字段根据描述推断为多个阶段；虚假认知字段从原始‘误以为投资稳赚不赔’调整为更准确的‘误以为可以轻松赚钱’；关键手法字段仅保留原始信息中的‘小额返利’，实际还包括诱导转账等。"
+    },
+    {
+      "case_id": "FZ-044",
+      "title": "短视频评论刷单诈骗",
+      "summary": "2025年5月，陕西西安王某刷短视频时，看到“评论、点赞刷单，每条5元，日结”的评论，添加对方微信后，小额任务返利到账，随后被诱导参与“批量评论单”，垫付7.2万元，提现时被对方以“任务量不达标”拒绝，随后拉黑。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例涉及刷单返利类诈骗典型手法：小额返利诱导、垫资后提现失败、拉黑失联。风险信号包括：虚假兼职信息、诱导下载App或添加私信、前期返利获取信任、后期以任务未完成拒绝提现。",
+      "entry_channels": [
+        "微信",
+        "社交平台私信"
+      ],
+      "impersonated_identity": [
+        "无明确冒充"
+      ],
+      "false_belief": [
+        "误以为可以轻松赚钱"
+      ],
+      "key_methods": [
+        "小额返利",
+        "提现失败",
+        "私信引流",
+        "虚假订单/任务"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "建立信任",
+        "诱导操作",
+        "资产获取",
+        "拉黑失联"
+      ],
+      "risk_signals": "陌生人添加好友；前期小额返利；垫付资金；以任务不达标拒绝提现",
+      "risk_level": "中",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "1. 凡是要求垫资的刷单均为诈骗，切勿相信。2. 短视频平台评论中的兼职信息需核实，不轻易添加陌生微信。3. 遇到提现失败、需继续充值的情况立即停止并报警。4. 下载国家反诈中心APP并开启预警。",
+      "source_name": "西安雁塔公安2025年5月反诈预警",
+      "source_type": "官方",
+      "collection_date": "2025-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "刷单返利"
+      ],
+      "ccl2023_category": "刷单返利类",
+      "custom_subcategory": "刷单返利类诈骗（短视频评论型）",
+      "tags": [
+        "刷单返利",
+        "短视频",
+        "微信引流",
+        "垫资"
+      ],
+      "involved_platforms": [
+        "微信",
+        "短视频平台"
+      ],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "2025-05-15",
+      "remark": "推断字段：risk_signals根据案例描述补充；false_belief原为'误以为投资稳赚不赔'，更正为'误以为可以轻松赚钱'。"
+    },
+    {
+      "case_id": "FZ-045",
+      "title": "刷单返利诈骗",
+      "summary": "市民王女士在家刷社交软件时，看到一条“足不出户、日赚300+，简单刷单秒到账”的兼职广告，广告附带多张他人高额返利截图，打动了想赚零花钱的王女士。她随即添加广告内的QQ号，对方客服热情接待，告知刷单流程简单，无需垫付大额资金。王女士先完成第一笔100元的小额刷单任务，短短5分钟就收到105元（本金+5元返利），成功提现到银行卡，这让王女士彻底放下戒备。随后客服表示，联单任务返利更高，单笔500元以...",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及刷单返利类诈骗的典型手法，包括小额返利建立信任、诱导大额转账、提现失败、要求解冻费等，受害人已转账并泄露银行卡信息，确认为诈骗。",
+      "entry_channels": [
+        "社交平台私信",
+        "QQ"
+      ],
+      "impersonated_identity": [
+        "冒充客服"
+      ],
+      "false_belief": [
+        "误以为对方是官方",
+        "误以为投资稳赚不赔",
+        "误以为必须立即操作"
+      ],
+      "key_methods": [
+        "小额返利",
+        "提现失败",
+        "保证金/解冻费",
+        "虚假客服",
+        "私信引流",
+        "诱导转账",
+        "虚假订单/任务"
+      ],
+      "target_assets": [
+        "钱款",
+        "银行卡信息"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "诱导操作",
+        "资产获取"
+      ],
+      "risk_signals": "要求转账；索要敏感信息；小额返利引诱；提现受阻",
+      "risk_level": "极高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "所有网络刷单都是诈骗！不存在“先垫资、高返利”的正规兼职，切勿轻信社交平台、短信的兼职广告，一旦对方要求连续转账、做联单、交解冻金，立即停止操作并拨打110报警。",
+      "source_name": "某市公安局反诈中心真实接警案例",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "刷单返利"
+      ],
+      "ccl2023_category": "刷单返利类",
+      "custom_subcategory": "刷单返利类诈骗",
+      "tags": [
+        "刷单返利类诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [
+        "QQ",
+        "社交软件"
+      ],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "2025-03-12",
+      "remark": "部分信息推断：入口渠道补充了社交平台私信，诈骗阶段补充了资产获取，风险信号根据常见信号补充。"
+    },
+    {
+      "case_id": "FZ-046",
+      "title": "网络贷款诈骗",
+      "summary": "男子张某经营小本生意，因资金周转困难，急需贷款应急，便在网页搜索“无抵押快速贷款”，跳出一条“无征信要求、秒下款、低利息，最高可贷20万”的广告。张某点击广告，添加客服微信后，对方发送一个虚假贷款APP下载链接，张某下载注册并填写个人信息、银行卡号，提交10万元贷款申请。仅10分钟，APP就显示贷款审核通过，但无法提现，客服随即联系张某，称其填写的银行卡号输入错误，导致贷款资金被银监会冻结，还发送...",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及虚假网络贷款诈骗的典型手法，受害人已转账，涉及银行卡信息",
+      "entry_channels": [
+        "微信",
+        "搜索引擎",
+        "App"
+      ],
+      "impersonated_identity": [
+        "冒充客服"
+      ],
+      "false_belief": [
+        "误以为对方是官方",
+        "误以为网站是正规官网"
+      ],
+      "key_methods": [
+        "钓鱼链接",
+        "仿冒官网",
+        "诱导下载陌生App",
+        "提现失败",
+        "保证金/解冻费",
+        "虚假客服",
+        "搜索引擎引流",
+        "私信引流",
+        "诱导转账",
+        "虚假投资平台"
+      ],
+      "target_assets": [
+        "钱款",
+        "银行卡信息"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "诱导操作",
+        "资产获取",
+        "拉黑失联"
+      ],
+      "risk_signals": "不明链接；要求转账；索要敏感信息",
+      "risk_level": "高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失",
+        "个人信息泄露"
+      ],
+      "prevention_advice": "正规贷款平台绝不会在放款前收取解冻金、保证金、刷流水等任何费用，凡是贷款先交钱的全是诈骗，切勿点击陌生链接下载非官方贷款软件，贷款请选择银行或持牌金融机构。",
+      "source_name": "某省反诈平台通报案例",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "贷款征信"
+      ],
+      "ccl2023_category": "贷款、代办信用卡类",
+      "custom_subcategory": "虚假网络贷款诈骗",
+      "tags": [
+        "虚假网络贷款诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "2025-05-08",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-047",
+      "title": "冒充客服退款诈骗",
+      "summary": "市民李女士在家中接到陌生来电，对方自称某电商平台官方客服，准确说出李女士3天前购买的护肤品订单号、收货地址、商品名称，告知该批次护肤品被检测出重金属超标，为保障消费者权益，可办理双倍退款理赔，还能无需退货直接领取补偿。李女士一听和自己的订单完全吻合，瞬间相信对方身份。对方随后发送一条短信链接，称是专属退款通道，让李女士点击进入，填写姓名、身份证号、银行卡号、银行预留手机号，还要填写收到的短信验证码...",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及冒充电商客服诈骗的典型手法，涉及验证码泄露，涉及银行卡信息；对方准确说出订单信息，诱导点击链接填写敏感信息并索要验证码。",
+      "entry_channels": [
+        "电话",
+        "短信"
+      ],
+      "impersonated_identity": [
+        "冒充电商物流客服"
+      ],
+      "false_belief": [
+        "误以为对方是官方",
+        "误以为有免费福利"
+      ],
+      "key_methods": [
+        "钓鱼链接",
+        "索要验证码",
+        "虚假客服",
+        "虚假订单/任务"
+      ],
+      "target_assets": [
+        "钱款",
+        "银行卡信息",
+        "身份证信息",
+        "手机号",
+        "验证码"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "建立信任",
+        "诱导操作",
+        "资产获取"
+      ],
+      "risk_signals": "陌生联系；不明链接；索要验证码；索要敏感信息",
+      "risk_level": "极高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "接到自称客服的退款、理赔、订单异常电话，务必通过电商平台官方APP、官方客服电话核实，切勿点击陌生短信链接，绝不向任何人透露银行卡密码、短信验证码，这是资金安全的最后防线。",
+      "source_name": "社区反诈宣传真实案例",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "冒充电商物流客服"
+      ],
+      "ccl2023_category": "冒充电商物流客服类",
+      "custom_subcategory": "冒充电商客服诈骗",
+      "tags": [
+        "冒充电商客服诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "网购用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "2025-04-20",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-048",
+      "title": "冒充公检法诈骗",
+      "summary": "退休老人刘阿姨在家接到固定电话，对方自称某市公安局刑侦支队民警，称其银行卡涉嫌洗钱犯罪，涉案金额20万元，已被立案侦查。对方准确报出刘阿姨的身份证号和家庭住址，制造恐慌。随后电话转接给“检察官”，发送伪造的逮捕令、警官证、立案通知书，要求严格保密，并称需将所有存款转入“安全账户”以自证清白。刘阿姨信以为真，按要求转账，导致金钱损失。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及冒充公检法机关诈骗的典型手法：假冒民警和检察官身份，伪造法律文书，利用受害人恐惧心理诱导转账至所谓“安全账户”，受害人已转账造成损失，符合确认诈骗特征。",
+      "entry_channels": [
+        "电话"
+      ],
+      "impersonated_identity": [
+        "冒充公检法"
+      ],
+      "false_belief": [
+        "误以为需要配合调查",
+        "误以为必须立即操作"
+      ],
+      "key_methods": [
+        "安全账户",
+        "诱导转账",
+        "冒充官方通知"
+      ],
+      "target_assets": [
+        "钱款",
+        "银行卡信息",
+        "身份证信息"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "诱导操作",
+        "资产获取"
+      ],
+      "risk_signals": "要求转账；索要敏感信息；提及安全账户",
+      "risk_level": "极高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "公检法机关不存在任何“安全账户”“核查账户”，绝不会通过电话办案、要求转账自证清白，更不会发送逮捕令等文件。接到此类电话立即挂断，直接拨打110核实，切勿轻信。同时，建议老年人遇到此类情况先与家人沟通，或向社区民警咨询。",
+      "source_name": "公安部反诈典型案例",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "冒充公检法"
+      ],
+      "ccl2023_category": "冒充公检法及政府机关类",
+      "custom_subcategory": "冒充公检法机关诈骗",
+      "tags": [
+        "冒充公检法机关诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "老人",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "2025-01-15",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-049",
+      "title": "交友网恋杀猪盘诈骗",
+      "summary": "单身女子陈女士在交友软件上认识一名男子，对方头像帅气、谈吐儒雅，自称在金融公司工作，因工作繁忙一直单身，想找真心人共度余生。两人每天从早到晚聊天，男子对陈女士关怀备至，记住她的喜好，暖心安慰她的情绪，短短半个月，陈女士就深陷这段网恋，对男子无比信任。相处一段时间后，男子无意间透露，自己有内部投资渠道，掌握虚拟货币平台的漏洞，能稳赚不赔，还晒出自己的盈利截图，称想带着陈女士一起赚钱，给她更好的生活。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及杀猪盘（交友投资）诈骗的典型手法，包括建立情感信任、虚假投资平台、小额返利诱导、最终提现失败、要求保证金解冻费等，受害人已转账造成损失。",
+      "entry_channels": [
+        "其他"
+      ],
+      "impersonated_identity": [
+        "无明确冒充"
+      ],
+      "false_belief": [
+        "误以为投资稳赚不赔"
+      ],
+      "key_methods": [
+        "诱导转账",
+        "虚假投资平台"
+      ],
+      "target_assets": [
+        "钱款",
+        "虚拟货币"
+      ],
+      "fraud_stage": [
+        "建立信任",
+        "诱导操作",
+        "拉黑失联"
+      ],
+      "risk_signals": "要求转账；承诺高回报；网络交友诱导投资",
+      "risk_level": "高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "网络交友需擦亮双眼，不轻信陌生网友的“稳赚不赔”投资机会，不向陌生账户转账。",
+      "source_name": "某市刑侦支队",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "虚假网络投资理财"
+      ],
+      "ccl2023_category": "虚假网络投资理财类",
+      "custom_subcategory": "杀猪盘（交友投资）诈骗",
+      "tags": [
+        "杀猪盘（交友投资）诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-050",
+      "title": "虚假投资理财诈骗",
+      "summary": "市民赵某偶然被拉入一个股票投资微信群，群内有200多人，每天都有“资深理财老师”免费直播讲课，讲解股票走势、投资技巧，群内还有不少“学员”不断发送盈利截图，夸赞老师专业，氛围十分热烈。赵某观察了几天，发现老师推荐的股票都有小幅上涨，便慢慢放下戒心，添加老师为好友。老师告知赵某，股票收益慢，自己合作的虚拟理财平台收益更高，日收益可达5%-10%，还一对一指导赵某下载虚假理财APP。赵某先充值1万元，...",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及虚假投资理财诈骗的典型手法：冒充理财老师、虚假投资平台、高收益诱惑、诱导下载未知APP、提现失败等，符合确认诈骗特征。",
+      "entry_channels": [
+        "微信",
+        "App",
+        "社交平台私信"
+      ],
+      "impersonated_identity": [
+        "冒充投资导师"
+      ],
+      "false_belief": [
+        "误以为对方是官方",
+        "误以为有免费福利",
+        "误以为投资稳赚不赔"
+      ],
+      "key_methods": [
+        "诱导下载陌生App",
+        "提现失败",
+        "私信引流",
+        "虚假投资平台"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "制造压力/诱惑",
+        "诱导操作",
+        "拉黑失联"
+      ],
+      "risk_signals": "陌生投资群推荐；虚假APP下载；高收益诱惑；提现失败",
+      "risk_level": "高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "高收益必然伴随高风险，凡是承诺“稳赚不赔、保本高息”的投资理财，全是骗局。正规投资需通过银行、证券所等持牌金融机构，切勿轻信陌生投资群、理财老师，不盲目跟风转账。",
+      "source_name": "金融反诈中心通报案例",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "虚假网络投资理财"
+      ],
+      "ccl2023_category": "虚假网络投资理财类",
+      "custom_subcategory": "虚假投资理财诈骗",
+      "tags": [
+        "虚假投资理财诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [
+        "微信",
+        "虚假理财APP"
+      ],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "2025-06-05",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-051",
+      "title": "游戏账号装备交易诈骗",
+      "summary": "中学生小林酷爱某热门手游，花费大量时间和金钱打造了高级账号和稀有装备，因学业原因想出售账号，便在游戏论坛、社交平台发布出售信息。很快有一名买家联系小林，称很喜欢这个账号，愿意高价收购，但表示官方交易平台手续费高、流程慢，提议私下交易，还承诺先付定金。买家先发了一张200元的虚假定金转账截图，让小林先提供账号密码、绑定手机号，帮忙验号，确认无误后就付全款。小林看到定金截图，便放松警惕，将账号密码、手机号等信息提供给了对方。随后买家失联，小林发现账号已被盗并改密，损失了账号内价值数千元的游戏装备。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及游戏账号装备交易诈骗的典型手法：伪造定金截图骗取信任，诱导脱离官方平台私下交易，到手后拉黑失联，符合确认诈骗特征。",
+      "entry_channels": [
+        "游戏平台私信"
+      ],
+      "impersonated_identity": [
+        "无明确冒充"
+      ],
+      "false_belief": [
+        "误以为对方是官方"
+      ],
+      "key_methods": [
+        "仿冒官网",
+        "保证金/解冻费",
+        "虚假交易",
+        "诱导转账"
+      ],
+      "target_assets": [
+        "钱款",
+        "手机号",
+        "平台账号",
+        "账号密码",
+        "游戏饰品"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "建立信任",
+        "诱导操作",
+        "拉黑失联"
+      ],
+      "risk_signals": "虚假定金转账截图；要求先提供账号密码和绑定手机号；引导脱离官方交易平台；私下交易无保障",
+      "risk_level": "高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失",
+        "账号被盗"
+      ],
+      "prevention_advice": "游戏账号、皮肤、装备交易，务必通过游戏官方交易平台完成，切勿私下交易、QQ微信直接转账。绝不提前向他人提供账号密码、验证码，遇到先给截图再要账号的买家，一律拒绝，谨防被骗。",
+      "source_name": "青少年反诈宣传案例",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "网络游戏产品虚假交易"
+      ],
+      "ccl2023_category": "网络游戏产品虚假交易类",
+      "custom_subcategory": "游戏账号装备交易诈骗",
+      "tags": [
+        "游戏账号装备交易诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "学生；游戏玩家",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "2025-04-18",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-052",
+      "title": "兼职求职诈骗",
+      "summary": "应届毕业生小周急于找工作，在招聘网站看到一家公司招聘行政文员，月薪5000+、包吃住且无需经验，遂投递简历。收到面试通知后，对方通过微信进行简单线上面试，当即表示录用，但要求缴纳服装费、押金、培训费共计2000元，承诺入职满一个月后全额返还。小周转账后，对方失联。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及虚假求职兼职诈骗的典型手法：招聘方要求求职者入职前缴纳各种费用（服装费、押金、培训费），并承诺退还，这是明显的诈骗信号。受害人已转账，且事后对方失联，符合诈骗特征。",
+      "entry_channels": [
+        "微信"
+      ],
+      "impersonated_identity": [
+        "冒充招聘人员"
+      ],
+      "false_belief": [
+        "其他"
+      ],
+      "key_methods": [
+        "诱导转账"
+      ],
+      "target_assets": [
+        "钱款",
+        "银行卡信息",
+        "身份证信息"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "诱导操作",
+        "资产获取",
+        "拉黑失联"
+      ],
+      "risk_signals": "要求转账；索要敏感信息",
+      "risk_level": "高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "正规企业招聘绝不会以任何理由收取押金、服装费、培训费等费用。求职者应通过正规招聘平台或人才市场寻找工作，凡是入职前要求先交钱的，均为诈骗，应立即停止操作并报警。",
+      "source_name": "人社部门联合反诈通报案例",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "其他/无法对应"
+      ],
+      "ccl2023_category": "虚假购物、服务类",
+      "custom_subcategory": "虚假求职兼职诈骗",
+      "tags": [
+        "虚假求职兼职诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "学生",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "2025-03-25",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-053",
+      "title": "冒充熟人微信借钱诈骗",
+      "summary": "市民小郑微信收到好友添加申请，对方头像、昵称和自己的远房亲戚一模一样，添加后对方开口就说：“我是你XX姨，我手机坏了，刚换手机登微信，聊天记录都没了，现在有急事急需用钱，能不能先转5000元救急，明天就还你！”对方还发送了一张亲戚的生活照片，语气和平时亲戚说话的风格相似，小郑没有多想，也没有打电话、发视频核实身份，觉得亲戚有难理应帮忙，便直接微信转账5000元。转账后，对方又以“钱不够，再借2000元”为由继续索要，小郑察觉不对劲才报警。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及冒充亲友借钱诈骗的典型手法，受害人已转账",
+      "entry_channels": [
+        "电话",
+        "微信"
+      ],
+      "impersonated_identity": [
+        "冒充亲友"
+      ],
+      "false_belief": [
+        "其他"
+      ],
+      "key_methods": [
+        "私信引流",
+        "诱导转账"
+      ],
+      "target_assets": [
+        "钱款",
+        "手机号"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "诱导操作"
+      ],
+      "risk_signals": "要求转账；冒充熟人；紧急借钱",
+      "risk_level": "高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "微信、QQ等社交软件上，凡是好友、亲戚借钱、转账，务必通过电话、视频当面核实身份，不核实绝不转账。遇到好友借钱语气急促、理由紧急，更要提高警惕，谨防账号被盗被冒充。",
+      "source_name": "派出所日常接警典型案例",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "冒充领导熟人"
+      ],
+      "ccl2023_category": "冒充领导、熟人类",
+      "custom_subcategory": "冒充亲友借钱诈骗",
+      "tags": [
+        "冒充亲友借钱诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "2025-08-03",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-054",
+      "title": "快递理赔退费诈骗",
+      "summary": "市民孙先生接到陌生手机号来电，对方自称某快递公司客服，语气诚恳地告知孙先生，其购买的快递包裹在运输途中丢失，公司可办理全额理赔，还准确说出孙先生的快递单号、收货地址、商品名称，孙先生核对后发现完全吻合，便相信了对方。客服表示，理赔无需联系商家，直接通过专属二维码办理，更快到账，随后发送一个二维码，让孙先生扫码填写银行卡信息、身份证号和短信验证码。孙先生扫码后按提示操作，刚填写完验证码，就收到银行扣款短信，发现银行卡内资金被转走。这是一个典型的快递理赔诈骗案例。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及快递物流理赔诈骗的典型手法，涉及验证码泄露，涉及银行卡信息",
+      "entry_channels": [
+        "电话",
+        "短信",
+        "二维码"
+      ],
+      "impersonated_identity": [
+        "冒充客服"
+      ],
+      "false_belief": [
+        "误以为对方是官方"
+      ],
+      "key_methods": [
+        "索要验证码",
+        "虚假客服",
+        "诱导扫码"
+      ],
+      "target_assets": [
+        "钱款",
+        "银行卡信息",
+        "身份证信息",
+        "手机号",
+        "验证码"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "建立信任",
+        "诱导操作",
+        "资产获取"
+      ],
+      "risk_signals": "陌生联系；陌生二维码；索要验证码；索要敏感信息",
+      "risk_level": "极高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失",
+        "个人信息泄露"
+      ],
+      "prevention_advice": "快递丢失、损毁理赔，务必通过购物平台官方客服、快递公司官方电话办理，陌生电话、二维码、链接一律不点，绝不透露验证码和银行卡信息，谨防理赔变被骗。",
+      "source_name": "全国反诈中心高发案例",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "冒充电商物流客服"
+      ],
+      "ccl2023_category": "冒充电商物流客服类",
+      "custom_subcategory": "快递物流理赔诈骗",
+      "tags": [
+        "快递物流理赔诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "2025-06-22",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-055",
+      "title": "免费领皮肤诈骗",
+      "summary": "初中生小夏在班级群、游戏群看到多条广告，内容为“扫码免费领游戏限定皮肤、微信888元大额红包、视频会员年卡”，广告配有精美的皮肤图片和红包截图，吸引了小夏的注意。小夏扫码后，进入一个虚假网页，页面提示“需将本条链接分享到3个微信群或QQ群，才能解锁领取资格”，小夏按要求分享完毕，页面又弹出填写框，要求输入游戏账号密码、微信账号和手机号，还索要短信验证码。小夏一心想领皮肤，全部如实填写，提交后页面显示“领取成功”，但随后账号被盗，微信钱包零钱被转走。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及诱导扫码领福利诈骗的典型手法，涉及验证码泄露，符合确认诈骗的判断标准。",
+      "entry_channels": [
+        "短信",
+        "微信",
+        "QQ",
+        "搜索引擎",
+        "二维码",
+        "游戏平台私信"
+      ],
+      "impersonated_identity": [
+        "无明确冒充"
+      ],
+      "false_belief": [
+        "误以为账号存在风险",
+        "误以为有免费福利"
+      ],
+      "key_methods": [
+        "钓鱼链接",
+        "仿冒官网",
+        "索要验证码",
+        "诱导扫码"
+      ],
+      "target_assets": [
+        "钱款",
+        "手机号",
+        "验证码",
+        "平台账号",
+        "账号密码",
+        "游戏饰品"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "诱导操作"
+      ],
+      "risk_signals": "不明链接；索要验证码",
+      "risk_level": "极高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "“免费领皮肤、红包、会员”全是骗子的诱饵，目的是盗取账号和个人信息。不要随意扫陌生二维码、转发不明链接，不泄露账号密码、验证码，提醒身边同学远离此类虚假福利广告。",
+      "source_name": "青少年高发反诈案例",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "虚假购物服务"
+      ],
+      "ccl2023_category": "虚假购物、服务类",
+      "custom_subcategory": "诱导扫码领福利诈骗",
+      "tags": [
+        "诱导扫码领福利诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "2025-07-17",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-056",
+      "title": "征信修复洗白诈骗",
+      "summary": "市民王先生因信用卡逾期影响贷款，在网上搜索“征信修复”，看到广告称“内部渠道、专人操作、百分百成功”，添加客服微信后，客服要求先交一半定金，并发送成功截图。王先生支付3000元定金后，对方失联。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及征信修复代办诈骗的典型手法，包括虚假广告、内部渠道承诺、定金要求等，符合诈骗特征。",
+      "entry_channels": [
+        "微信",
+        "搜索引擎"
+      ],
+      "impersonated_identity": [
+        "冒充客服"
+      ],
+      "false_belief": [
+        "误以为对方是官方"
+      ],
+      "key_methods": [
+        "虚假客服",
+        "搜索引擎引流",
+        "私信引流"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "拉黑失联"
+      ],
+      "risk_signals": "声称内部渠道、专人操作、百分百成功；要求先交定金；用他人成功截图骗取信任",
+      "risk_level": "中",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "征信记录由中国人民银行征信系统统一管理，任何机构和个人都无法花钱洗白、修复、消除逾期记录，“征信修复、内部消记录”全是诈骗，有征信问题请通过正规银行渠道咨询处理。",
+      "source_name": "金融反诈典型案例",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "贷款征信"
+      ],
+      "ccl2023_category": "贷款、代办信用卡类",
+      "custom_subcategory": "征信修复代办诈骗",
+      "tags": [
+        "征信修复代办诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [
+        "微信"
+      ],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "2025-05-25",
+      "remark": "风险信号根据案例描述补充"
+    },
+    {
+      "case_id": "FZ-057",
+      "title": "黄牛票务诈骗",
+      "summary": "大学生小李因未能抢到演唱会门票，在微博、小红书等社交平台寻找转票信息。一名用户自称正规黄牛，发布有两张内场票低价转卖，并附带门票照片。小李联系后，对方要求先付200元定金锁定门票，尾款3000元在发货前付清，并承诺快递邮寄，发送虚假快递单号。小李付定金后，对方催促付尾款，小李付完尾款后对方失联，造成损失3200元。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及非官方渠道交易、预付定金、虚假快递单号、催促付款后失联等典型诈骗风险信号。对方利用用户急于购票的心理，通过虚假门票照片和快递单号建立信任，最终骗取钱财。",
+      "entry_channels": [
+        "社交平台私信"
+      ],
+      "impersonated_identity": [
+        "无明确冒充"
+      ],
+      "false_belief": [
+        "误以为对方有权威身份",
+        "误以为交易受到平台保护"
+      ],
+      "key_methods": [
+        "私信引流",
+        "虚假订单/任务",
+        "诱导转账"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "建立信任",
+        "制造压力/诱惑",
+        "诱导操作",
+        "资产获取",
+        "拉黑失联"
+      ],
+      "risk_signals": "非官方渠道交易；预付定金；虚假快递单号；催促付款；陌生人转账",
+      "risk_level": "中",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "演唱会、演出、高铁、机票等票务，务必通过官方渠道或正规票务平台购买，切勿轻信社交平台的个人转票、黄牛票。凡是要求先付定金、全款或保证金的，都是诈骗。不要相信任何非官方快递单号，付款前应通过官方渠道核实。如发现被骗，立即报警并保留聊天记录、转账凭证。",
+      "source_name": "演唱会节假日高发案例",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "虚假购物服务"
+      ],
+      "ccl2023_category": "虚假购物、服务类",
+      "custom_subcategory": "虚假票务黄牛诈骗",
+      "tags": [
+        "虚假票务黄牛诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [
+        "微博",
+        "小红书"
+      ],
+      "victim_group": "学生",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "2025-09-10",
+      "remark": "根据案例描述推断部分字段，如false_belief选用了'误以为对方有权威身份'和'误以为交易受到平台保护'，因案例中对方自称正规黄牛并提供虚假快递单号。"
+    },
+    {
+      "case_id": "FZ-058",
+      "title": "虚假购物/秒杀诈骗",
+      "summary": "市民刘女士在二手交易平台、朋友圈看到一条“双11提前秒杀，品牌护肤品一折抢购”的广告，价格远低于市场价，还附带大量买家晒单好评截图。刘女士心动不已，联系卖家后，对方称不走平台交易可再优惠，发送私人收款码让刘女士直接转账。刘女士转完账后，对方又以“需补差价、交保证金、缴纳税费”为由要求继续转账，刘女士察觉不对要求退款，却被对方拉黑，最终既没收到商品，也无法追回钱款。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及虚假购物、秒杀促销诈骗的典型手法，受害人已转账",
+      "entry_channels": [
+        "微信"
+      ],
+      "impersonated_identity": [
+        "无明确冒充"
+      ],
+      "false_belief": [
+        "其他"
+      ],
+      "key_methods": [
+        "保证金/解冻费",
+        "虚假交易",
+        "诱导转账"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "诱导操作",
+        "拉黑失联"
+      ],
+      "risk_signals": "要求转账",
+      "risk_level": "高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "低价秒杀、一折抢购多为骗局，购物务必通过官方平台交易，切勿脱离平台私下转账，凡是要求先付款再发货的，一律拒绝，谨防钱货两空。",
+      "source_name": "电商平台反诈中心预警案例",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "虚假购物服务"
+      ],
+      "ccl2023_category": "虚假购物、服务类",
+      "custom_subcategory": "虚假购物、秒杀促销诈骗",
+      "tags": [
+        "虚假购物、秒杀促销诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "2025-10-12",
+      "remark": "根据场景简述推断造成金钱损失，原信息中loss_occurred和loss_type有误"
+    },
+    {
+      "case_id": "FZ-059",
+      "title": "冒充老师收费诈骗",
+      "summary": "家长王女士收到一条自称“孩子班主任”的微信好友申请，对方头像、昵称都和班级群里的老师一致，添加后说“学校要统一收取资料费、校服费，直接转账给我就行，不用再交现金”，还发送了伪造的收费通知。王女士没核实，直接转账800元，随后在班级群里才发现，真正的老师并未发布任何收费通知，对方是冒充老师的骗子。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及冒充老师/辅导员收费诈骗的典型手法，受害人已转账",
+      "entry_channels": [
+        "微信"
+      ],
+      "impersonated_identity": [
+        "冒充领导熟人"
+      ],
+      "false_belief": [
+        "误以为对方有权威身份"
+      ],
+      "key_methods": [
+        "私信引流",
+        "诱导转账"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "诱导操作"
+      ],
+      "risk_signals": "陌生人冒充老师要求转账；未经核实即转账",
+      "risk_level": "高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "凡是老师通过微信/QQ私下收取费用的，务必通过电话、班级群核实身份，切勿直接转账，学校收费都会通过正规渠道通知，不会私下催缴。",
+      "source_name": "校园反诈典型案例",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "其他/无法对应"
+      ],
+      "ccl2023_category": "冒充领导、熟人类",
+      "custom_subcategory": "冒充老师/辅导员收费诈骗",
+      "tags": [
+        "冒充老师/辅导员收费诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "2025-11-03",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-060",
+      "title": "宠物领养/救助诈骗",
+      "summary": "网友小张想领养一只宠物猫，在社交平台看到一条“免费领养布偶猫，只求爱心人士善待”的帖子，附带可爱的猫咪照片。联系发布者后，对方说猫咪已不在本地，需要支付运费、检疫费才能邮寄，小张先后转账300元运费、200元检疫费后，对方又以“猫咪应激、需买指定用品”为由继续要钱，小张拒绝后被拉黑，猫咪从未收到。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及虚假宠物领养、救助诈骗的典型手法，受害人已转账",
+      "entry_channels": [
+        "社交平台私信"
+      ],
+      "impersonated_identity": [
+        "无明确冒充"
+      ],
+      "false_belief": [
+        "误以为有免费福利"
+      ],
+      "key_methods": [
+        "诱导转账"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "诱导操作",
+        "拉黑失联"
+      ],
+      "risk_signals": "要求转账；非正规平台交易",
+      "risk_level": "高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "免费领养宠物多为诱饵，凡是以运费、检疫费、用品费为由提前收费的，全是诈骗，领养宠物务必当面核实，不私下转账。",
+      "source_name": "社交平台高发诈骗案例",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "其他/无法对应"
+      ],
+      "ccl2023_category": "虚假购物、服务类",
+      "custom_subcategory": "虚假宠物领养、救助诈骗",
+      "tags": [
+        "虚假宠物领养、救助诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "2025-08-20",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-061",
+      "title": "“ETC异常/失效”诈骗",
+      "summary": "车主陈先生收到一条短信，称“您的ETC账户已过期/异常，将影响高速通行，请点击链接办理更新”，附带一个仿冒的官方链接。陈先生点击链接后，页面要求填写车牌号、银行卡号、短信验证码，填写完成后，银行卡内2000元被转走，联系官方客服才知道ETC根本没有异常。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及ETC异常、账户冻结诈骗的典型手法，涉及验证码泄露，涉及银行卡信息",
+      "entry_channels": [
+        "短信"
+      ],
+      "impersonated_identity": [
+        "冒充客服"
+      ],
+      "false_belief": [
+        "误以为对方是官方"
+      ],
+      "key_methods": [
+        "钓鱼链接",
+        "仿冒官网",
+        "索要验证码",
+        "虚假客服"
+      ],
+      "target_assets": [
+        "钱款",
+        "银行卡信息",
+        "验证码"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "诱导操作",
+        "资产获取"
+      ],
+      "risk_signals": "不明链接；索要验证码；索要敏感信息",
+      "risk_level": "极高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "ETC相关通知务必通过官方APP、线下网点核实，陌生短信链接一律不点，绝不透露银行卡信息和验证码，谨防被仿冒网站盗刷。",
+      "source_name": "交通部门联合反诈通报案例",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "其他/无法对应"
+      ],
+      "ccl2023_category": "冒充电商物流客服类",
+      "custom_subcategory": "ETC异常、账户冻结诈骗",
+      "tags": [
+        "ETC异常、账户冻结诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "车主",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "2025-07-05",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-062",
+      "title": "“医保/社保异常”诈骗",
+      "summary": "市民周女士接到电话，对方自称医保局工作人员，说她的医保卡涉嫌违规报销，已被冻结，需按提示操作解冻。对方发送虚假链接，让周女士填写身份证号、银行卡信息和验证码，还要求转账验证账户，周女士操作后，账户内资金被转走，才发现被骗。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及医保/社保账户异常诈骗的典型手法，受害人已转账，涉及验证码泄露，涉及银行卡信息",
+      "entry_channels": [
+        "电话"
+      ],
+      "impersonated_identity": [
+        "无明确冒充"
+      ],
+      "false_belief": [
+        "误以为需要配合调查"
+      ],
+      "key_methods": [
+        "钓鱼链接",
+        "仿冒官网",
+        "索要验证码",
+        "保证金/解冻费",
+        "诱导转账"
+      ],
+      "target_assets": [
+        "钱款",
+        "银行卡信息",
+        "身份证信息",
+        "验证码"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "诱导操作",
+        "资产获取"
+      ],
+      "risk_signals": "不明链接；要求转账；索要验证码；索要敏感信息",
+      "risk_level": "极高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失",
+        "个人信息泄露"
+      ],
+      "prevention_advice": "医保、社保异常问题，官方绝不会通过电话或短信要求转账、提供验证码，接到此类通知，务必拨打官方电话或到线下窗口核实，切勿轻信陌生来电和链接。",
+      "source_name": "医保系统反诈预警案例",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "其他/无法对应"
+      ],
+      "ccl2023_category": "冒充公检法及政府机关类",
+      "custom_subcategory": "医保/社保账户异常诈骗",
+      "tags": [
+        "医保/社保账户异常诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "2025-09-01",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-063",
+      "title": "投资理财群“荐股诈骗”",
+      "summary": "股民李先生被拉入一个“牛股交流群”，群内有“资深分析师”免费荐股，每天都有群友晒出高额盈利截图。李先生跟着买了几次，确实小赚，随后“分析师”推荐一个内部交易平台，说收益更高。李先生充值后，初期能提现，加大投入后平台突然无法登录，群里所有人都失联，李先生才发现群里大部分是托，平台也是假的，损失惨重。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "陌生人拉群荐股、群内晒高额盈利截图、诱导下载非官方平台、初期小额可提现、后期无法提现、平台无法登录，符合投资理财类诈骗典型特征。",
+      "entry_channels": [
+        "微信"
+      ],
+      "impersonated_identity": [
+        "无明确冒充"
+      ],
+      "false_belief": [
+        "误以为有免费福利",
+        "误以为投资稳赚不赔"
+      ],
+      "key_methods": [
+        "虚假投资平台",
+        "提现失败",
+        "虚假交易"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "资产获取",
+        "拉黑失联"
+      ],
+      "risk_signals": "陌生人拉群荐股；群内有托晒单；诱导转入非官方平台；初期小额返利；后期无法提现；平台无法登录",
+      "risk_level": "高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "凡是荐股群、理财老师推荐的非官方交易平台，全是诈骗。正规股票交易只能通过持牌券商APP，切勿被高收益诱惑，不盲目跟风充值。如遇可疑情况，立即拨打96110反诈专线咨询。",
+      "source_name": "证监会联合反诈中心通报案例",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "虚假网络投资理财"
+      ],
+      "ccl2023_category": "虚假网络投资理财类",
+      "custom_subcategory": "虚假荐股、投资群杀猪盘诈骗",
+      "tags": [
+        "虚假荐股",
+        "投资群杀猪盘诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [
+        "微信"
+      ],
+      "victim_group": "股民",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "2025-10-28",
+      "remark": "entry_channels从'其他'推断为'微信'；risk_level从'中'调整为'高'"
+    },
+    {
+      "case_id": "FZ-064",
+      "title": "兼职刷单返利诈骗（发案率最高）",
+      "summary": "2026年1月，安徽舒城邓女士刷到“直播间听课+下单返利”兼职广告，添加“客服”微信。初期小额任务返利到账，放松警惕后，对方诱导连续大额下单，累计垫付12.44万元。申请提现时，对方以“账户未达标”拒绝，随后失联。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及刷单返利类诈骗的典型手法：先小额返利获取信任，再诱导大额垫资，最后以各种理由拒绝提现并失联。",
+      "entry_channels": [
+        "微信",
+        "搜索引擎",
+        "社交平台私信"
+      ],
+      "impersonated_identity": [
+        "冒充客服"
+      ],
+      "false_belief": [
+        "误以为对方是官方",
+        "误以为投资稳赚不赔"
+      ],
+      "key_methods": [
+        "小额返利",
+        "提现失败",
+        "虚假客服",
+        "私信引流",
+        "虚假订单/任务"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "建立信任",
+        "拉黑失联"
+      ],
+      "risk_signals": "兼职广告引流；小额返利获取信任；诱导大额垫资；提现被拒",
+      "risk_level": "极高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "1. 法律红线：网络刷单本身属于违法行为，不受法律保护。2. 核心套路：先小额返利获取信任→诱导大额垫资→以“冻结/卡单/升级”为由拒绝提现→拉黑消失。3. 防范要点：不轻信“日赚几百、零门槛”兼职；任何要求先垫资、充值、交保证金的兼职都是诈骗。",
+      "source_name": "舒城公安",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "刷单返利"
+      ],
+      "ccl2023_category": "刷单返利类",
+      "custom_subcategory": "刷单返利",
+      "tags": [
+        "刷单返利",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-065",
+      "title": "冒充公检法诈骗（恐吓式高发）",
+      "summary": "2024年5月，江苏无锡杜某接到视频电话，对方身着制服自称“市公安局民警”，指控其银行卡涉嫌洗钱，需配合调查。对方发送虚假“通缉令”，要求下载会议软件开启屏幕共享，核查资金流水。随后指令其将全部存款转入“安全账户”，并贷款15万元一并转入，所幸被家人及时阻止，未造成全额损失。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "冒充公检法身份，发送虚假通缉令，要求下载陌生App并开启屏幕共享，诱导将资金转入所谓“安全账户”，属于典型的冒充公检法诈骗手法，且已进入资产获取阶段，虽被阻止但风险极高。",
+      "entry_channels": [
+        "电话"
+      ],
+      "impersonated_identity": [
+        "冒充公检法"
+      ],
+      "false_belief": [
+        "误以为需要配合调查"
+      ],
+      "key_methods": [
+        "仿冒官网",
+        "诱导下载陌生App",
+        "屏幕共享",
+        "安全账户",
+        "冒充官方通知"
+      ],
+      "target_assets": [
+        "钱款",
+        "银行卡信息"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "诱导操作",
+        "资产获取"
+      ],
+      "risk_signals": "要求屏幕共享；索要敏感信息；提及安全账户；发送虚假通缉令",
+      "risk_level": "高",
+      "loss_occurred": "未造成但存在风险",
+      "loss_type": [
+        "未造成损失"
+      ],
+      "prevention_advice": "1. 权威常识：公检法机关不会通过电话/视频办案，不会发送通缉令、逮捕令等电子文书。2. 核心套路：冒充警官/检察官→谎称涉嫌洗钱/诈骗→出示虚假法律文书恐吓→要求屏幕共享/远程控制→诱导转账至“安全账户”。3. 防范要点：凡是要求“保密、转账、屏幕共享”的公检法来电，100%是诈骗；可直接挂断并拨打110核实。",
+      "source_name": "江苏省无锡市公安局反诈中心2024年第二季度反诈案例通报",
+      "source_type": "官方",
+      "collection_date": "2024-05-20",
+      "is_desensitized": "是",
+      "official_category": [
+        "冒充公检法"
+      ],
+      "ccl2023_category": "冒充公检法及政府机关类",
+      "custom_subcategory": "冒充公检法",
+      "tags": [
+        "冒充公检法",
+        "反诈案例",
+        "屏幕共享"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通居民",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": "案例编号和采集日期根据原始信息推断；性质判断从“疑似诈骗”调整为“确认诈骗”，因符合典型诈骗特征。"
+    },
+    {
+      "case_id": "FZ-066",
+      "title": "冒充熟人/领导诈骗（情感信任利用）",
+      "summary": "2024年1月，江苏镇江方某在微博收到私信，对方头像、昵称与亲姐姐完全一致，称手机卡销户，无法登录其他账号，请求帮忙垫付名牌包尾款。方某未核实身份，按“客服”要求转账垫付，后发现真正姐姐并未联系自己，被骗金额累计数万元。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及冒充领导/熟人类诈骗的典型手法，受害人已转账，损失数万元，符合确认诈骗的判定。",
+      "entry_channels": [
+        "其他"
+      ],
+      "impersonated_identity": [
+        "冒充客服",
+        "冒充领导熟人",
+        "冒充亲友"
+      ],
+      "false_belief": [
+        "误以为对方是官方"
+      ],
+      "key_methods": [
+        "虚假客服",
+        "私信引流",
+        "诱导转账"
+      ],
+      "target_assets": [
+        "钱款",
+        "手机号",
+        "平台账号",
+        "账号密码"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "诱导操作",
+        "拉黑失联"
+      ],
+      "risk_signals": "要求转账",
+      "risk_level": "高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "1. 伪造手段：诈骗分子通过社交平台盗取头像、昵称、动态，高仿熟人账号，难以一眼识别。\n2. 核心套路：高仿账号添加好友→编造“手机注销/换号/不方便接电话”理由→紧急请求转账/代付→发送虚假转账截图骗取信任。\n3. 防范要点：熟人线上借钱/代付，务必通过电话、视频当面核实身份；不轻易点击陌生链接、代付陌生订单。",
+      "source_name": "镇江市公安局京口分局官方微博“京口公安”2024年1月反诈预警案例",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "冒充领导熟人"
+      ],
+      "ccl2023_category": "冒充领导、熟人类",
+      "custom_subcategory": "冒充领导/熟人类诈骗",
+      "tags": [
+        "冒充领导/熟人类诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-067",
+      "title": "虚假网络投资理财诈骗（损失金额最高）",
+      "summary": "2025年3月，江苏王先生被拉入“内部炒股群”，群内“导师”直播荐股，“托儿”晒高额盈利截图。诱导下载虚假投资APP，初期小额投入提现成功，放松警惕后，18天内陆续投入28万元。当申请大额提现时，APP无法登录，“导师”失联，平台彻底消失。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及虚假网络投资理财类诈骗的典型手法：通过社交平台引流、虚假导师荐股、诱导下载仿冒APP、小额返利建立信任、大额投入后平台跑路。",
+      "entry_channels": [
+        "App",
+        "社交平台私信"
+      ],
+      "impersonated_identity": [
+        "冒充投资导师"
+      ],
+      "false_belief": [
+        "误以为投资稳赚不赔"
+      ],
+      "key_methods": [
+        "仿冒官网",
+        "诱导下载陌生App",
+        "小额返利",
+        "提现失败",
+        "虚假投资平台"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "建立信任",
+        "诱导操作",
+        "拉黑失联"
+      ],
+      "risk_signals": "信息不足",
+      "risk_level": "极高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "1. 平台真相：无监管资质、无官方备案的投资APP都是虚假平台，服务器多在境外，资金无法追回。2. 核心套路：社交平台引流→“导师”荐股/晒盈利→诱导下载虚假APP→小额试水返利→大额投入后平台跑路。3. 防范要点：“低风险、高回报、稳赚不赔”是诈骗专属话术；正规理财需通过银行、券商等持牌机构购买。",
+      "source_name": "公安部刑侦局官方微信公众号“刑侦局”2025年4月典型诈骗案例通报。",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "虚假网络投资理财"
+      ],
+      "ccl2023_category": "虚假网络投资理财类",
+      "custom_subcategory": "虚假网络投资理财类诈骗（损失金额最高）。",
+      "tags": [
+        "虚假网络投资理财类诈骗（损失金额最高）。",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-068",
+      "title": "游戏账号虚假交易诈骗（青少年高发）",
+      "summary": "2023年2月，江苏镇江王某在游戏交易APP出售手游账号，收到“买家”私聊，商定830元交易。对方发送含二维码的虚假交易截图，谎称已下单，要求扫码联系“官方客服”确认。王某扫码进入虚假平台，被“客服”以“缴纳交易保证金”为由，先后转账6000元，后被拉黑，账号、资金双失。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及网络游戏虚假交易类诈骗的典型手法，受害人已转账。",
+      "entry_channels": [
+        "App",
+        "二维码",
+        "游戏平台私信"
+      ],
+      "impersonated_identity": [
+        "冒充客服"
+      ],
+      "false_belief": [
+        "误以为对方是官方"
+      ],
+      "key_methods": [
+        "仿冒官网",
+        "保证金/解冻费",
+        "虚假客服",
+        "虚假交易",
+        "诱导扫码",
+        "诱导转账"
+      ],
+      "target_assets": [
+        "钱款",
+        "平台账号",
+        "账号密码",
+        "游戏饰品"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "诱导操作",
+        "拉黑失联"
+      ],
+      "risk_signals": "陌生二维码；要求转账",
+      "risk_level": "高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "1. 交易原则：游戏账号/装备交易必须通过官方正规平台，私下交易无任何保障。2. 核心套路：冒充买家/卖家→诱导脱离正规平台→发送虚假交易截图/二维码→以“保证金/解冻费/手续费”为由诈骗→拉黑跑路。3. 防范要点：不扫陌生交易二维码；任何“先交钱再交易”的要求都是诈骗；交易前核实平台官网真伪。",
+      "source_name": "江苏省公安厅官方网站“平安江苏”2023年青少年反诈专项案例通报",
+      "source_type": "官方",
+      "collection_date": "2023-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "网络游戏产品虚假交易"
+      ],
+      "ccl2023_category": "网络游戏产品虚假交易类",
+      "custom_subcategory": "网络游戏虚假交易类诈骗",
+      "tags": [
+        "网络游戏虚假交易类诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "游戏玩家",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-069",
+      "title": "虚假投资理财诈骗",
+      "summary": "2025年3月，江苏王先生被拉入炒股群，诱导下载虚假APP，投入28万元后无法登录、导师失联。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及虚假网络投资理财类诈骗的典型手法，包括冒充投资导师、诱导下载虚假APP、承诺高收益后无法提现。",
+      "entry_channels": [
+        "App"
+      ],
+      "impersonated_identity": [
+        "冒充投资导师"
+      ],
+      "false_belief": [
+        "误以为投资稳赚不赔"
+      ],
+      "key_methods": [
+        "仿冒官网",
+        "诱导下载陌生App",
+        "虚假投资平台"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "诱导操作",
+        "拉黑失联"
+      ],
+      "risk_signals": "陌生人拉群；高收益诱惑；诱导下载非官方APP；无法提现",
+      "risk_level": "中",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "警惕“低风险高回报”投资话术；选择持牌正规理财机构，不下载陌生投资APP；切勿向陌生账户转账。",
+      "source_name": "公安部刑侦局2025年4月通报",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "虚假网络投资理财"
+      ],
+      "ccl2023_category": "虚假网络投资理财类",
+      "custom_subcategory": "虚假网络投资理财类诈骗",
+      "tags": [
+        "虚假网络投资理财类诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": "推断：false_belief根据案例调整为“误以为投资稳赚不赔”；entry_channels仅App，但可能还有社交群聊渠道未注明。"
+    },
+    {
+      "case_id": "FZ-070",
+      "title": "虚构身份理财诈骗",
+      "summary": "2026年1月，南京花先生被虚构身份的女子诱导，下载虚拟投资软件，充值50万元后无法提现。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及虚假网络投资理财类诈骗（虚构身份型）的典型手法：虚构身份诱导下载陌生App进行投资，充值后无法提现，符合诈骗特征。",
+      "entry_channels": [
+        "其他"
+      ],
+      "impersonated_identity": [
+        "无明确冒充"
+      ],
+      "false_belief": [
+        "误以为投资稳赚不赔"
+      ],
+      "key_methods": [
+        "诱导下载陌生App",
+        "提现失败"
+      ],
+      "target_assets": [
+        "钱款",
+        "虚拟货币"
+      ],
+      "fraud_stage": [
+        "诱导操作"
+      ],
+      "risk_signals": "诱导下载非官方App；承诺高收益；提现失败",
+      "risk_level": "中",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "网上陌生“投资达人”不可信，不随意添加好友谈论理财；投资应选择正规平台，不下载不明来源App；警惕高收益诱惑，任何要求充值到个人账户或不明平台的行为均为诈骗。",
+      "source_name": "央广网2026年4月通报",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "虚假网络投资理财"
+      ],
+      "ccl2023_category": "虚假网络投资理财类",
+      "custom_subcategory": "虚假网络投资理财类诈骗（虚构身份型）",
+      "tags": [
+        "虚假网络投资理财类诈骗（虚构身份型）",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-071",
+      "title": "虚拟货币虚假交易诈骗",
+      "summary": "2025年4月，北京王先生被诱导下载虚假虚拟货币平台，投入18万元，提现时被要求交解冻费3万元后失联。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "该案例涉及诱导下载虚假平台、小额投资无法提现、要求缴纳解冻费后失联等典型诈骗手法，符合虚拟货币虚假交易诈骗特征。",
+      "entry_channels": [
+        "App"
+      ],
+      "impersonated_identity": [
+        "无明确冒充"
+      ],
+      "false_belief": [
+        "误以为可以轻松赚钱"
+      ],
+      "key_methods": [
+        "仿冒官网",
+        "诱导下载陌生App",
+        "提现失败",
+        "保证金/解冻费"
+      ],
+      "target_assets": [
+        "钱款",
+        "虚拟货币"
+      ],
+      "fraud_stage": [
+        "诱导操作",
+        "拉黑失联"
+      ],
+      "risk_signals": "诱导下载非官方App；承诺高收益；提现异常要求解冻费",
+      "risk_level": "高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "1. 我国禁止虚拟货币交易，任何虚拟货币投资平台均为非法；2. 不点击不明链接或扫描二维码下载App；3. 拒绝缴纳任何解冻费、保证金；4. 发现被骗立即报警并保留转账记录。",
+      "source_name": "北京朝阳公安2025年5月通报",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "虚假网络投资理财"
+      ],
+      "ccl2023_category": "虚假网络投资理财类",
+      "custom_subcategory": "虚拟货币虚假交易类诈骗",
+      "tags": [
+        "虚拟货币",
+        "虚假投资",
+        "提现失败",
+        "解冻费"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-072",
+      "title": "网络交友诱导投资诈骗",
+      "summary": "2024年7月，浙江宁波王女士与网络交友对象确立关系后，被诱导投入12万元，对方随后失联。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "受害者通过社交平台结识网友，对方以恋爱为名建立信任，虚构高收益投资项目，前期给予小额返利，诱使受害者加大投入，最终失联，符合虚假网络投资理财诈骗的典型特征。",
+      "entry_channels": [
+        "其他"
+      ],
+      "impersonated_identity": [
+        "无明确冒充"
+      ],
+      "false_belief": [
+        "其他"
+      ],
+      "key_methods": [
+        "诱导转账"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "拉黑失联"
+      ],
+      "risk_signals": "陌生人诱导投资；承诺高回报；前期小额返利；后期无法提现；诱导下载不明App",
+      "risk_level": "中",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "网络交友需谨慎，不要轻信网友的投资建议；任何稳赚不赔的投资项目都是骗局；投资前应核实平台资质，通过正规渠道进行；如遇要求转账到个人账户或不明账户，应立即停止操作并报警。",
+      "source_name": "宁波海曙公安2024年8月通报",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "虚假网络投资理财"
+      ],
+      "ccl2023_category": "虚假网络投资理财类",
+      "custom_subcategory": "网络交友诱导投资理财类诈骗",
+      "tags": [
+        "网络交友诱导投资理财类诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": "推断：入口渠道可能为社交平台私信或婚恋交友App，原信息填写为'其他'，故保留；虚假认知和关键手法根据案例补充。"
+    },
+    {
+      "case_id": "FZ-073",
+      "title": "游戏账号虚假交易诈骗",
+      "summary": "2023年2月，江苏镇江王某出售游戏账号，被诱导脱离正规平台，缴纳6000元保证金后被拉黑，账号、资金双失。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及网络游戏虚假交易类诈骗的典型手法：脱离官方平台、要求缴纳保证金、拉黑失联。",
+      "entry_channels": [
+        "游戏平台私信"
+      ],
+      "impersonated_identity": [
+        "无明确冒充"
+      ],
+      "false_belief": [
+        "误以为网站是正规官网"
+      ],
+      "key_methods": [
+        "保证金/解冻费"
+      ],
+      "target_assets": [
+        "钱款",
+        "平台账号",
+        "账号密码",
+        "游戏饰品"
+      ],
+      "fraud_stage": [
+        "拉黑失联"
+      ],
+      "risk_signals": "脱离官方平台交易；要求缴纳保证金；对方失联；账号密码泄露",
+      "risk_level": "中",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "游戏交易走官方平台，不信“保证金、解冻费”，不扫陌生二维码。",
+      "source_name": "江苏公安2023年青少年反诈通报",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "网络游戏产品虚假交易"
+      ],
+      "ccl2023_category": "网络游戏产品虚假交易类",
+      "custom_subcategory": "网络游戏虚假交易类诈骗",
+      "tags": [
+        "网络游戏虚假交易类诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "游戏玩家",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": "原始信息中部分字段直接使用，未修改。"
+    },
+    {
+      "case_id": "FZ-074",
+      "title": "游戏账号交易连环套诈骗",
+      "summary": "2024年3月，大学生小张在某游戏平台出售自己的游戏账号，很快有买家联系并称需要第三方担保完成交易。小张被诱导添加所谓的“担保客服”QQ，对方要求小张先转账刷信誉以激活交易通道，小张先后多次转账共计7000余元，但最终不仅没有收到交易款项，自己的游戏账号也被对方骗走。整个过程中，骗子利用小张对游戏交易流程不熟悉以及急于出售账号的心理，步步设套实施连环诈骗。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中受害者被诱导向第三方担保账户转账刷信誉，最终资金损失且游戏账号被盗，符合网络游戏虚假交易类诈骗的典型特征。具体风险信号包括：要求通过非官方渠道联系、以刷信誉或解冻费等名义要求先行转账、承诺的收益或交易无法兑现。",
+      "entry_channels": [
+        "游戏平台私信"
+      ],
+      "impersonated_identity": [
+        "无明确冒充"
+      ],
+      "false_belief": [
+        "其他"
+      ],
+      "key_methods": [
+        "诱导转账"
+      ],
+      "target_assets": [
+        "钱款",
+        "平台账号",
+        "账号密码",
+        "游戏饰品"
+      ],
+      "fraud_stage": [
+        "诱导操作"
+      ],
+      "risk_signals": "要求通过第三方担保交易；要求转账刷信誉；拒绝官方平台交易；承诺高额回报或快速卖出。",
+      "risk_level": "高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "1. 游戏账号交易务必选择官方或大型可信平台，拒绝任何第三方担保或私下交易。2. 凡是要求先转账、刷信誉、交保证金或解冻费的，均为诈骗。3. 不要轻信游戏内或私信中的“买家”或“客服”，所有操作应在平台内完成。4. 如遇可疑情况，立即停止转账并报警。",
+      "source_name": "央视新闻2025年11月通报",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "网络游戏产品虚假交易"
+      ],
+      "ccl2023_category": "网络游戏产品虚假交易类",
+      "custom_subcategory": "网络游戏虚假交易类诈骗（连环套型）",
+      "tags": [
+        "网络游戏虚假交易类诈骗（连环套型）",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "学生；游戏玩家",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": "根据原始信息补充summary和judgment_reason，其他字段大部分直接使用用户提供内容。部分枚举值（如false_belief）使用'其他'。"
+    },
+    {
+      "case_id": "FZ-075",
+      "title": "游戏币虚假交易诈骗",
+      "summary": "2025年2月，浙江杭州徐某在某游戏交流群看到“低价出售游戏币”广告，添加对方微信后，对方声称“先转账再发货，量大优惠”，徐某先后转账4.2万元购买游戏币，转账后对方以“系统延迟”“需缴纳解冻费”为由推脱，随后失联，徐某发现未收到任何游戏币。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例涉及网络游戏虚假交易类诈骗，典型风险信号包括：以低价优惠诱导转账、要求先付款后发货、以解冻费为由二次榨取、最终失联。",
+      "entry_channels": [
+        "微信",
+        "游戏平台私信"
+      ],
+      "impersonated_identity": [
+        "无明确冒充"
+      ],
+      "false_belief": [
+        "其他"
+      ],
+      "key_methods": [
+        "保证金/解冻费",
+        "私信引流",
+        "诱导转账"
+      ],
+      "target_assets": [
+        "钱款",
+        "游戏饰品"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "诱导操作",
+        "拉黑失联"
+      ],
+      "risk_signals": "要求转账；低价诱惑；解冻费",
+      "risk_level": "高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "游戏币交易需通过游戏官方交易渠道，不信“低价优惠”“先转账后发货”，任何解冻费、保证金均为诈骗套路。",
+      "source_name": "杭州西湖公安2025年2月反诈案例通报",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "网络游戏产品虚假交易"
+      ],
+      "ccl2023_category": "网络游戏产品虚假交易类",
+      "custom_subcategory": "网络游戏虚假交易类诈骗（游戏币型）",
+      "tags": [
+        "网络游戏虚假交易类诈骗（游戏币型）",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "游戏玩家",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-076",
+      "title": "游戏装备虚假交易诈骗",
+      "summary": "2024年5月，广东深圳赵某在游戏内看到有人出售稀有装备，对方诱导脱离官方平台，通过私人微信交易，赵某转账6.8万元后，对方未交付装备，反而以“装备绑定需缴费解绑”为由继续索要资金，赵某察觉不对后报警，对方已失联。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及网络游戏虚假交易类诈骗（游戏装备型）的典型手法，受害人已转账，对方失联。",
+      "entry_channels": [
+        "游戏平台私信",
+        "微信"
+      ],
+      "impersonated_identity": [
+        "无明确冒充"
+      ],
+      "false_belief": [
+        "其他"
+      ],
+      "key_methods": [
+        "诱导转账",
+        "虚假交易",
+        "保证金/解冻费"
+      ],
+      "target_assets": [
+        "钱款",
+        "游戏饰品"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "诱导操作",
+        "拉黑失联"
+      ],
+      "risk_signals": "要求私下交易；要求脱离平台；以解冻费为由继续索要资金；对方失联",
+      "risk_level": "高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "稀有游戏装备交易务必走官方平台，不私下添加好友转账，不相信“装备绑定解绑缴费”等说辞。",
+      "source_name": "深圳南山公安2024年5月反诈通报",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "网络游戏产品虚假交易"
+      ],
+      "ccl2023_category": "网络游戏产品虚假交易类",
+      "custom_subcategory": "网络游戏虚假交易类诈骗（游戏装备型）",
+      "tags": [
+        "网络游戏虚假交易类诈骗（游戏装备型）",
+        "反诈案例"
+      ],
+      "involved_platforms": [
+        "未知"
+      ],
+      "victim_group": "游戏玩家",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-077",
+      "title": "虚假装修诈骗",
+      "summary": "2023年8月，湖南长沙李先生被虚假装修公司以优惠为由，预付10万元装修款后，对方停工失联。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例涉及虚假装修诈骗典型手法：以优惠为由诱导预付大额款项，随后停工失联。风险信号包括未核实公司资质、预付款比例过高、直接失联。",
+      "entry_channels": [
+        "其他"
+      ],
+      "impersonated_identity": [
+        "无明确冒充"
+      ],
+      "false_belief": [
+        "其他"
+      ],
+      "key_methods": [
+        "仿冒官网"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "拉黑失联"
+      ],
+      "risk_signals": "信息不足；未核实资质；大额预付款；停工失联",
+      "risk_level": "中",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "选装修公司核实资质，预付费用不宜过高，按施工进度付款。",
+      "source_name": "长沙芙蓉公安2023年9月通报",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "虚假购物服务"
+      ],
+      "ccl2023_category": "虚假购物、服务类",
+      "custom_subcategory": "虚假装修类诈骗。",
+      "tags": [
+        "虚假装修类诈骗。",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-078",
+      "title": "虚假二手车交易诈骗",
+      "summary": "2025年6月，广东东莞赵某在网上看到“低价二手车”广告，添加对方微信后，被要求缴纳5000元定金锁定车辆，转账后对方失联，发现车辆信息均为虚假。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及虚假二手车交易类诈骗的典型手法，受害人已转账且对方失联，车辆信息虚假。风险信号包括要求提前缴纳定金、未提供真实车辆凭证、诱导转账后失联。",
+      "entry_channels": [
+        "微信",
+        "搜索引擎"
+      ],
+      "impersonated_identity": [
+        "无明确冒充"
+      ],
+      "false_belief": [
+        "误以为交易受到平台保护",
+        "误以为不操作会造成损失"
+      ],
+      "key_methods": [
+        "仿冒官网",
+        "私信引流",
+        "诱导转账"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "诱导操作",
+        "拉黑失联"
+      ],
+      "risk_signals": "要求转账；虚假广告；失联",
+      "risk_level": "高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "二手车交易需实地看车，通过正规中介或平台交易，不提前缴纳定金。核实车辆信息和卖家身份，拒绝私下转账。",
+      "source_name": "东莞东城公安2025年6月反诈通报",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "虚假购物服务"
+      ],
+      "ccl2023_category": "虚假购物、服务类",
+      "custom_subcategory": "虚假二手车交易",
+      "tags": [
+        "虚假二手车交易",
+        "反诈案例"
+      ],
+      "involved_platforms": [
+        "微信",
+        "搜索引擎"
+      ],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-079",
+      "title": "虚假中奖诈骗（大众群体高发）",
+      "summary": "2023年12月，河南郑州赵女士收到一条短信，称其中了某品牌“年终抽奖”一等奖，奖品为价值10万元的汽车，需先缴纳“个人所得税、手续费”共计8000元才能领取奖品。赵女士满心欢喜，按对方要求转账8000元，随后联系对方询问领奖事宜，发现对方电话停机、短信不回复，才意识到被骗。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及虚假中奖类诈骗的典型手法，受害人已转账，属于确认诈骗。",
+      "entry_channels": [
+        "电话",
+        "短信"
+      ],
+      "impersonated_identity": [
+        "无明确冒充"
+      ],
+      "false_belief": [
+        "误以为有免费福利"
+      ],
+      "key_methods": [
+        "保证金/解冻费",
+        "诱导转账"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "接触引流",
+        "诱导操作"
+      ],
+      "risk_signals": "要求转账",
+      "risk_level": "高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "1. 核心套路：发送虚假中奖短信/链接→以“中高额奖品”为诱饵→要求缴纳“税费、手续费、保证金”→收取费用后失联。2. 关键提醒：正规抽奖活动不会要求中奖者先缴纳任何费用，税费由主办方代扣代缴。3. 防范要点：不轻信陌生中奖信息，不点击陌生中奖链接，不向陌生账号转账。",
+      "source_name": "河南省郑州市公安局中原分局官方微信公众号“中原公安”2023年12月反诈案例通报。",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "虚假购物服务"
+      ],
+      "ccl2023_category": "虚假购物、服务类",
+      "custom_subcategory": "虚假中奖类诈骗。",
+      "tags": [
+        "虚假中奖类诈骗。",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-080",
+      "title": "虚假投资理财诈骗",
+      "summary": "2025年3月，江苏王先生被拉入炒股群，诱导下载虚假APP，投入28万元后无法登录、导师失联。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例涉及虚假网络投资理财类诈骗的典型手法：通过炒股群引流，诱导下载非正规投资APP，初期可能小额返利，后期无法提现且导师失联，符合诈骗特征。",
+      "entry_channels": [
+        "App"
+      ],
+      "impersonated_identity": [
+        "冒充投资导师"
+      ],
+      "false_belief": [
+        "其他"
+      ],
+      "key_methods": [
+        "仿冒官网",
+        "诱导下载陌生App",
+        "虚假投资平台"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "诱导操作",
+        "拉黑失联"
+      ],
+      "risk_signals": "高收益诱惑；陌生群聊引流；非正规APP下载；无法提现；导师失联",
+      "risk_level": "中",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "1. 警惕“低风险高回报”的投资宣传，正规理财应通过持牌金融机构。2. 不下载陌生人推荐的炒股或投资APP，通过官方应用商店核实。3. 切勿向陌生账户转账，尤其是用于投资。4. 发现无法提现或导师拉黑立即报警。",
+      "source_name": "公安部刑侦局2025年4月通报",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "虚假网络投资理财"
+      ],
+      "ccl2023_category": "虚假网络投资理财类",
+      "custom_subcategory": "虚假网络投资理财类诈骗",
+      "tags": [
+        "虚假网络投资理财类诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": "根据原始信息整理，部分字段如风险信号、判断理由等做了补充推断。"
+    },
+    {
+      "case_id": "FZ-081",
+      "title": "虚构身份理财诈骗",
+      "summary": "2026年1月，南京花先生被一名虚构身份的女子诱导，下载了一款虚拟投资软件，先后充值共计50万元，后发现无法提现，意识到被骗。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "该案例中，受害者被陌生人诱导下载非官方App进行投资，承诺高收益，前期可能小额返利，后期无法提现，符合虚假网络投资理财诈骗的典型特征。风险信号包括：陌生人推荐、诱导下载陌生App、无法提现。",
+      "entry_channels": [
+        "社交平台私信"
+      ],
+      "impersonated_identity": [
+        "冒充投资导师"
+      ],
+      "false_belief": [
+        "误以为投资稳赚不赔"
+      ],
+      "key_methods": [
+        "诱导下载陌生App",
+        "提现失败"
+      ],
+      "target_assets": [
+        "钱款",
+        "虚拟货币"
+      ],
+      "fraud_stage": [
+        "诱导操作",
+        "资产获取"
+      ],
+      "risk_signals": "陌生人推荐投资；诱导下载非官方App；承诺高收益；无法提现",
+      "risk_level": "高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "不要轻信陌生网友推荐的所谓高收益投资平台，所有稳赚不赔的理财都是诈骗。切勿下载不明来源的App，投资理财应选择正规金融机构。如遇无法提现，立即报警并保留证据。",
+      "source_name": "央广网2026年4月通报",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "虚假网络投资理财"
+      ],
+      "ccl2023_category": "虚假网络投资理财类",
+      "custom_subcategory": "虚假网络投资理财类诈骗（虚构身份型）",
+      "tags": [
+        "虚假网络投资理财",
+        "虚构身份",
+        "诱导下载App",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": "原始信息中entry_channels和impersonated_identity为推断：根据描述，女子通过社交平台私信接触受害者并冒充投资导师。"
+    },
+    {
+      "case_id": "FZ-082",
+      "title": "虚拟货币虚假交易诈骗",
+      "summary": "2025年4月，北京王先生被诱导下载虚假虚拟货币平台，投入18万元，提现时被要求交解冻费3万元后失联。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及虚拟货币虚假交易类诈骗的典型手法",
+      "entry_channels": [
+        "其他"
+      ],
+      "impersonated_identity": [
+        "无明确冒充"
+      ],
+      "false_belief": [
+        "其他"
+      ],
+      "key_methods": [
+        "仿冒官网",
+        "提现失败",
+        "保证金/解冻费"
+      ],
+      "target_assets": [
+        "钱款",
+        "虚拟货币"
+      ],
+      "fraud_stage": [
+        "诱导操作",
+        "拉黑失联"
+      ],
+      "risk_signals": "信息不足",
+      "risk_level": "中",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "我国禁止虚拟货币交易，此类平台均为非法，切勿投入资金。",
+      "source_name": "北京朝阳公安2025年5月通报。",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "虚假购物服务"
+      ],
+      "ccl2023_category": "虚假网络投资理财类",
+      "custom_subcategory": "虚拟货币虚假交易类诈骗。",
+      "tags": [
+        "虚拟货币虚假交易类诈骗。",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    },
+    {
+      "case_id": "FZ-083",
+      "title": "网络交友诱导投资诈骗",
+      "summary": "2024年7月，浙江宁波王女士与网络交友对象确立关系后，被诱导投入12万元，对方随后失联。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及网络交友诱导投资理财类诈骗的典型手法：通过网络交友建立信任，诱导投资，最终失联。风险信号包括虚假身份、诱导转账、失联。",
+      "entry_channels": [
+        "其他"
+      ],
+      "impersonated_identity": [
+        "无明确冒充"
+      ],
+      "false_belief": [
+        "误以为投资稳赚不赔"
+      ],
+      "key_methods": [
+        "虚假投资平台"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "拉黑失联"
+      ],
+      "risk_signals": "网络交友对象诱导投资；大额资金投入；对方失联",
+      "risk_level": "中",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "网络交友不透露财产信息，不信陌生网友投资建议，涉及转账前务必核实对方身份。",
+      "source_name": "宁波海曙公安2024年8月通报。",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "虚假网络投资理财"
+      ],
+      "ccl2023_category": "虚假网络投资理财类",
+      "custom_subcategory": "网络交友诱导投资理财类诈骗",
+      "tags": [
+        "网络交友诱导投资理财类诈骗",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": "根据原始信息推断false_belief为‘误以为投资稳赚不赔’，key_methods为‘虚假投资平台’。"
+    },
+    {
+      "case_id": "FZ-084",
+      "title": "游戏账号虚假交易诈骗",
+      "summary": "2023年2月，江苏镇江王某出售游戏账号，被诱导脱离正规平台，缴纳6000元保证金后被拉黑，账号、资金双失。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及网络游戏虚假交易类诈骗的典型手法：诱导脱离正规平台、以缴纳保证金为由骗取钱款、最终拉黑失联。",
+      "entry_channels": [
+        "游戏平台私信"
+      ],
+      "impersonated_identity": [
+        "无明确冒充"
+      ],
+      "false_belief": [
+        "误以为网站是正规官网"
+      ],
+      "key_methods": [
+        "保证金/解冻费"
+      ],
+      "target_assets": [
+        "钱款",
+        "平台账号",
+        "账号密码",
+        "游戏饰品"
+      ],
+      "fraud_stage": [
+        "拉黑失联"
+      ],
+      "risk_signals": "诱导脱离官方平台；要求缴纳保证金；拉黑失联",
+      "risk_level": "中",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "游戏交易走官方平台，不信“保证金、解冻费”，不扫陌生二维码。",
+      "source_name": "江苏公安2023年青少年反诈通报",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "网络游戏产品虚假交易"
+      ],
+      "ccl2023_category": "网络游戏产品虚假交易类",
+      "custom_subcategory": "网络游戏虚假交易",
+      "tags": [
+        "网络游戏虚假交易",
+        "反诈案例"
+      ],
+      "involved_platforms": [
+        "未知"
+      ],
+      "victim_group": "游戏玩家",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "2023",
+      "remark": "原始信息中部分字段缺失，已根据案例内容推断补充。"
+    },
+    {
+      "case_id": "FZ-085",
+      "title": "游戏账号交易连环套诈骗",
+      "summary": "2024年3月，大学生小张出售游戏账号，被诱导找第三方担保，转账7000余元刷信誉后，资金、账号均被骗。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "受害人被诱导找第三方担保并刷信誉，最终转账7000余元后资金和账号均被骗，符合网络游戏虚假交易类诈骗的典型特征，包括诱导转账、保证金/解冻费等风险信号。",
+      "entry_channels": [
+        "游戏平台私信"
+      ],
+      "impersonated_identity": [
+        "无明确冒充"
+      ],
+      "false_belief": [
+        "误以为需要缴费解冻"
+      ],
+      "key_methods": [
+        "诱导转账",
+        "保证金/解冻费"
+      ],
+      "target_assets": [
+        "钱款",
+        "平台账号",
+        "账号密码",
+        "游戏饰品"
+      ],
+      "fraud_stage": [
+        "诱导操作",
+        "资产获取"
+      ],
+      "risk_signals": "要求转账至第三方账户；要求支付保证金/刷信誉",
+      "risk_level": "高",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失",
+        "账号被盗"
+      ],
+      "prevention_advice": "不相信“第三方担保、刷信誉”，交易仅走官方平台。",
+      "source_name": "央视新闻",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "网络游戏产品虚假交易"
+      ],
+      "ccl2023_category": "网络游戏产品虚假交易类",
+      "custom_subcategory": "网络游戏虚假交易类诈骗（连环套型）。",
+      "tags": [
+        "网络游戏虚假交易类诈骗（连环套型）。",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "学生；游戏玩家",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": "根据原始信息推断部分字段，如false_belief、key_methods等。"
+    },
+    {
+      "case_id": "FZ-086",
+      "title": "虚假装修诈骗",
+      "summary": "2023年8月，湖南长沙李先生被虚假装修公司以优惠为由，预付10万元装修款后，对方停工失联。",
+      "nature_judgment": "确认诈骗",
+      "judgment_reason": "案例中涉及虚假装修类诈骗的典型手法",
+      "entry_channels": [
+        "其他"
+      ],
+      "impersonated_identity": [
+        "无明确冒充"
+      ],
+      "false_belief": [
+        "其他"
+      ],
+      "key_methods": [
+        "仿冒官网"
+      ],
+      "target_assets": [
+        "钱款"
+      ],
+      "fraud_stage": [
+        "拉黑失联"
+      ],
+      "risk_signals": "信息不足",
+      "risk_level": "中",
+      "loss_occurred": "是",
+      "loss_type": [
+        "金钱损失"
+      ],
+      "prevention_advice": "选装修公司核实资质，预付费用不宜过高，按施工进度付款。",
+      "source_name": "长沙芙蓉公安2023年9月通报。",
+      "source_type": "官方",
+      "collection_date": "2026-05-15",
+      "is_desensitized": "是",
+      "official_category": [
+        "虚假购物服务"
+      ],
+      "ccl2023_category": "虚假购物、服务类",
+      "custom_subcategory": "虚假装修类诈骗。",
+      "tags": [
+        "虚假装修类诈骗。",
+        "反诈案例"
+      ],
+      "involved_platforms": [],
+      "victim_group": "普通用户",
+      "emergency_plan_id": "",
+      "law_basis_ids": [],
+      "source_links": [],
+      "publish_date": "",
+      "remark": ""
+    }
+  ]
+}

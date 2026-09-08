@@ -1,0 +1,78 @@
+--- a/.env
++++ b/.env
+@@ -27,11 +27,15 @@
+ XF_API_KEY=<redacted>
+ XF_API_SECRET=<redacted>
+ XF_ASR_RES_ID=<redacted>
+-TTS_VOICE=<redacted>
+-TTS_RATE=<redacted>
+-TTS_PITCH=<redacted>
+ EMBEDDING_WORKERS=<redacted>
+ EMBEDDING_REQUEST_TIMEOUT=<redacted>
+ EMBEDDING_MAX_RETRIES=<redacted>
+ EMBEDDING_RETRY_BACKOFF=<redacted>
+ EMBEDDING_REQUEST_DELAY=<redacted>
++
++# Provider settings synchronized with source application.
++VOLC_TTS_API_VERSION=<redacted>
++VOLC_TTS_API_KEY=<redacted>
++VOLC_TTS_RESOURCE_ID=<redacted>
++VOLC_TTS_VOICE_TYPE=<redacted>
++VOLC_TTS_EMOTION=<redacted>
+
+--- a/.env.example
++++ b/.env.example
+@@ -34,11 +34,6 @@
+ # Limit automatic multilingual recognition to the requested foreign-language set.
+ XF_MULTILINGUAL_LANGUAGE_HINT=en|ja|ko
+ 
+-# Edge TTS output (used by /api/tts)
+-TTS_VOICE=zh-CN-XiaoxiaoNeural
+-TTS_RATE=-2%
+-TTS_PITCH=+0Hz
+-
+ # Optional OpenAI-compatible embedding API.
+ # Build index with: python .\scripts\maintenance\rebuild_embedding_index.py --no-resume
+ EMBEDDING_BASE_URL=https://api.vectorengine.ai/v1
+
+--- a/src/anti_fraud_explorer/config.py
++++ b/src/anti_fraud_explorer/config.py
+@@ -51,12 +51,6 @@
+     "en|ja|ko",
+ )
+ 
+-# Edge TTS is deliberately configured here rather than in the HTTP handler so
+-# local, container and hosted deployments can choose the same voice policy.
+-TTS_VOICE = os.getenv("TTS_VOICE", "zh-CN-XiaoxiaoNeural")
+-TTS_RATE = os.getenv("TTS_RATE", "-2%")
+-TTS_PITCH = os.getenv("TTS_PITCH", "+0Hz")
+-
+ EMBEDDING_API_KEY = os.getenv("EMBEDDING_API_KEY", "")
+ EMBEDDING_BASE_URL = os.getenv("EMBEDDING_BASE_URL", "https://api.vectorengine.ai/v1")
+ EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "text-embedding-3-small")
+
+--- a/src/anti_fraud_explorer/api.py
++++ b/src/anti_fraud_explorer/api.py
+@@ -28,9 +28,6 @@
+ from .assistant import AssistantService, SearchService
+ from .config import (
+     FRONTEND_DIR,
+-    TTS_PITCH,
+-    TTS_RATE,
+-    TTS_VOICE,
+     XF_API_KEY,
+     XF_API_SECRET,
+     XF_APP_ID,
+@@ -186,9 +183,9 @@
+         async def audio_stream() -> AsyncIterator[bytes]:
+             communicate = edge_tts.Communicate(
+                 text,
+-                voice=TTS_VOICE,
+-                rate=TTS_RATE,
+-                pitch=TTS_PITCH,
++                voice=language_profile.tts_voice,
++                rate="-2%",
++                pitch="+0Hz",
+             )
+             first_chunk = True
+             async for chunk in communicate.stream():

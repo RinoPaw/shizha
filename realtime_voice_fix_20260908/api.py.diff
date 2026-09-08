@@ -1,0 +1,80 @@
+diff --git "a/D:\\Projects\\Packages\\\350\257\206\350\257\210\\realtime_voice_fix_20260908\\api.py.original" "b/D:\\Projects\\Packages\\\350\257\206\350\257\210\\realtime_voice_fix_20260908\\api.py.modified"
+index 00b1844..827577c 100644
+--- "a/D:\\Projects\\Packages\\\350\257\206\350\257\210\\realtime_voice_fix_20260908\\api.py.original"
++++ "b/D:\\Projects\\Packages\\\350\257\206\350\257\210\\realtime_voice_fix_20260908\\api.py.modified"
+@@ -55,6 +55,12 @@ MAX_CHAT_CHARS = 4000
+ MAX_SESSION_ID_CHARS = 128
+ MAX_TURN_ID_CHARS = 128
+ MAX_TTS_CHARS = 4000
++TTS_FALLBACK_VOICES = {
++    # Xiaoshuang is the requested primary voice, but the consumer Edge TTS
++    # endpoint doesn't expose it on every account/region. Xiaoyi keeps a
++    # similarly neutral female timbre and is broadly available there.
++    "zh-CN-XiaoshuangNeural": "zh-CN-XiaoyiNeural",
++}
+ MAX_VOICE_CONTEXT_TITLES = 8
+ MAX_VOICE_RECENT_ITEMS = 8
+ LOGGER = logging.getLogger(__name__)
+@@ -181,24 +187,45 @@ def create_app(
+         )
+ 
+         async def audio_stream() -> AsyncIterator[bytes]:
+-            communicate = edge_tts.Communicate(
+-                text,
+-                voice=language_profile.tts_voice,
+-                rate="-2%",
+-                pitch="+0Hz",
+-            )
+             first_chunk = True
+-            async for chunk in communicate.stream():
+-                if chunk.get("type") == "audio" and chunk.get("data"):
+-                    if first_chunk:
+-                        first_chunk = False
+-                        LOGGER.info(
+-                            "[trace=%s segment=%s] tts.first_audio_chunk +%.3fs",
+-                            trace_id or "-",
+-                            segment,
+-                            time.perf_counter() - started,
+-                        )
+-                    yield chunk["data"]
++            primary_voice = language_profile.tts_voice
++            voices = tuple(
++                item
++                for item in (primary_voice, TTS_FALLBACK_VOICES.get(primary_voice, ""))
++                if item
++            )
++            for voice_index, voice in enumerate(voices):
++                try:
++                    communicate = edge_tts.Communicate(
++                        text,
++                        voice=voice,
++                        rate="-2%",
++                        pitch="+0Hz",
++                    )
++                    async for chunk in communicate.stream():
++                        if chunk.get("type") == "audio" and chunk.get("data"):
++                            if first_chunk:
++                                first_chunk = False
++                                LOGGER.info(
++                                    "[trace=%s segment=%s] tts.first_audio_chunk +%.3fs voice=%s",
++                                    trace_id or "-",
++                                    segment,
++                                    time.perf_counter() - started,
++                                    voice,
++                                )
++                            yield chunk["data"]
++                    break
++                except Exception as exc:
++                    fallback_available = first_chunk and voice_index + 1 < len(voices)
++                    if not fallback_available:
++                        raise
++                    LOGGER.warning(
++                        "[trace=%s segment=%s] tts.primary_unavailable voice=%s reason=%s; retrying fallback",
++                        trace_id or "-",
++                        segment,
++                        voice,
++                        type(exc).__name__,
++                    )
+             LOGGER.info(
+                 "[trace=%s segment=%s] tts.stream.complete +%.3fs",
+                 trace_id or "-",

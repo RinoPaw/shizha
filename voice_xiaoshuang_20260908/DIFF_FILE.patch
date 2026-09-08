@@ -1,0 +1,49 @@
+--- a/src/anti_fraud_explorer/language.py
++++ b/src/anti_fraud_explorer/language.py
+@@ -29,7 +29,7 @@
+         "zh-CN",
+         "简体中文（普通话）",
+         "使用自然、清晰的简体中文普通话回答。",
+-        "zh-CN-XiaoxiaoNeural",
++        "zh-CN-XiaoshuangNeural",
+         "zh",
+     ),
+     "yue-CN": LanguageProfile(
+@@ -44,7 +44,7 @@
+         "zh-CN-sichuan",
+         "四川话",
+         "用户正在使用四川话；请用自然、克制、易懂的四川话口吻回答，不要用生造的谐音字，项目专名保持标准写法。",
+-        "zh-CN-YunxiNeural",
++        "zh-CN-XiaoshuangNeural",
+         "zh",
+         True,
+     ),
+@@ -52,7 +52,7 @@
+         "zh-CN-henan",
+         "河南话",
+         "用户正在使用河南话；请用自然、克制、易懂的河南口吻回答，不要堆砌或生造方言字，项目专名保持标准写法。",
+-        "zh-CN-YunxiNeural",
++        "zh-CN-XiaoshuangNeural",
+         "zh",
+         True,
+     ),
+
+--- a/tests/test_language.py
++++ b/tests/test_language.py
+@@ -45,7 +45,7 @@
+ 
+ def test_provider_language_tags_map_to_response_and_tts_profiles() -> None:
+     expected = {
+-        "zh_cn": ("zh-CN", "zh-CN-XiaoxiaoNeural"),
++        "zh_cn": ("zh-CN", "zh-CN-XiaoshuangNeural"),
+         "en": ("en-US", "en-US-JennyNeural"),
+         "ja": ("ja-JP", "ja-JP-NanamiNeural"),
+         "ko": ("ko-KR", "ko-KR-SunHiNeural"),
+@@ -66,5 +66,5 @@
+     assert is_chinese_locale("zh-CN-henan")
+     assert not is_chinese_locale("en-US")
+     assert get_language_profile("yue-CN").tts_voice == "zh-HK-HiuMaanNeural"
+-    assert get_language_profile("zh-CN-sichuan").tts_voice == "zh-CN-YunxiNeural"
+-    assert get_language_profile("zh-CN-henan").tts_voice == "zh-CN-YunxiNeural"
++    assert get_language_profile("zh-CN-sichuan").tts_voice == "zh-CN-XiaoshuangNeural"
++    assert get_language_profile("zh-CN-henan").tts_voice == "zh-CN-XiaoshuangNeural"
