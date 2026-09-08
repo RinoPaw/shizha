@@ -1,0 +1,7 @@
+/* Realtime voice failures are reflected by the voice control itself.
+ * Do not insert a transient alert into the conversation flow: repeated
+ * transport/TTS failures otherwise reflow the whole demo UI and flash.
+ */
+.voice-error {
+  display: none !important;
+}
